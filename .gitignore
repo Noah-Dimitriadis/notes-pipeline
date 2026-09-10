@@ -1,0 +1,8 @@
+models/
+testlecture/*
+__pycache__/
+.venv/
+*.pyc
+.cache/
+.DS_Store
+*.egg-info/
