@@ -288,7 +288,7 @@ produces one clear sentence, not a traceback.
 
 ---
 
-### M1 — Domain models
+### M1 — Domain models ✅ DONE
 **Depends on:** M0
 **Creates:** `notes_pipeline/models.py`
 
@@ -323,7 +323,7 @@ emits `[MM:SS]`, zero-padded, wrapping correctly past an hour.
 
 ---
 
-### M2 — Store and content-hash cache
+### M2 — Store and content-hash cache ✅ DONE
 **Depends on:** M1
 **Creates:** `notes_pipeline/{store,cache}.py`
 
