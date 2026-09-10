@@ -387,7 +387,7 @@ attached. `vocabulary()` surfaces course jargon and excludes stopwords.
 
 ---
 
-### M4 — Audio preparation
+### M4 — Audio preparation ✅ DONE
 **Depends on:** M1
 **Creates:** `notes_pipeline/stages/audio.py`
 
