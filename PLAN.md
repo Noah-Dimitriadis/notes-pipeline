@@ -15,7 +15,7 @@ acceptance criteria that define done.
 | Decision | Choice | Why |
 |---|---|---|
 | Where it runs | The Mac | Claude Code runs here; transcription is fast here; nothing else needs to be true |
-| Transcription | whisper.cpp `large-v3-turbo`; Apple `SpeechAnalyzer` as fast preview | Whisper is far more accurate on real lecture audio — see §2 |
+| Transcription | whisper.cpp `large-v3-turbo` | Only engine tested that survives real lecture audio — see §2 |
 | Synthesis | Claude API, `claude-opus-5` | 1M context deletes chunking, embeddings, and alignment from the design |
 | Storage | SQLite + files on disk | Single-user, single-machine; the server's Postgres bought nothing |
 | Interface | MCP over stdio, via FastMCP | Point Claude Code at a folder and say "synthesise this, then quiz me" |
@@ -40,13 +40,9 @@ have the deck.
 
 | Engine | Hardware | Wall clock | Realtime | Words | Repetition loops |
 |---|---|---|---|---|---|
-| Apple SpeechAnalyzer | M3 Air | 41.19 s | 65.4× | 7,875 | none |
 | whisper large-v3-turbo | M3 Air (Metal) | 338.68 s | 7.96× | ~7,850 | none |
 | whisper large-v3-turbo | GTX 1060 (CUDA) | 274.22 s | 9.83× | ~7,850 | none |
 | whisper large-v3 | GTX 1060 (CUDA) | 1098.29 s | 2.45× | 9,628 | **913** |
-
-On this corpus Apple looked like a clean win: same word count as whisper, at
-8× the speed. **That conclusion did not survive contact with a real lecture.**
 
 ### Benchmark B — real lecture (the one that decides it)
 
@@ -55,36 +51,41 @@ lecturer, room reverb, an AI-ethics topic with heavy domain vocabulary.
 
 | Engine | Wall clock | Realtime | Words | Domain terms hit | Stutter runs |
 |---|---|---|---|---|---|
-| whisper large-v3-turbo (M3 Air) | 374.25 s | 10.2× | 7,874 | **125** | **0** |
-| Apple SpeechAnalyzer (M3 Air) | 55.89 s | 68.6× | 8,247 | 50 | 18 |
+| whisper large-v3-turbo (M3 Air) | 374.25 s | 10.2× | 7,874 | 125 | 0 |
 
-Both covered 94.7% of the audio. Apple emitted *more* words while carrying
-*less* information — it fills uncertainty with plausible-sounding filler.
-
-Apple scored **zero** occurrences of `UNESCO`, `artificial intelligence`,
-`accountability`, `sustainability`, `human oversight`, `framework`, and
-`responsible AI` — the last of which is the lecture's actual subject, which
-whisper caught 5 times. Representative:
-
-| Apple | whisper |
-|---|---|
-| "the purpose of AI is want to replace one, for example, if I, what is best" | "the purpose of AI is not to replace humans or to amplify what is best in us" |
-| "both benefits and ants can affect many people" | "both benefits and harms can affect many people very quickly" |
-| "There's one, China, one, that's Nesco, at their house." | "There is one in China that UNESCO has their own." |
-| "awareness, privacy, safety, one of our side" | "awareness, privacy, transparency, accountability, safety, human oversight, and sustainability" |
-| "I, I, I, I, I, I, I, I, I, I, I, I" | "Unfortunately, I didn't hit that button" |
+Covers 94.7% of the audio. **This is the reference corpus** — it lives in
+`testlecture/` with its transcripts. Re-run any engine change against it.
 
 ### The three findings that shaped the plan
 
 1. **`large-v3` is not the safe default.** It fell into a repetition loop and
    emitted one line 913 times — over half its output hallucinated. The distilled
    `turbo` model was cleaner *and* 4× faster. Use `turbo`, and pass `-mc 0`.
-2. **Clean-audio benchmarks do not predict lecture-hall performance.** Apple tied
-   whisper on the audiobook and lost badly on the real recording. Any future
-   engine comparison must be run on Benchmark B, not Benchmark A.
-3. **Apple's speed is still worth keeping.** 56 s for a 64-minute lecture makes it
-   a genuinely useful preview — good enough to confirm a recording captured
-   audio at all, or to skim a lecture before the real transcript finishes.
+2. **Clean-audio benchmarks do not predict lecture-hall performance.** Any future
+   engine comparison must be run on Benchmark B, not Benchmark A. See the
+   rejection note below for how badly A can mislead.
+3. **Transcription costs ~6 minutes per lecture** on the Mac and is the slowest
+   stage by far. This is what makes the stage cache in M2 load-bearing, and what
+   the 9060 XT box would improve (§10).
+
+### Rejected: Apple `SpeechAnalyzer` (macOS 26)
+
+Evaluated and dropped — recorded so it isn't re-litigated.
+
+On Benchmark A it looked like a clean win: 41.19 s, 65.4× realtime, 7,875 words,
+matching whisper at 8× the speed. On Benchmark B it collapsed. It ran in 55.89 s
+but hit only **50 domain terms to whisper's 125**, and produced *more* words while
+carrying *less* information — it fills uncertainty with plausible-sounding filler.
+It scored zero occurrences of `UNESCO`, `artificial intelligence`,
+`accountability`, `sustainability`, `human oversight`, `framework`, and
+`responsible AI` — the last being the lecture's actual subject, which whisper
+caught 5 times. It also produced 18 single-word stutter runs against whisper's 0:
+
+| Apple | whisper |
+|---|---|
+| "both benefits and ants can affect many people" | "both benefits and harms can affect many people very quickly" |
+| "There's one, China, one, that's Nesco, at their house." | "There is one in China that UNESCO has their own." |
+| "I, I, I, I, I, I, I, I, I, I, I, I" | "Unfortunately, I didn't hit that button" |
 
 ---
 
@@ -130,8 +131,6 @@ notes-pipeline/
       courses/<code>.md
     cli.py               # M8
     mcp_server.py        # M9
-  vendor/
-    stt/main.swift       # M5 — Apple SpeechAnalyzer CLI
   tests/
     fixtures/
   testlecture/               # Benchmark B: real 64-min lecture + both transcripts
@@ -268,8 +267,7 @@ class Config(BaseSettings):
     model: str = "claude-opus-5"
     library_root: Path
     db_path: Path
-    transcriber: Literal["whisper", "apple", "remote"] = "whisper"
-    stt_bin: Path                          # vendor/stt/stt
+    transcriber: Literal["whisper", "remote"] = "whisper"
     whisper_bin: Path = Path("whisper-cli")
     whisper_model: Path                    # ggml-large-v3-turbo.bin
     whisper_threads: int = 8
@@ -413,14 +411,13 @@ sentence.
 
 ### M5 — Transcription
 **Depends on:** M1, M4
-**Creates:** `vendor/stt/main.swift`, `notes_pipeline/stages/transcribe.py`
+**Creates:** `notes_pipeline/stages/transcribe.py`
 
 ```python
 class Transcriber(Protocol):
     def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript: ...
 
 class WhisperTranscriber(Transcriber): ...   # default
-class AppleTranscriber(Transcriber): ...     # fast preview
 class RemoteTranscriber(Transcriber): ...    # POST to a transcription service
 def get_transcriber(cfg: Config) -> Transcriber
 ```
@@ -450,44 +447,12 @@ Parse `OUTBASE.json` → `transcription[].offsets` (milliseconds).
   recording that actually loops.
 - `--prompt` caps at roughly `n_text_ctx/2` (~224) tokens — truncate.
 
-#### Apple SpeechAnalyzer (fast preview)
-
-A small Swift CLI, built once with `swiftc -O -o stt main.swift`, that the
-Python stage shells out to. Verified working — the benchmark in §2 came from it.
-
-```swift
-let transcriber = SpeechTranscriber(
-    locale: await SpeechTranscriber.supportedLocale(equivalentTo: Locale(identifier: "en-US")) ?? ...,
-    transcriptionOptions: [], reportingOptions: [],
-    attributeOptions: [.audioTimeRange, .transcriptionConfidence])
-
-if let req = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
-    try await req.downloadAndInstall()          // first run only; OS-managed
-}
-
-let analyzer = SpeechAnalyzer(modules: [transcriber])
-let collector = Task { /* for try await r in transcriber.results { ... } */ }
-_ = try await analyzer.analyzeSequence(from: AVAudioFile(forReading: url))
-try await analyzer.finalizeAndFinishThroughEndOfInput()
-```
-
-Emit JSON: `[{start, end, text, confidence}]`. `Result.range` is a `CMTimeRange`
-— use `CMTimeGetSeconds`.
-
-Notes:
-- Requires macOS 26+. No TCC prompt for file input; the model self-installs.
-- Consume `transcriber.results` in a **concurrent Task** and only then call
-  `finalizeAndFinishThroughEndOfInput()`, or the stream will not drain.
-- Vocabulary seeding: `AnalysisContext.ContextualStringsTag`, fed from
-  `Deck.vocabulary()`. `SFCustomLanguageModelData` is the richer option
-  (phrase counts, phonemes) if plain contextual strings prove insufficient.
-
 #### Quality guard (both engines)
 
 Raise a `TranscriptQualityWarning` on any of:
 - more than 20 consecutive identical segments (the `large-v3` failure mode);
-- a single word repeated 4+ times in a row (Apple's degeneration mode — 18
-  occurrences on Benchmark B, 0 for whisper);
+- a single word repeated 4+ times in a row (whisper scored 0 of these on
+  Benchmark B, so any occurrence is a signal the audio is degrading);
 - mean confidence below threshold, where the engine reports it.
 
 Catch a bad transcript here, not by reading a hallucinated note file three
@@ -592,7 +557,7 @@ Print one line per stage with cache status and elapsed time:
 ```
 slides      12 slides                     0.3s
 audio       2694.3s → wav                 4.1s
-transcribe  683 segments (apple)         41.2s
+transcribe  732 segments (whisper)      374.2s
 synthesize  claude-opus-5                 —  cached
 emit        out/notes.md
 ```
@@ -702,7 +667,6 @@ Already installed and verified on this machine:
 | `ffmpeg` | `/opt/homebrew/bin/ffmpeg` | M4 |
 | `pdftotext` (poppler) | `/opt/homebrew/bin/pdftotext` | M3 |
 | `whisper-cli` | `/opt/homebrew/bin/whisper-cli` | M5 |
-| `swiftc` | `/usr/bin/swiftc` | M5 (Apple preview) |
 | whisper model | `models/ggml-large-v3-turbo.bin` (1.6 GB) | M5 |
 
 Still missing — do these first:
@@ -723,9 +687,8 @@ explicitly — the default `python3` is 3.14.6, which is ahead of some wheels.
 
 Already in the repo and working:
 
-- `vendor/stt/main.swift` — the Apple SpeechAnalyzer CLI, benchmarked
 - `testlecture/` — Benchmark B corpus: the real 64-min lecture, normalized wav,
-  and four transcripts (whisper plain / seeded / carry-prompt / Apple)
+  and the whisper transcripts (plain / seeded / carry-prompt)
 - `~/School/Fall-2026/COSC-4V88/Week1-lecture-notes.md` — reference output
 
 ---
