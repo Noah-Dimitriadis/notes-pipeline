@@ -353,7 +353,7 @@ the transcription stage. That last one is the whole point — verify it explicit
 
 ---
 
-### M3 — Slide extraction
+### M3 — Slide extraction ✅ DONE
 **Depends on:** M1
 **Creates:** `notes_pipeline/stages/slides.py`
 

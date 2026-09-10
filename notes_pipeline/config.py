@@ -22,8 +22,7 @@ class Config(BaseSettings):
     model: str = "claude-opus-5"
     library_root: Path
     db_path: Path
-    transcriber: Literal["whisper", "apple", "remote"] = "whisper"
-    stt_bin: Path
+    transcriber: Literal["whisper", "remote"] = "whisper"
     whisper_bin: Path = Path("whisper-cli")
     whisper_model: Path
     whisper_threads: int = 8
