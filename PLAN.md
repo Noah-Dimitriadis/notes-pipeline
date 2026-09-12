@@ -538,7 +538,7 @@ silently destroys a previous version.
 
 ---
 
-### M8 — CLI
+### M8 — CLI ✅ DONE
 **Depends on:** M0–M7
 **Creates:** `notes_pipeline/cli.py`
 
@@ -564,6 +564,24 @@ emit        out/notes.md
 
 **Acceptance:** end-to-end on a real lecture folder. Second run reports every
 stage cached. `--force` re-runs everything.
+
+**Added beyond this spec, post-M8, on request (real recurring needs, not
+speculative):**
+
+```
+notes build ... --notes N.pdf            # --notes now also accepts PDF (extracted via M3's pdf_to_text)
+notes build ... --assets A.pdf B.md ...  # supplementary files (any of .md/.pdf/.txt) as extra
+                                          # synthesis context — wires up the `extras` param that
+                                          # synthesize() already had in M6 but M8 never exposed
+notes append --audio P2 --note N.md [--deck D] [--notes N2] [--assets ...] [--out O]
+                                          # merges a continuation recording (a lecture split across
+                                          # multiple audio files) into an already-generated note.
+                                          # Reads the existing note back in as context instead of
+                                          # re-transcribing earlier parts. New prompt fragment at
+                                          # prompts/append.md handles timestamp disambiguation
+                                          # ([Part 2, MM:SS] vs [MM:SS], since the two recordings
+                                          # don't share a timeline).
+```
 
 ---
 

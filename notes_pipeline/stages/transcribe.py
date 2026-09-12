@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import warnings
 from pathlib import Path
-from typing import Protocol
+from typing import Callable, Protocol
 
 from ..config import Config
 from ..models import Segment, Transcript
@@ -15,6 +15,9 @@ from .audio import wav_duration
 _MIN_MEAN_CONFIDENCE = 0.5
 _MAX_IDENTICAL_RUN = 20
 _WORD_STUTTER_RE = re.compile(r"\b(\w+)\b(?:[\s,]+\1\b){3,}", re.IGNORECASE)
+_SEGMENT_END_RE = re.compile(r"-->\s*(\d{2}):(\d{2}):(\d{2})\.\d{3}\]")
+
+ProgressCallback = Callable[[float], None]
 
 
 class TranscriberError(RuntimeError):
@@ -26,7 +29,9 @@ class TranscriptQualityWarning(UserWarning):
 
 
 class Transcriber(Protocol):
-    def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript: ...
+    def transcribe(
+        self, wav: Path, *, vocabulary: list[str] | None = None, on_progress: ProgressCallback | None = None
+    ) -> Transcript: ...
 
 
 def get_transcriber(cfg: Config) -> Transcriber:
@@ -41,7 +46,9 @@ class WhisperTranscriber:
     def __init__(self, cfg: Config):
         self.cfg = cfg
 
-    def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript:
+    def transcribe(
+        self, wav: Path, *, vocabulary: list[str] | None = None, on_progress: ProgressCallback | None = None
+    ) -> Transcript:
         # `vocabulary` is accepted for Transcriber-protocol compatibility but
         # deliberately unused here. -mc 0 and --prompt are mutually exclusive
         # (max-context zero means no prompt tokens reach the decoder at all),
@@ -54,6 +61,8 @@ class WhisperTranscriber:
         # Jargon correction stays M6's job (Claude reconciling the deck
         # against the transcript), exactly as M3 already specifies.
         del vocabulary
+        total_duration = wav_duration(wav)
+
         with tempfile.TemporaryDirectory() as tmpdir:
             outbase = Path(tmpdir) / "out"
             args = [
@@ -62,21 +71,43 @@ class WhisperTranscriber:
                 "-f", str(wav),
                 "-l", "en",
                 "-t", str(self.cfg.whisper_threads),
-                "-np",
                 "-mc", "0",
                 "-oj",
                 "-of", str(outbase),
             ]
-
+            # No -np here: whisper-cli's stdout then carries one clean
+            # "[HH:MM:SS.mmm --> HH:MM:SS.mmm]  text" line per segment as it
+            # works (backend/timing noise goes to stderr), which is what lets
+            # us report live progress against the known audio duration
+            # instead of going silent for minutes. stderr is redirected to a
+            # real file rather than left as an undrained PIPE (which risks
+            # deadlocking the child once its OS buffer fills) or DEVNULL
+            # (which would lose the detail needed for a useful error message).
+            stderr_path = Path(tmpdir) / "stderr.log"
             try:
-                result = subprocess.run(args, capture_output=True, text=True)
+                with open(stderr_path, "w") as stderr_file:
+                    process = subprocess.Popen(
+                        args, stdout=subprocess.PIPE, stderr=stderr_file, text=True, bufsize=1,
+                    )
+                    assert process.stdout is not None
+                    for line in process.stdout:
+                        if on_progress is None:
+                            continue
+                        match = _SEGMENT_END_RE.search(line)
+                        if match:
+                            h, m, s = (int(g) for g in match.groups())
+                            elapsed = h * 3600 + m * 60 + s
+                            on_progress(min(elapsed / total_duration, 1.0) if total_duration else 0.0)
+                    returncode = process.wait()
             except FileNotFoundError:
                 raise TranscriberError(
                     f"whisper-cli not found at {self.cfg.whisper_bin!r}. "
                     "Check whisper_bin in your config, or install whisper.cpp."
                 ) from None
-            if result.returncode != 0:
-                detail = result.stderr.strip().splitlines()[-1] if result.stderr.strip() else "unknown whisper-cli error"
+
+            if returncode != 0:
+                stderr_text = stderr_path.read_text().strip()
+                detail = stderr_text.splitlines()[-1] if stderr_text else "unknown whisper-cli error"
                 raise TranscriberError(f"whisper-cli failed on {wav}: {detail}")
 
             data = json.loads(outbase.with_suffix(".json").read_text())
@@ -105,7 +136,10 @@ class RemoteTranscriber:
             raise TranscriberError("transcriber is set to 'remote' but no remote_url is configured.")
         self.cfg = cfg
 
-    def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript:
+    def transcribe(
+        self, wav: Path, *, vocabulary: list[str] | None = None, on_progress: ProgressCallback | None = None
+    ) -> Transcript:
+        del on_progress  # no live progress signal from a remote HTTP call yet
         import httpx2
 
         with open(wav, "rb") as f:

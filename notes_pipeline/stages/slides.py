@@ -76,19 +76,23 @@ def _extract_pptx(path: Path) -> Deck:
 # -- .pdf ---------------------------------------------------------------------
 
 
-def _extract_pdf(path: Path) -> Deck:
+def pdf_to_text(path: Path) -> str:
+    """Extract raw text from a PDF via `pdftotext -layout` (poppler), falling
+    back to pypdf with a warning if poppler isn't on PATH."""
     if shutil.which("pdftotext") is not None:
-        raw_text = _pdftotext_layout(path)
-    else:
-        warnings.warn(
-            "poppler's `pdftotext` was not found on PATH; falling back to pypdf, "
-            "which does not preserve multi-column slide layout as reliably. "
-            "Install poppler (`brew install poppler`) for better extraction.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        raw_text = _pypdf_text(path)
+        return _pdftotext_layout(path)
+    warnings.warn(
+        "poppler's `pdftotext` was not found on PATH; falling back to pypdf, "
+        "which does not preserve layout as reliably. "
+        "Install poppler (`brew install poppler`) for better extraction.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+    return _pypdf_text(path)
 
+
+def _extract_pdf(path: Path) -> Deck:
+    raw_text = pdf_to_text(path)
     pages = raw_text.split("\f")
     if len(pages) > 1 and pages[-1] == "":
         pages = pages[:-1]
