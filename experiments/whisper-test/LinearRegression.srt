@@ -1,0 +1,2220 @@
+1
+00:00:00,000 --> 00:00:07,000
+ it might be very daily
+
+2
+00:00:07,000 --> 00:00:09,000
+ What is it?
+
+3
+00:00:09,000 --> 00:00:13,000
+ Well, suppose that I am interested
+
+4
+00:00:13,000 --> 00:00:17,000
+ for example, I pick a random person
+
+5
+00:00:17,000 --> 00:00:20,000
+ and measure his height and weight
+
+6
+00:00:20,000 --> 00:00:22,000
+ for example
+
+7
+00:00:22,000 --> 00:00:25,000
+ then I take another person randomly
+
+8
+00:00:25,000 --> 00:00:27,000
+ not necessarily his class
+
+9
+00:00:27,000 --> 00:00:29,000
+ just elsewhere
+
+10
+00:00:29,000 --> 00:00:32,000
+ And again, measure height and weight.
+
+11
+00:00:33,000 --> 00:00:35,000
+ That was the same person.
+
+12
+00:00:35,000 --> 00:00:38,000
+ And do it all the time, randomly. I have data.
+
+13
+00:00:38,000 --> 00:00:41,000
+ How this data are organized into space.
+
+14
+00:00:41,000 --> 00:00:43,000
+ So I first put...
+
+15
+00:00:47,000 --> 00:00:51,000
+ In the first person, for example...
+
+16
+00:00:51,000 --> 00:00:53,000
+ So let me make...
+
+17
+00:00:53,000 --> 00:00:57,000
+ Let me measure height in centimeters and weight in kilograms.
+
+18
+00:00:57,000 --> 00:00:59,000
+ I don't know other things
+
+19
+00:00:59,000 --> 00:01:01,000
+ so for example first person one
+
+20
+00:01:01,000 --> 00:01:05,000
+ 80 centimeters
+
+21
+00:01:05,000 --> 00:01:07,000
+ and 80 kilograms
+
+22
+00:01:07,000 --> 00:01:09,000
+ for example
+
+23
+00:01:09,000 --> 00:01:11,000
+ then we write this data like this
+
+24
+00:01:11,000 --> 00:01:13,000
+ first is height
+
+25
+00:01:13,000 --> 00:01:15,000
+ second is weight
+
+26
+00:01:15,000 --> 00:01:17,000
+ and we know that this person is such
+
+27
+00:01:17,000 --> 00:01:19,000
+ higher than such
+
+28
+00:01:19,000 --> 00:01:21,000
+ well another could have
+
+29
+00:01:21,000 --> 00:01:23,000
+ 152
+
+30
+00:01:23,000 --> 00:01:25,000
+ and also have 80 kilograms
+
+31
+00:01:25,000 --> 00:01:42,000
+ grab another one, one is 40, and there is 75, and a lot of such data, ok?
+
+32
+00:01:42,000 --> 00:01:52,000
+ and we have such question which, I personally think this question is a little too, but a lot of people are interested in this question
+
+33
+00:01:52,000 --> 00:01:57,320
+ How our weight depends on our size.
+
+34
+00:01:57,320 --> 00:02:01,560
+ I personally don't like this.
+
+35
+00:02:01,560 --> 00:02:04,820
+ But a lot of people this is important.
+
+36
+00:02:04,820 --> 00:02:09,160
+ I have 180 centimeters.
+
+37
+00:02:09,160 --> 00:02:11,200
+ Is it normal weight for me?
+
+38
+00:02:11,200 --> 00:02:16,500
+ Maybe I have two head, maybe I have two silver.
+
+39
+00:02:16,500 --> 00:02:18,620
+ What is the normal weight?
+
+40
+00:02:18,620 --> 00:02:21,960
+ Oh, for example, this weight is too much.
+
+41
+00:02:21,960 --> 00:02:28,960
+ Maybe, what about this, oh my god, how weight should depend on height?
+
+42
+00:02:28,960 --> 00:02:35,960
+ A lot of people, for a lot of people it's important, especially when I was a child.
+
+43
+00:02:35,960 --> 00:02:45,960
+ Long ago, I was provided with the formula that weight should be able to height minus one height.
+
+44
+00:02:48,960 --> 00:03:17,960
+ Yeah, my grandfather told me you are to not hate enough, yeah, because there is a simple formula, side is a spot, let's say, found this formula, take, let's take the height, subtract 100, this is weight you should have, if your weight is smaller you need to eat a lot, yeah, hate your weight, okay.
+
+45
+00:03:18,960 --> 00:03:42,960
+ For example, well, it's not, but, so we want to know, well more generally we have something like x1, y1, x2, y2, a lot of dot, xn, yn, a lot of data
+
+46
+00:03:42,960 --> 00:03:54,160
+ Okay, so as statisticians, we will say we have x and y run variables
+
+47
+00:04:01,840 --> 00:04:12,560
+ Okay, I will tell you, well, in principle, we assume that it's not a variable, but I will make a new one
+
+48
+00:04:12,560 --> 00:04:17,560
+ Random variable means that we make an experiment and we have a realisation.
+
+49
+00:04:17,560 --> 00:04:19,560
+ This is random.
+
+50
+00:04:19,560 --> 00:04:23,560
+ We take random person, this is high, this is variable, this person.
+
+51
+00:04:23,560 --> 00:04:25,560
+ Random variable.
+
+52
+00:04:25,560 --> 00:04:40,560
+ But at the moment where x is called independent variable and y, dependent.
+
+53
+00:04:42,560 --> 00:04:55,560
+ Well, they are not, this is not independent and dependent and usual kind of way in physics, for example
+
+54
+00:04:55,560 --> 00:05:04,560
+ It's kind of statistical, so for given value of x, given realization of x could be a lot of y
+
+55
+00:05:04,560 --> 00:05:15,760
+ For example, another portion with the same height could be 0.50.
+
+56
+00:05:15,760 --> 00:05:23,600
+ But we have this idea that maybe if we know it, then somehow we can estimate why.
+
+57
+00:05:23,600 --> 00:05:27,640
+ Maybe not exactly, but there is some dependence.
+
+58
+00:05:27,640 --> 00:05:50,880
+ Why somehow you have to do that? In statistical sense, not the sense of first year value. Okay? Regression analysis is about static events. Well, suppose that you have something like this. Let's put it here.
+
+59
+00:05:57,640 --> 00:06:05,640
+ So there are a lot of ways how to represent invariate data, there are a lot of names for such ways, but I'm not going to finish this.
+
+60
+00:06:06,640 --> 00:06:10,640
+ What is most important for us is the homework.
+
+61
+00:06:13,640 --> 00:06:21,640
+ So you have these numbers that you don't make any numbers, so we just denote it by x1 by 1.
+
+62
+00:06:27,640 --> 00:06:29,640
+ and then y
+
+63
+00:06:31,240 --> 00:06:33,240
+ and then as we present this
+
+64
+00:06:34,440 --> 00:06:36,440
+ on x, y plane
+
+65
+00:06:37,640 --> 00:06:38,640
+ x
+
+66
+00:06:40,140 --> 00:06:41,140
+ y
+
+67
+00:06:44,840 --> 00:06:45,640
+ yeah
+
+68
+00:06:47,240 --> 00:06:49,640
+ I just want to explain what does it mean
+
+69
+00:06:50,140 --> 00:06:53,140
+ dependence in statistical frames
+
+70
+00:06:53,140 --> 00:07:05,860
+ but let me just this can be considered as a point with coordinates x1 by 1
+
+71
+00:07:05,860 --> 00:07:12,500
+ could be somewhere here, could be another point here, another point here, another point here
+
+72
+00:07:12,500 --> 00:07:16,020
+ another point here, could be something like this
+
+73
+00:07:16,020 --> 00:07:31,820
+ This would be a kind of cloud for each of these, this could be x1 by 1, this is x2 by 2, and so.
+
+74
+00:07:31,820 --> 00:07:42,820
+ Okay, if you look at this cloud, you see that there is approximately a kind of idea that it is,
+
+75
+00:07:42,820 --> 00:07:52,820
+ They kind of want to be on some line. They are not on a line. Of course there is no line which passes through all these points.
+
+76
+00:07:52,820 --> 00:07:58,820
+ It is not possible because it is a random variable. It's a kind of rough situations.
+
+77
+00:07:58,820 --> 00:08:05,820
+ Still there is some line kind of like this. Maybe something like this.
+
+78
+00:08:05,820 --> 00:08:12,820
+ such that each of this oil is approximately on this side.
+
+79
+00:08:14,820 --> 00:08:18,820
+ Well, there is another situation. Something like this.
+
+80
+00:08:20,820 --> 00:08:23,820
+ Your cloud will be like this.
+
+81
+00:08:28,820 --> 00:08:33,820
+ In this case, it doesn't look like there is a light.
+
+82
+00:08:34,820 --> 00:08:51,820
+ And we humans, by the way, we humans, many humans, if given this picture, given this picture, ask which looks better like a lion, I think that everybody will say that this one, yeah?
+
+83
+00:08:53,820 --> 00:09:02,460
+ but how can we teach computer to ask such questions this is very important by some means
+
+84
+00:09:02,460 --> 00:09:08,220
+ this is called machine learning how can we teach computers suppose that we just download
+
+85
+00:09:08,860 --> 00:09:13,340
+ to computer coordinates of these points and coordinates of these points
+
+86
+00:09:14,300 --> 00:09:18,860
+ yeah there are two files right in one file we have coordinates of these points
+
+87
+00:09:19,820 --> 00:09:22,940
+ another file coordinates of those points
+
+88
+00:09:22,940 --> 00:09:28,300
+ and gas computer please tell me which is closer to the line and tell me what is this line
+
+89
+00:09:30,060 --> 00:09:35,420
+ again kind of important question and this kind of toy model for machine learning
+
+90
+00:09:36,700 --> 00:09:43,660
+ and regression analysis by the way is kind of in overlap of statistics and machine learning
+
+91
+00:09:43,660 --> 00:09:47,820
+ it is kind of advanced part of statistics
+
+92
+00:09:47,820 --> 00:09:52,460
+ yeah you have introductory probability statistics and now you're in
+
+93
+00:09:52,460 --> 00:09:56,540
+ regression class but from machine learning it's kind of
+
+94
+00:09:56,540 --> 00:10:01,420
+ the simplest possible moment okay
+
+95
+00:10:01,900 --> 00:10:07,580
+ so the question is you have some cloud points
+
+96
+00:10:07,580 --> 00:10:11,740
+ in this case in this case you don't have
+
+97
+00:10:11,740 --> 00:10:18,940
+ you don't you cannot draw a frame and just look when you look you don't know how your brain goes
+
+98
+00:10:19,660 --> 00:10:27,260
+ why our brain tells that this is closer to light than this and i even have approximately
+
+99
+00:10:30,380 --> 00:10:39,340
+ the problem is how can i which computations should i do to understand first of all to understand
+
+100
+00:10:39,340 --> 00:10:46,700
+ which line is kind of the best in this case and maybe in this case because if i have some formulas
+
+101
+00:10:46,700 --> 00:10:51,100
+ these formulas should work in all cases in this case in this case
+
+102
+00:10:51,740 --> 00:10:57,500
+ formulas should be it could give me something but somehow i should be able to estimate that in this
+
+103
+00:10:57,500 --> 00:11:06,220
+ case this line is kind of better approximation of my data than in this case you see i should be able
+
+104
+00:11:06,220 --> 00:11:12,220
+ to do this without looking at picture when i look at picture well i can do it in this case
+
+105
+00:11:12,220 --> 00:11:18,380
+ but suppose that you have one million points and not in two-dimensional space like that
+
+106
+00:11:18,380 --> 00:11:25,020
+ this is called simple linear regression but it could be more inputs more in general variables
+
+107
+00:11:25,020 --> 00:11:32,220
+ and you cannot visualize this if it is not in plane but in five-dimensional space okay so the problem
+
+108
+00:11:32,220 --> 00:11:40,220
+ Which computation should we do, so that we don't need to draw such pictures.
+
+109
+00:11:40,220 --> 00:11:52,220
+ We just do computations, find this line, which fits best, and then estimate if it is really good estimation.
+
+110
+00:11:52,220 --> 00:12:00,220
+ This is kind of a main problem of statistics, of regression analysis in the simplest possible case.
+
+111
+00:12:00,220 --> 00:12:02,220
+ Is it clear?
+
+112
+00:12:02,220 --> 00:12:04,220
+ Is it clear?
+
+113
+00:12:04,220 --> 00:12:08,220
+ Everybody okay with this?
+
+114
+00:12:08,220 --> 00:12:10,220
+ What do you have?
+
+115
+00:12:10,220 --> 00:12:12,220
+ Could be very data
+
+116
+00:12:12,220 --> 00:12:14,220
+ If you draw it as a picture here
+
+117
+00:12:14,220 --> 00:12:18,220
+ Or it could be something like this
+
+118
+00:12:18,220 --> 00:12:20,220
+ It could be
+
+119
+00:12:24,220 --> 00:12:26,220
+ To be more complicated
+
+120
+00:12:26,220 --> 00:12:28,220
+ In this case probably
+
+121
+00:12:28,220 --> 00:12:52,160
+ In this case, probably it is some more complicated language, it's not a linear equation, but somehow we need to be able to analyze such data, you have a lot of data, it may be one million, several million, such, yes, and you should know which computations to do, to understand this, okay?
+
+122
+00:12:54,260 --> 00:12:58,020
+ Okay, let me explain this in the simplest possible ways.
+
+123
+00:12:58,020 --> 00:12:59,400
+ So let me erase.
+
+124
+00:13:10,500 --> 00:13:12,780
+ So at the moment we are discussing that
+
+125
+00:13:12,780 --> 00:13:14,780
+ of single linear regression.
+
+126
+00:13:24,260 --> 00:13:53,260
+ Okay. So what is this, this is called regression light. Yeah. So let's put it wrong. Okay. But now let's get kind of.
+
+127
+00:13:53,260 --> 00:13:58,760
+ kind of 1, 2, 3, 4, 5 points.
+
+128
+00:13:58,760 --> 00:14:02,240
+ Of course, let's just see the subject.
+
+129
+00:14:02,240 --> 00:14:14,060
+ Regression line is a line which tries to approximate all this point with smallest possible mistake.
+
+130
+00:14:14,060 --> 00:14:20,260
+ Let me explain what does it mean and subject as what we have subject like this.
+
+131
+00:14:20,260 --> 00:14:24,260
+ Let me how to write an arbitrary line.
+
+132
+00:14:24,260 --> 00:14:26,260
+ It's a linear function, yeah.
+
+133
+00:14:26,260 --> 00:14:30,260
+ Y is equal to alpha plus Dx.
+
+134
+00:14:32,260 --> 00:14:34,260
+ Yeah.
+
+135
+00:14:34,260 --> 00:14:38,260
+ And the question is alpha and beta.
+
+136
+00:14:42,260 --> 00:14:48,260
+ So, analytically, I don't want to look at pictures and draw sass over.
+
+137
+00:14:48,260 --> 00:14:52,300
+ We are saying that this one is just a cloud of the line.
+
+138
+00:14:52,300 --> 00:14:54,800
+ I want to do computations.
+
+139
+00:14:54,800 --> 00:15:00,240
+ So instead of the line, I have a formula.
+
+140
+00:15:00,240 --> 00:15:02,700
+ y is equal to alpha plus d x.
+
+141
+00:15:02,700 --> 00:15:06,780
+ To find this line is to find alpha in this.
+
+142
+00:15:06,780 --> 00:15:08,600
+ It's a 10.
+
+143
+00:15:08,600 --> 00:15:10,020
+ And 12, 12.
+
+144
+00:15:10,020 --> 00:15:14,580
+ So alpha is at least a percent, a size one.
+
+145
+00:15:14,580 --> 00:15:18,020
+ d is the slope of this line.
+
+146
+00:15:18,020 --> 00:15:46,020
+ Okay, and I want this line, so I want to find such algebra so that this line kind of base possible approximation of this data, yeah, but I need to define what doesn't mean base possible, if I have two points of course I can just make a straight line which passes through the
+
+147
+00:15:48,020 --> 00:15:55,780
+ these two points no problems but if i have a lot of points what to do so let's say what we want
+
+148
+00:16:05,220 --> 00:16:17,620
+ everyone okay here that's right so what we want we want y1 d approximately alpha plus beta x1
+
+149
+00:16:21,460 --> 00:16:30,500
+ so this is for example this is my point with coordinates x1 y1
+
+150
+00:16:32,420 --> 00:16:34,580
+ for example and this
+
+151
+00:16:37,620 --> 00:16:44,420
+ is y which is alpha plus beta x1
+
+152
+00:16:46,820 --> 00:16:53,940
+ yeah this is my line this equation alpha plus beta x yeah so this point
+
+153
+00:16:55,700 --> 00:17:02,260
+ has coordinate y which is alpha plus beta x1 and this point is a point with coordinates x1 y1
+
+154
+00:17:03,220 --> 00:17:09,380
+ yeah and of course this r plus beta x1 it is here it is not necessarily equal to y1 to have this
+
+155
+00:17:09,380 --> 00:17:20,980
+ distance and similarly here and here and here and here we have a lot of mistakes yeah we want this
+
+156
+00:17:20,980 --> 00:17:25,980
+ So this would be approximately. This is approximately equal to this. This is what we want.
+
+157
+00:17:25,980 --> 00:17:35,980
+ Also we want that y2 is approximately equal to y plus b times 2.
+
+158
+00:17:35,980 --> 00:17:42,980
+ yn is approximately equal to y plus b times 2.
+
+159
+00:17:42,980 --> 00:17:56,280
+ We want to make this approximation best possible, kind of simultaneous
+
+160
+00:17:56,280 --> 00:18:00,780
+ We don't distinguish any points, we don't say that this is better than this
+
+161
+00:18:00,780 --> 00:18:03,780
+ All data for us are of the same position
+
+162
+00:18:03,780 --> 00:18:09,780
+ So somehow we want to find a line which fits best possible
+
+163
+00:18:09,780 --> 00:18:16,740
+ so all these distances simultaneously kind of should be smallest possible yeah
+
+164
+00:18:18,260 --> 00:18:26,820
+ everybody okay well let me write this is all that quick so alpha plus eta x
+
+165
+00:18:26,820 --> 00:18:56,800
+ x-bita alpha. So let me write my error. It is alpha plus bita x1 minus y1.
+
+166
+00:18:56,820 --> 00:19:03,820
+ Now, this is error for first data point.
+
+167
+00:19:03,820 --> 00:19:13,820
+ I want to take it square and I want to add all other errors.
+
+168
+00:19:13,820 --> 00:19:29,320
+ x of plus beta x2 minus y2 squared plus plus dot plus x plus beta xn minus yn squared.
+
+169
+00:19:31,220 --> 00:19:34,220
+ ok
+
+170
+00:19:37,220 --> 00:19:39,220
+ so I take error
+
+171
+00:19:39,220 --> 00:19:42,220
+ so this I want to be as small as possible
+
+172
+00:19:42,220 --> 00:19:45,220
+ this I want to be as small as possible as possible
+
+173
+00:19:45,220 --> 00:19:49,220
+ so if you have seen any statistic
+
+174
+00:19:49,220 --> 00:19:52,220
+ you know that the best kind of
+
+175
+00:19:52,220 --> 00:19:54,220
+ the most standard way
+
+176
+00:19:54,220 --> 00:19:58,220
+ to make all these kind of simultaneously smaller as possible
+
+177
+00:19:58,220 --> 00:20:06,940
+ possible to take some of these squares okay is that a wild idea in some way
+
+178
+00:20:08,780 --> 00:20:11,580
+ if you want this kind of square distance
+
+179
+00:20:13,500 --> 00:20:20,940
+ two points high dimensional space yeah take this error but i don't care if it's positive for that
+
+180
+00:20:22,140 --> 00:20:25,820
+ the best way to get relief from the side is to take a square
+
+181
+00:20:25,820 --> 00:20:31,340
+ of course it can take absolute value but mathematically it will be much harder to deal with such
+
+182
+00:20:31,340 --> 00:20:38,700
+ expression so standard the most standard way in statistics is to take square
+
+183
+00:20:38,700 --> 00:20:45,820
+ okay so this is 0 if upon the if y1 is exactly equal to alpha plus beta x1
+
+184
+00:20:45,820 --> 00:21:13,940
+ Okay, and this I denote by S alpha beta, so S alpha beta, I can also write it as sum alpha plus beta as i minus yi, square by i from 1 to f.
+
+185
+00:21:15,820 --> 00:21:16,820
+ Okay.
+
+186
+00:21:22,780 --> 00:21:31,820
+ So, kind of in-semitically or analytically when I tell you my wish that this line should fit the best.
+
+187
+00:21:31,820 --> 00:21:38,820
+ It's a little bit wet, yeah, but now I have just kind of more precise wish.
+
+188
+00:21:38,820 --> 00:21:40,820
+ My wish now is more precise.
+
+189
+00:21:40,820 --> 00:21:43,820
+ I want this to be the smallest possible.
+
+190
+00:21:43,820 --> 00:22:13,760
+ sum of squares of my error, I want to minimize each of these simultaneously, which means that sum of squares should be smaller as possible, okay, everybody remembers this, this can be called, in machine learning such set is called loss function, if you want, you can call it like this, or it's just sum of squares,
+
+191
+00:22:13,820 --> 00:22:29,180
+ okay loss or it could be a fine function
+
+192
+00:22:30,140 --> 00:22:32,620
+ we want to have smallest possible loss
+
+193
+00:22:34,140 --> 00:22:37,020
+ sometimes people say this function whatever
+
+194
+00:22:39,420 --> 00:22:42,700
+ yeah but you should understand that you want to find
+
+195
+00:22:42,700 --> 00:22:52,700
+ such that this is smallest possible. This is a analytical way of a formulation of what I just tried to explain.
+
+196
+00:22:52,700 --> 00:23:07,700
+ We assume that our line fits the best, if sum of squares: this square, this distance square, plus this distance square, plus this distance square, and so on,
+
+197
+00:23:07,700 --> 00:23:16,700
+ all data points should be smallest possible. Everybody okay?
+
+198
+00:23:16,700 --> 00:23:23,700
+ Please ask questions if you want to ask questions.
+
+199
+00:23:23,700 --> 00:23:45,700
+ and now we have kind of standard mathematical problem of finding the minimum
+
+200
+00:23:45,700 --> 00:23:58,700
+ we know this Xi, Yi are no. In a concrete situation, just announce. And we want to find alpha and beta.
+
+201
+00:23:58,700 --> 00:24:11,700
+ So find, the problem is to find alpha and beta such that
+
+202
+00:24:11,700 --> 00:24:18,700
+ "S" is the smallest possible.
+
+203
+00:24:25,700 --> 00:24:28,700
+ "Find" is another "Rose".
+
+204
+00:24:29,700 --> 00:24:35,700
+ "Find" is the "Linear".
+
+205
+00:24:36,700 --> 00:24:40,700
+ or this function as
+
+206
+00:24:40,700 --> 00:24:44,700
+ you have a kind of type of extension problems from hypers
+
+207
+00:24:44,700 --> 00:24:48,700
+ you have a function in two variables, you have only two variables
+
+208
+00:24:48,700 --> 00:24:52,700
+ because x and y are low
+
+209
+00:24:52,700 --> 00:24:56,700
+ you know for example weight, height, you have the data set
+
+210
+00:24:56,700 --> 00:25:00,700
+ you have to compute the sum
+
+211
+00:25:00,700 --> 00:25:04,700
+ this is a low sum, it could be 1 million here
+
+212
+00:25:04,700 --> 00:25:08,700
+ but it depends on your life and which are there
+
+213
+00:25:08,700 --> 00:25:12,700
+ and we need to find the size of eigenvectors that this function is lost
+
+214
+00:25:12,700 --> 00:25:16,700
+ everybody know how to find
+
+215
+00:25:16,700 --> 00:25:20,700
+ the minimum and maximum of a function
+
+216
+00:25:20,700 --> 00:25:24,700
+ who knows
+
+217
+00:25:24,700 --> 00:25:28,700
+ well
+
+218
+00:25:28,700 --> 00:25:32,700
+ I could have told to see, other people don't
+
+219
+00:25:34,700 --> 00:25:36,700
+ who doesn't know?
+
+220
+00:25:44,700 --> 00:25:46,700
+ from the logical point of view
+
+221
+00:25:46,700 --> 00:25:48,700
+ everybody A is a no
+
+222
+00:25:48,700 --> 00:25:50,700
+ who doesn't know?
+
+223
+00:25:50,700 --> 00:25:52,700
+ ok?
+
+224
+00:25:52,700 --> 00:25:54,700
+ so let's agree
+
+225
+00:25:54,700 --> 00:25:56,700
+ let's
+
+226
+00:26:02,700 --> 00:26:15,700
+ Let me explain it before. If I ask you such kind of questions, who knows Samsung or who has an idea about Samsung, and you raise your hand, you are safe.
+
+227
+00:26:15,700 --> 00:26:24,700
+ I am not going to ask you, tell me. What do you think? You are safe.
+
+228
+00:26:24,700 --> 00:26:31,700
+ But if you don't know or don't know, you are not safe.
+
+229
+00:26:31,700 --> 00:26:40,700
+ So please, I need your feedback, because otherwise, if I don't know what I know, what I don't know,
+
+230
+00:26:40,700 --> 00:26:44,700
+ what can I reach?
+
+231
+00:26:44,700 --> 00:26:50,700
+ So let's try again, who knows how to find minimum, minima, and maximum of maximum?
+
+232
+00:26:50,700 --> 00:26:53,700
+ For example, I know.
+
+233
+00:26:53,700 --> 00:26:55,700
+ Most people know, yeah?
+
+234
+00:26:55,700 --> 00:26:56,700
+ Very good.
+
+235
+00:26:56,700 --> 00:26:58,700
+ Of course, I'm not going to check.
+
+236
+00:26:58,700 --> 00:27:00,700
+ But I just need them there.
+
+237
+00:27:00,700 --> 00:27:01,700
+ Just rough idea.
+
+238
+00:27:01,700 --> 00:27:04,700
+ And now, I'm going to use a few beliefs that they know.
+
+239
+00:27:04,700 --> 00:27:09,700
+ More precisely, this question is a few beliefs that know.
+
+240
+00:27:09,700 --> 00:27:12,700
+ It's not the same thing.
+
+241
+00:27:13,700 --> 00:27:14,700
+ Okay?
+
+242
+00:27:18,700 --> 00:27:25,700
+ You should take, let me take the secret of the check, of course, as I promised.
+
+243
+00:27:25,700 --> 00:27:29,700
+ You need to take your index with respect to alpha and nita and the equation is here.
+
+244
+00:27:29,700 --> 00:27:31,700
+ Okay.
+
+245
+00:27:31,700 --> 00:27:47,700
+ For example, if you have something like s alpha-nita is equal to alpha square minus c alpha-nita plus 10 meter square.
+
+246
+00:27:48,700 --> 00:27:53,900
+ for example minus two alpha plus three vector
+
+247
+00:27:56,540 --> 00:28:00,140
+ i hope that this function has a minimum looks
+
+248
+00:28:04,140 --> 00:28:09,660
+ so side functions by the way which are quadratic this function is a quadratic polynomial in alpha
+
+249
+00:28:10,700 --> 00:28:15,260
+ if you expand and collect you will see it's alpha square alpha vector
+
+250
+00:28:15,260 --> 00:28:39,260
+ V^2 is a quadratic in two ways. And such a polynomial is not a maximum minimum, but it is a maximum minimum. It is a unique. So in this case, to find, in this case, this function has a minimum.
+
+251
+00:28:39,260 --> 00:29:04,260
+ So finally we need to equate here is VdA which is both 2A minus 3V minus 2 and we need to break through 0. And yes, VdB is equal to minus 3A plus VdB plus 3, break through 0.
+
+252
+00:29:04,260 --> 00:29:11,260
+ You need to solve this system of two equations and it will be minimum of your function.
+
+253
+00:29:11,260 --> 00:29:17,260
+ If it is minimum you need to investigate, maybe it is not minimum, maybe it is maximum.
+
+254
+00:29:17,260 --> 00:29:19,260
+ But in this case it is minimum.
+
+255
+00:29:19,260 --> 00:29:26,260
+ And in this case just from kind of common sense this function cannot have maximum.
+
+256
+00:29:26,260 --> 00:29:32,260
+ Because if I make alpha very big this function will be very big.
+
+257
+00:29:32,260 --> 00:29:34,700
+ And similarly, this is very big and very big.
+
+258
+00:29:34,700 --> 00:29:39,060
+ So functions like this in all directions, like this.
+
+259
+00:29:39,060 --> 00:29:41,400
+ And some ways can be needed.
+
+260
+00:29:41,400 --> 00:29:44,720
+ To find this minimum, we need to equate to zero derivative
+
+261
+00:29:44,720 --> 00:29:47,340
+ with respect to alpha.
+
+262
+00:29:47,340 --> 00:29:49,040
+ Is it real?
+
+263
+00:29:49,040 --> 00:29:50,860
+ Well, let's do this.
+
+264
+00:29:50,860 --> 00:29:51,940
+ You guys-- wait a minute.
+
+265
+00:29:51,940 --> 00:29:55,400
+ You guys are OK with such subs?
+
+266
+00:29:55,400 --> 00:29:57,740
+ Who is OK with such subs?
+
+267
+00:29:57,740 --> 00:29:59,760
+ Are you OK?
+
+268
+00:29:59,760 --> 00:30:04,260
+ but I can do it this way, but I think that it's more convenient
+
+269
+00:30:04,260 --> 00:30:07,260
+ it is for hypotraeal computations
+
+270
+00:30:07,260 --> 00:30:09,760
+ so let me do it this way
+
+271
+00:30:09,760 --> 00:30:10,760
+ okay
+
+272
+00:30:10,760 --> 00:30:14,760
+ let me erase this
+
+273
+00:30:18,760 --> 00:30:21,760
+ and then we can build stereotips, yeah?
+
+274
+00:30:21,760 --> 00:30:26,760
+ so what about d_S by d_i?
+
+275
+00:30:28,760 --> 00:30:46,760
+ This sum, alpha more round to m, here is this, this is 2, alpha plus beta xi minus yi.
+
+276
+00:30:48,760 --> 00:30:49,760
+ Okay?
+
+277
+00:30:51,760 --> 00:30:57,760
+ You know how to compare it, respect to alpha, this alpha plus alpha, so I can put here and that's all.
+
+278
+00:30:58,760 --> 00:31:04,760
+ what about here with respect to beta? yes, by d beta
+
+279
+00:31:06,760 --> 00:31:09,760
+ sum i for one to n
+
+280
+00:31:11,760 --> 00:31:13,760
+ so we have two
+
+281
+00:31:14,760 --> 00:31:18,760
+ i for plus beta x i minus y i
+
+282
+00:31:21,760 --> 00:31:24,760
+ you guys of course know chain rule, yeah?
+
+283
+00:31:24,760 --> 00:31:26,760
+ chain rule
+
+284
+00:31:26,760 --> 00:31:31,680
+ So you take derivative of the square, it will be 2 by this
+
+285
+00:31:31,680 --> 00:31:36,740
+ And now derivative of this, what you have here
+
+286
+00:31:36,740 --> 00:31:39,740
+ derivative with respect to beta will be on x_i
+
+287
+00:31:39,740 --> 00:31:45,740
+ Okay, derivative of this with respect to beta is x_i
+
+288
+00:31:45,740 --> 00:31:47,740
+ So you should write here x_i
+
+289
+00:31:49,740 --> 00:31:52,740
+ Okay
+
+290
+00:31:52,740 --> 00:31:58,740
+ And this I should apply to zero, and this I should apply to zero.
+
+291
+00:32:00,740 --> 00:32:01,740
+ Ok.
+
+292
+00:32:02,740 --> 00:32:07,740
+ Because there is a 5,000 beta I need to apply this and this to zero.
+
+293
+00:32:09,740 --> 00:32:10,740
+ Ok.
+
+294
+00:32:14,740 --> 00:32:18,740
+ So by the way, we stop at 560.
+
+295
+00:32:19,740 --> 00:32:23,980
+ I have no problem with wash here, so I will try to fix it
+
+296
+00:32:23,980 --> 00:32:27,980
+ So if you see that I continue to work here, I will try to follow all the time
+
+297
+00:32:27,980 --> 00:32:34,300
+ If you see that I am not going to stop, I am not going to stop, just quiet here, okay?
+
+298
+00:32:34,300 --> 00:32:37,180
+ Okay? Don't like this
+
+299
+00:32:42,620 --> 00:32:43,660
+ Okay?
+
+300
+00:32:43,660 --> 00:32:47,820
+ Because I have had all the knowledge that I am not good with those
+
+301
+00:32:47,820 --> 00:32:55,340
+ Okay, this is really fine, but if you tell me, it's not very useful for this variable.
+
+302
+00:32:55,340 --> 00:32:59,340
+ Okay, so let's invite this to you.
+
+303
+00:32:59,340 --> 00:33:05,340
+ So before I ask any questions about this, everybody wait.
+
+304
+00:33:05,340 --> 00:33:15,260
+ So we have this closed function, sum of squares of errors, which we want to minimize, and then I try to minimize it.
+
+305
+00:33:15,260 --> 00:33:29,260
+ okay
+
+306
+00:33:34,700 --> 00:33:37,100
+ okay so i have this sum
+
+307
+00:33:39,980 --> 00:33:41,980
+ 5 from 1 to m
+
+308
+00:33:41,980 --> 00:33:43,980
+ I can only have this 2
+
+309
+00:33:43,980 --> 00:33:45,980
+ can't divide by 2
+
+310
+00:33:45,980 --> 00:33:47,980
+ so this is equal to 0
+
+311
+00:33:47,980 --> 00:33:49,980
+ so I can have 2
+
+312
+00:33:49,980 --> 00:33:51,980
+ so I have alpha
+
+313
+00:33:51,980 --> 00:33:53,980
+ plus
+
+314
+00:33:53,980 --> 00:33:55,980
+ beta
+
+315
+00:33:55,980 --> 00:33:57,980
+ xn minus
+
+316
+00:33:57,980 --> 00:33:59,980
+ yi
+
+317
+00:33:59,980 --> 00:34:01,980
+ yi
+
+318
+00:34:07,980 --> 00:34:10,380
+ So let's compute it.
+
+319
+00:34:10,380 --> 00:34:11,880
+ I want to collect alpha.
+
+320
+00:34:11,880 --> 00:34:14,180
+ So this would be .
+
+321
+00:34:14,180 --> 00:34:18,100
+ Let me collect alpha and b, yeah?
+
+322
+00:34:18,100 --> 00:34:21,520
+ Is it easy to collect alpha and b?
+
+323
+00:34:21,520 --> 00:34:22,520
+ So what about alpha?
+
+324
+00:34:22,520 --> 00:34:25,900
+ What coefficient do I have at alpha?
+
+325
+00:34:25,900 --> 00:34:28,200
+ It will be m, yeah?
+
+326
+00:34:28,200 --> 00:34:32,240
+ Because I have i from 1 to m.
+
+327
+00:34:32,240 --> 00:34:36,880
+ I add up this n times, OK?
+
+328
+00:34:36,880 --> 00:34:40,800
+ So if A is plus alpha, plus alpha, and x.
+
+329
+00:34:41,980 --> 00:34:42,400
+ Okay?
+
+330
+00:34:43,240 --> 00:34:45,140
+ So it is here in A and alpha.
+
+331
+00:34:47,520 --> 00:34:48,040
+ Okay?
+
+332
+00:34:50,960 --> 00:34:54,240
+ So I feel like beta will be 1 plus beta.
+
+333
+00:34:55,340 --> 00:34:57,140
+ And this will be sum of x i.
+
+334
+00:34:58,520 --> 00:35:01,120
+ I from 1 to 1.
+
+335
+00:35:03,460 --> 00:35:04,060
+ Okay?
+
+336
+00:35:06,160 --> 00:35:17,160
+ beta, I can take beta outside, I have the sum of oxide, and minus sum of my i.
+
+337
+00:35:17,160 --> 00:35:23,160
+ i from 1 to 1, and this is equal to 0.
+
+338
+00:35:23,160 --> 00:35:33,160
+ This is the first equation, and I want to make it a bit better.
+
+339
+00:35:33,160 --> 00:35:56,440
+ I want to write it as alpha plus beta 1 over n sum xii plus, sorry, i from 1 to n minus 1 over n sum by i, i from 1 to n equals 2.
+
+340
+00:35:58,060 --> 00:36:24,940
+ Ok, so you guys already have a lot of statistics courses, yeah, most of you, you probably recognize this, 1 over N sum of all your data, what is it, mean, people call this sample mean, yeah, there is a difference, there is a population mean, when I take all people,
+
+341
+00:36:26,080 --> 00:36:33,080
+ It helps me in Canada and make every single day in kind, it's a population.
+
+342
+00:36:33,080 --> 00:36:40,080
+ But there is a sample, this is my sample, my data which I erase, it's just a small sample.
+
+343
+00:36:40,080 --> 00:36:45,080
+ It could be in practice one thousand people, the power of a lot of billions.
+
+344
+00:36:45,080 --> 00:36:50,080
+ So there is called SampleMe, and there is also SampleMe.
+
+345
+00:36:50,080 --> 00:36:53,080
+ Remember this?
+
+346
+00:36:53,080 --> 00:37:14,080
+ And there is a notation we call the notation somewhere here, so x bar is sample here for x, and y bar is sample here for x.
+
+347
+00:37:20,080 --> 00:37:23,080
+ Is it the same as you have previously?
+
+348
+00:37:23,080 --> 00:37:30,080
+ Yeah, but you have some data, x with index, i-o with index, and draw a bar.
+
+349
+00:37:30,080 --> 00:37:36,080
+ Means, mean of all x's, 1 over a number of x's, and sum.
+
+350
+00:37:36,080 --> 00:37:40,080
+ Okay, 7 to b for x, 7 to b for y.
+
+351
+00:37:40,080 --> 00:37:49,080
+ So I like the equation like this: alpha plus beta x bar minus y bar,
+
+352
+00:37:49,080 --> 00:38:00,100
+ Okay, finally I have kind of a simple notation, simple equation, okay, instead of all this.
+
+353
+00:38:00,100 --> 00:38:10,160
+ Sums I have just this, x bar minus y bar, where x bar and y bar have kind of very clear need, okay?
+
+354
+00:38:10,160 --> 00:38:19,040
+ So let me write it somewhere, let me write it here, I can write it out of us,
+
+355
+00:38:19,040 --> 00:38:46,040
+ This is what I have right here. From here to here to this equation. One point. Everywhere. Well, let's do a similar thing for second equation. So for every equation.
+
+356
+00:38:49,040 --> 00:38:56,040
+ Well, let's do similar thing with another equation.
+
+357
+00:38:56,040 --> 00:39:02,040
+ Well, how can I write this equation?
+
+358
+00:39:02,040 --> 00:39:06,040
+ I want to drop this too, because I don't need it.
+
+359
+00:39:06,040 --> 00:39:09,040
+ Yeah, this equation.
+
+360
+00:39:09,040 --> 00:39:11,040
+ So I have sum.
+
+361
+00:39:11,040 --> 00:39:15,160
+ i from 1
+
+362
+00:39:15,160 --> 00:39:18,300
+ i plus
+
+363
+00:39:18,300 --> 00:39:21,080
+ liter x i
+
+364
+00:39:21,080 --> 00:39:22,540
+ minus y i
+
+365
+00:39:22,540 --> 00:39:24,680
+ multiplied by x i
+
+366
+00:39:24,680 --> 00:39:26,980
+ this should be
+
+367
+00:39:26,980 --> 00:39:27,380
+ complete
+
+368
+00:39:27,380 --> 00:39:30,140
+ rewrite example
+
+369
+00:39:30,140 --> 00:39:32,000
+ ok
+
+370
+00:39:32,000 --> 00:39:34,600
+ now let me rewrite it
+
+371
+00:39:34,600 --> 00:39:36,120
+ let me
+
+372
+00:39:36,120 --> 00:39:37,020
+ expand
+
+373
+00:39:37,020 --> 00:39:40,100
+ at alpha f
+
+374
+00:39:40,100 --> 00:39:49,100
+ Well, let me write this as a sum, just expand it.
+
+375
+00:39:49,100 --> 00:40:01,100
+ i of x i plus beta x i squared minus x i by i.
+
+376
+00:40:01,100 --> 00:40:05,100
+ Yeah, this will be complete.
+
+377
+00:40:05,100 --> 00:40:13,100
+ and just the square, alpha by x, beta by x, minus x, beta x square, minus y by x.
+
+378
+00:40:13,100 --> 00:40:16,100
+ Everybody okay?
+
+379
+00:40:16,100 --> 00:40:33,100
+ Well, so I can have alpha sum xi, i form 1 square, plus beta sum xi square,
+
+380
+00:40:33,100 --> 00:40:43,100
+ i from 1 to n minus sum as i like i from 1 to n.
+
+381
+00:40:45,100 --> 00:40:47,100
+ This will be good to you.
+
+382
+00:40:51,100 --> 00:40:53,100
+ I want to use my notation.
+
+383
+00:40:53,100 --> 00:40:55,100
+ I want to write this with statistics.
+
+384
+00:40:57,100 --> 00:40:59,100
+ So I want to have mean.
+
+385
+00:40:59,100 --> 00:41:28,800
+ I want to have mean, so this will be mean for xi, this will be mean for xi squared, this will be mean for xi squared, all I need to do is to divide by m, so I can write here 1 over m, 1 over m, 1 over m, I just write, I just divide by m, yeah, because I want everything in terms of mean, so now I have alpha x bar, because this is just x bar, okay,
+
+386
+00:41:29,100 --> 00:41:52,100
+ What is this? x^2 bar. Also a mean, it's not mean, it's kind of central analog of a second comment, not second comment of your random variable, we'll review this later, but probably you'll remember this.
+
+387
+00:41:52,100 --> 00:42:11,920
+ So by definition, let's write definition, 5 over n sum, x i square, i from 1 to m, and also x y1, equal to 1 over n sum, x i y5, i from 1 to m, okay?
+
+388
+00:42:12,360 --> 00:42:22,740
+ So a general principle, if you have something with indices, and you have 1 over n and some of this, just omit this index and write bar.
+
+389
+00:42:23,860 --> 00:42:24,160
+ Okay?
+
+390
+00:42:24,980 --> 00:42:29,720
+ So for example, x, y, y, and bar is about both.
+
+391
+00:42:30,500 --> 00:42:37,560
+ I just put indices for x and y, sum up from 1 to n, and make a average.
+
+392
+00:42:38,520 --> 00:42:38,760
+ Yeah?
+
+393
+00:42:38,760 --> 00:42:53,000
+ So I can like it as beta x squared minus xy bar, equal.
+
+394
+00:42:54,620 --> 00:43:04,100
+ So my second equation would be alpha x bar plus beta x squared bar, equal to xy bar.
+
+395
+00:43:05,980 --> 00:43:10,980
+ And how is the system of the version of the code?
+
+396
+00:43:18,980 --> 00:43:20,980
+ Everyone okay?
+
+397
+00:43:21,980 --> 00:43:25,980
+ If you have your specific data, you can see the code.
+
+398
+00:43:26,980 --> 00:43:30,980
+ Not much code, but you can see the calculator or the computer.
+
+399
+00:43:30,980 --> 00:43:34,820
+ we are going to compute there, there, there, there, there, there, there, those holes, yeah?
+
+400
+00:43:36,560 --> 00:43:38,660
+ It's still here, and then you have a question for it.
+
+401
+00:43:40,500 --> 00:43:40,820
+ Okay.
+
+402
+00:43:41,860 --> 00:43:43,860
+ Well, let us solve this system.
+
+403
+00:43:44,820 --> 00:43:49,300
+ I hope that it's not hard to solve such kind of systems.
+
+404
+00:43:49,940 --> 00:43:51,140
+ Any questions about this?
+
+405
+00:43:52,500 --> 00:43:53,140
+ We're going to go away.
+
+406
+00:44:00,980 --> 00:44:23,200
+ So I have this and this. What can I do? Let me write it. Okay. Alpha and X bar. Let me write the second equation. I want to write it.
+
+407
+00:44:23,200 --> 00:44:30,200
+ So it's important that this bar is over x^2.
+
+408
+00:44:30,200 --> 00:44:34,200
+ So I have x^2 as something compact thin,
+
+409
+00:44:34,200 --> 00:44:36,200
+ and then I take bar.
+
+410
+00:44:36,200 --> 00:44:39,200
+ Standard statistical way for sample mean,
+
+411
+00:44:39,200 --> 00:44:42,200
+ but now not for x, but for x^2.
+
+412
+00:44:42,200 --> 00:44:44,200
+ So we have a sample,
+
+413
+00:44:44,200 --> 00:44:46,200
+ some numbers,
+
+414
+00:44:46,200 --> 00:44:49,200
+ take x^2 and make mean.
+
+415
+00:44:49,200 --> 00:44:52,200
+ And this is equal to xy^1.
+
+416
+00:44:53,200 --> 00:45:22,200
+ I also have alpha plus beta S bar equal to Y bar, I need to solve this, and let me just tell you right away that in principle, beta is more important than alpha, because beta shows slope, what happens if it changes, how Y changes, if it changes X.
+
+417
+00:45:22,200 --> 00:45:31,300
+ So bit is more important than alpha, of course, but for statistics, for regression, bit are kind of more important.
+
+418
+00:45:31,300 --> 00:45:42,300
+ So let's find bit first. How to find bit? I need to re-tribute, so I multiply by x bar and sub-card.
+
+419
+00:45:42,300 --> 00:45:55,300
+ If I multiply this equation by X bar, I have X bar, here I have X bar square and here I have X bar by Y bar.
+
+420
+00:45:55,300 --> 00:45:59,300
+ So I have F and I subtract this minus F.
+
+421
+00:45:59,300 --> 00:46:04,300
+ Then I do it at once. Everybody, okay, we solve the system of the equations.
+
+422
+00:46:04,300 --> 00:46:08,300
+ Okay. Are you okay?
+
+423
+00:46:08,300 --> 00:46:19,300
+ So I have here alpha x-bar. Here I have beta by x-bar by x-bar again. And here I have x-bar by y-bar.
+
+424
+00:46:19,300 --> 00:46:26,300
+ And now I subtract this minuses. So alpha x-bar minus alpha x-bar will cancel out.
+
+425
+00:46:26,300 --> 00:46:34,300
+ So, for Vita is the fact Vita X^2 bar minus X bar square.
+
+426
+00:46:36,300 --> 00:46:39,300
+ And of course this is not the same as this.
+
+427
+00:46:40,300 --> 00:46:48,300
+ And this is equal to X Y bar minus X bar Y bar.
+
+428
+00:46:52,300 --> 00:47:11,300
+ x and beta is equal to xy bar minus x bar y bar over x squared bar minus x bar squared.
+
+429
+00:47:11,300 --> 00:47:19,300
+ And I could write here breakfast but is it clear from my reaction that here first I take bar and then square.
+
+430
+00:47:19,300 --> 00:47:22,300
+ and here first I take square and then make bar
+
+431
+00:47:24,300 --> 00:47:31,300
+ so here first I make sample mu for x and then square and take square of the sample mu
+
+432
+00:47:31,300 --> 00:47:36,300
+ here first I take x square, so I take square of each value of x
+
+433
+00:47:36,300 --> 00:47:41,300
+ and then take sample mu of this square itself
+
+434
+00:47:41,300 --> 00:47:45,300
+ ok, so this is not in the same equivalences
+
+435
+00:47:45,300 --> 00:48:07,300
+ Okay now we can find alpha complexes. Alpha is equal to y bar minus x bar multiplied by x, y bar minus x bar, y bar over x square bar minus x bar.
+
+436
+00:48:15,300 --> 00:48:21,300
+ okay this gives you life which kind of most heat
+
+437
+00:48:21,300 --> 00:48:23,300
+ okay
+
+438
+00:48:27,300 --> 00:48:30,300
+ so we are good we can find such life
+
+439
+00:48:30,300 --> 00:48:32,300
+ so why we have cold push
+
+440
+00:48:32,300 --> 00:48:34,300
+ we are done yeah
+
+441
+00:48:34,300 --> 00:48:36,300
+ time is almost
+
+442
+00:48:36,300 --> 00:48:40,300
+ we have 14 minutes
+
+443
+00:48:40,300 --> 00:48:42,300
+ so why it is not enough
+
+444
+00:48:42,300 --> 00:48:46,320
+ Even in principle, I don't tell you anything about statistics.
+
+445
+00:48:46,320 --> 00:48:49,260
+ You need to know if there's factors.
+
+446
+00:48:49,260 --> 00:48:50,260
+ Yeah?
+
+447
+00:48:50,260 --> 00:48:51,260
+ Some shortness.
+
+448
+00:48:51,260 --> 00:48:53,260
+ Some theoretical ideas.
+
+449
+00:48:53,260 --> 00:48:56,260
+ There's a couple of points, one of the classes line.
+
+450
+00:48:56,260 --> 00:48:58,260
+ Why we need statistics at all?
+
+451
+00:48:58,260 --> 00:49:01,260
+ For example, your prediction was?
+
+452
+00:49:01,260 --> 00:49:04,260
+ Probably a statistic, yeah?
+
+453
+00:49:04,260 --> 00:49:05,260
+ Why?
+
+454
+00:49:05,260 --> 00:49:07,260
+ Trust cycles.
+
+455
+00:49:07,260 --> 00:49:09,260
+ Okay?
+
+456
+00:49:09,260 --> 00:49:12,260
+ The problem is, like, well, not so simple.
+
+457
+00:49:12,260 --> 00:49:23,220
+ So main problem is not just draw the slide, so you have the explainer.
+
+458
+00:49:23,220 --> 00:49:36,220
+ So everyone okay with the sensations, because you have seen it before.
+
+459
+00:49:36,220 --> 00:49:44,060
+ so sometimes people do it so i find it was type of general i could write here type of hat
+
+460
+00:49:47,260 --> 00:49:48,460
+ so data hat
+
+461
+00:49:50,860 --> 00:49:56,380
+ and type of hat just a connection for this let's see the type of data which we found
+
+462
+00:49:56,380 --> 00:50:08,460
+ with a minimum of some squares of difference yeah so we have our line y equal to alpha x plus beta x
+
+463
+00:50:11,020 --> 00:50:21,100
+ and my eyes close to alpha plus beta x i and this error is small as possible yeah
+
+464
+00:50:22,300 --> 00:50:28,700
+ We are done. But the problem is that why in practice we need all this?
+
+465
+00:50:30,300 --> 00:50:36,220
+ In practice people are not often, especially dialogosmeticians, people are not often interested
+
+466
+00:50:36,220 --> 00:50:44,220
+ just to draw the slide for given data. They want to predict. For example this, maybe this is
+
+467
+00:50:44,220 --> 00:50:50,220
+ again this is still the example this hides some plates but when people obtain this line
+
+468
+00:50:50,220 --> 00:50:57,580
+ i'm a scientist after that they want to tell well your height is this let's compute which way you
+
+469
+00:50:57,580 --> 00:51:06,860
+ should have oh it's not really a weight yeah something like this we want to predict in more
+
+470
+00:51:06,860 --> 00:51:13,900
+ our important situation for example we have data for example size of house and price of this house
+
+471
+00:51:14,700 --> 00:51:25,180
+ for example yeah we have a lot of data for some city yeah a lot of houses for each you know it's
+
+472
+00:51:25,980 --> 00:51:34,140
+ size in meters for example and price and we know what we estimate which price should have some
+
+473
+00:51:34,780 --> 00:51:43,020
+ in your house. Let's assume that there is no other practice.
+
+474
+00:51:43,020 --> 00:51:50,140
+ So, you want to predict it, yeah? If you are going to predict something, you want to
+
+475
+00:51:50,140 --> 00:51:57,420
+ estimate error in your situation. So you have your data, you compute this alpha hat
+
+476
+00:51:57,420 --> 00:52:07,820
+ And now somebody asks you what happens if x equal to c. What is your prediction for y?
+
+477
+00:52:07,820 --> 00:52:17,820
+ You can compute this of course, but then you are asked what is the probability, for example, that your prediction is close to this.
+
+478
+00:52:17,820 --> 00:52:21,420
+ Yeah? And so on.
+
+479
+00:52:21,420 --> 00:52:27,020
+ Okay? So there are a lot of questions which arise in this situation.
+
+480
+00:52:27,020 --> 00:52:41,020
+ And then this, well, this data are kind of random, so we need to model this, yeah, we really need statistics for us, to answer more serious questions, okay?
+
+481
+00:52:41,020 --> 00:52:52,020
+ So we need to recall that x and y are random variables, so we need to know all these things about, basic things about random variables.
+
+482
+00:52:52,020 --> 00:53:05,020
+ Because we are going to model, if you have a sample, for example, it will become a sample x_1, x_n, for example, height for random people.
+
+483
+00:53:05,020 --> 00:53:09,020
+ For a statistician, there is a model of this.
+
+484
+00:53:09,020 --> 00:53:14,020
+ A statistician would say that, well, we have a random variable x.
+
+485
+00:53:14,020 --> 00:53:21,020
+ And this is a realisation or a result of experiments with this random variable.
+
+486
+00:53:21,020 --> 00:53:28,020
+ And if you have y-variate data, you have x1, y1, and so on
+
+487
+00:53:28,020 --> 00:53:32,020
+ Statisticians would say that we have a pair of random variables, x and y
+
+488
+00:53:32,020 --> 00:53:35,020
+ With some joint distribution and
+
+489
+00:53:35,020 --> 00:53:38,020
+ Yeah, I guess it will be a modular solution
+
+490
+00:53:38,020 --> 00:53:42,020
+ Okay, is that clear?
+
+491
+00:53:42,020 --> 00:53:50,020
+ So, I just explained to you today the main idea of regression analysis without any statistics
+
+492
+00:53:50,020 --> 00:53:58,020
+ But now we need to start modeling of this thing with statistical motions, okay?
+
+493
+00:53:58,020 --> 00:54:04,020
+ Because otherwise we just, well.
+
+494
+00:54:04,020 --> 00:54:09,020
+ Okay, let's start with about 7-5 minutes.
+
+495
+00:54:09,020 --> 00:54:14,020
+ So next what we are going to do is to make a review.
+
+496
+00:54:20,020 --> 00:54:43,020
+ I will be able to do this, I will be able to do my example, so I will be able to do my example, so I will be able to do my example, so I will be able to do my example, so I will be able to do my example.
+
+497
+00:54:43,020 --> 00:54:49,020
+ Okay, who doesn't want to have example, but who, 35, doesn't want.
+
+498
+00:54:49,020 --> 00:54:54,020
+ So it's maybe if they can do something.
+
+499
+00:54:54,020 --> 00:54:58,020
+ Okay, so let's talk about random variance.
+
+500
+00:55:06,020 --> 00:55:08,020
+ And this is really a view.
+
+501
+00:55:12,020 --> 00:55:18,580
+ okay so i just kind of feel more simple which i'm going to tell you it's just a kind of view
+
+502
+00:55:18,580 --> 00:55:20,740
+ a kind of view of what you should know
+
+503
+00:55:24,740 --> 00:55:28,660
+ well so what is random variation i'm not going to define this
+
+504
+00:55:28,660 --> 00:55:35,620
+ okay it's a view so we're supposed to know this but let's start with one half variable x
+
+505
+00:55:38,500 --> 00:55:46,100
+ First thing which people are learning about is that it could go two times: discreet and continuous.
+
+506
+00:55:50,100 --> 00:56:02,580
+ round of arrows that would be continuous
+
+507
+00:56:14,660 --> 00:56:18,580
+ and of course you know what is the difference
+
+508
+00:56:18,980 --> 00:56:22,460
+ So I don't have a lot of time for something serious
+
+509
+00:56:22,460 --> 00:56:29,900
+ Let me explain to you how all this my and your mathematician's way of visualizing the random variable
+
+510
+00:56:29,900 --> 00:56:34,860
+ So random variable means that you can make an experiment and have another
+
+511
+00:56:34,860 --> 00:56:36,860
+ Because there's always an experiment
+
+512
+00:56:36,860 --> 00:56:41,860
+ So if for example you can imagine that you can have some box
+
+513
+00:56:41,860 --> 00:56:44,220
+ which is random variable x
+
+514
+00:56:44,220 --> 00:56:45,780
+ and the box
+
+515
+00:56:45,780 --> 00:56:47,780
+ and here you have a button
+
+516
+00:56:48,980 --> 00:56:58,980
+ You can press this button, as many times as you want, and here you have the number.
+
+517
+00:56:58,980 --> 00:57:06,980
+ You press button and have a number here. Press it once more and have another number.
+
+518
+00:57:06,980 --> 00:57:12,980
+ You can't predict which number you have here. You know only probability.
+
+519
+00:57:12,980 --> 00:57:36,980
+ That's all. It's kind of a model of a lot of things. Again, I can throw dice, of course, instead of pressing this button here, I can do a lot of practical things, I can throw dice and have a number from 1 to 6 possibilities.
+
+520
+00:57:36,980 --> 00:57:46,980
+ If there are only finite and many, or infinitely many, but discrete possibilities for variable here, this is called discrete variable.
+
+521
+00:57:46,980 --> 00:57:53,980
+ Or if I take a random person and measure his height for weight, it will be continuous variable.
+
+522
+00:57:53,980 --> 00:57:59,980
+ Okay, so if you have just one random variable,
+
+523
+00:57:59,980 --> 00:58:08,980
+ I want to make like a first section of practices how I measure it, that's why I prepare to think about this in this way.
+
+524
+00:58:08,980 --> 00:58:16,980
+ But it's basically what you need to know to be able to compute any synth with your randomly.
+
+525
+00:58:16,980 --> 00:58:26,980
+ You need to know something which is called something, let me denote it by f, x of x.
+
+526
+00:58:26,980 --> 00:58:29,980
+ Sometimes they will call it x.
+
+527
+00:58:29,980 --> 00:58:40,980
+ This is called PDS or PRM.
+
+528
+00:58:40,980 --> 00:58:46,980
+ Probability Distribution Function or Probability Mass Function.
+
+529
+00:58:46,980 --> 00:58:47,980
+ Okay?
+
+530
+00:58:47,980 --> 00:58:51,980
+ In case of continuous variable, in case of descriptive variable.
+
+531
+00:58:51,980 --> 00:58:53,980
+ Okay?
+
+532
+00:58:53,980 --> 00:59:00,980
+ in this course, at least, in the beginning, we mostly will deal with continuous variable
+
+533
+00:59:00,980 --> 00:59:05,980
+ and this is a review, so I don't want to do everything for both cases
+
+534
+00:59:05,980 --> 00:59:12,980
+ okay, so let me just, from now, let me just consider all the continuous variable
+
+535
+00:59:12,980 --> 00:59:15,980
+ let me just lose the sense of full discrete case
+
+536
+00:59:15,980 --> 00:59:19,980
+ you just replace the graphs by subs
+
+537
+00:59:19,980 --> 00:59:32,980
+ okay so what does that mean probability distribution function? it means that probability that your variable x between a and b
+
+538
+00:59:32,980 --> 00:59:38,980
+ well for continuous variables smaller or smaller or equal
+
+539
+00:59:38,980 --> 00:59:40,980
+ let me write smaller or equal but
+
+540
+00:59:40,980 --> 00:59:43,980
+ for discrete variables in a bottom let me talk
+
+541
+00:59:43,980 --> 00:59:45,980
+ speak about this
+
+542
+00:59:45,980 --> 00:59:58,100
+ this is equal to integral from a to b of this partial f dx. And the discrete case, instead
+
+543
+00:59:58,100 --> 01:00:05,480
+ of integral, you have sum by all possible values of x. Okay? That will not write it
+
+544
+01:00:05,480 --> 01:00:12,300
+ out. Isn't it clear? And that's all in principle. If you can compute this, you can compute
+
+545
+01:00:12,300 --> 01:00:21,420
+ because all you have if you have just one variable you don't you're not interested in anything else
+
+546
+01:00:21,420 --> 01:00:27,100
+ you just want to predict what you have here but you cannot predict it exactly you want to know
+
+547
+01:00:27,100 --> 01:00:33,420
+ probabilities so basic question which you can ask i press this button what is the probability that
+
+548
+01:00:33,420 --> 01:00:37,920
+ that this result will be between 0 and 1
+
+549
+01:00:37,920 --> 01:00:40,920
+ ok, and you can compute it
+
+550
+01:00:40,920 --> 01:00:43,920
+ as integral from 0 and 1 to 1
+
+551
+01:00:43,920 --> 01:00:45,920
+ this function you know
+
+552
+01:00:45,920 --> 01:00:48,420
+ and you can compute as integral
+
+553
+01:00:48,420 --> 01:00:50,420
+ ok
+
+554
+01:00:50,920 --> 01:00:52,920
+ is it clear?
+
+555
+01:00:55,920 --> 01:00:59,100
+ ok, let's stop now, so next time I will do more
+

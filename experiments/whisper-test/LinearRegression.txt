@@ -1,0 +1,555 @@
+it might be very daily
+What is it?
+Well, suppose that I am interested
+for example, I pick a random person
+and measure his height and weight
+for example
+then I take another person randomly
+not necessarily his class
+just elsewhere
+And again, measure height and weight.
+That was the same person.
+And do it all the time, randomly. I have data.
+How this data are organized into space.
+So I first put...
+In the first person, for example...
+So let me make...
+Let me measure height in centimeters and weight in kilograms.
+I don't know other things
+so for example first person one
+80 centimeters
+and 80 kilograms
+for example
+then we write this data like this
+first is height
+second is weight
+and we know that this person is such
+higher than such
+well another could have
+152
+and also have 80 kilograms
+grab another one, one is 40, and there is 75, and a lot of such data, ok?
+and we have such question which, I personally think this question is a little too, but a lot of people are interested in this question
+How our weight depends on our size.
+I personally don't like this.
+But a lot of people this is important.
+I have 180 centimeters.
+Is it normal weight for me?
+Maybe I have two head, maybe I have two silver.
+What is the normal weight?
+Oh, for example, this weight is too much.
+Maybe, what about this, oh my god, how weight should depend on height?
+A lot of people, for a lot of people it's important, especially when I was a child.
+Long ago, I was provided with the formula that weight should be able to height minus one height.
+Yeah, my grandfather told me you are to not hate enough, yeah, because there is a simple formula, side is a spot, let's say, found this formula, take, let's take the height, subtract 100, this is weight you should have, if your weight is smaller you need to eat a lot, yeah, hate your weight, okay.
+For example, well, it's not, but, so we want to know, well more generally we have something like x1, y1, x2, y2, a lot of dot, xn, yn, a lot of data
+Okay, so as statisticians, we will say we have x and y run variables
+Okay, I will tell you, well, in principle, we assume that it's not a variable, but I will make a new one
+Random variable means that we make an experiment and we have a realisation.
+This is random.
+We take random person, this is high, this is variable, this person.
+Random variable.
+But at the moment where x is called independent variable and y, dependent.
+Well, they are not, this is not independent and dependent and usual kind of way in physics, for example
+It's kind of statistical, so for given value of x, given realization of x could be a lot of y
+For example, another portion with the same height could be 0.50.
+But we have this idea that maybe if we know it, then somehow we can estimate why.
+Maybe not exactly, but there is some dependence.
+Why somehow you have to do that? In statistical sense, not the sense of first year value. Okay? Regression analysis is about static events. Well, suppose that you have something like this. Let's put it here.
+So there are a lot of ways how to represent invariate data, there are a lot of names for such ways, but I'm not going to finish this.
+What is most important for us is the homework.
+So you have these numbers that you don't make any numbers, so we just denote it by x1 by 1.
+and then y
+and then as we present this
+on x, y plane
+x
+y
+yeah
+I just want to explain what does it mean
+dependence in statistical frames
+but let me just this can be considered as a point with coordinates x1 by 1
+could be somewhere here, could be another point here, another point here, another point here
+another point here, could be something like this
+This would be a kind of cloud for each of these, this could be x1 by 1, this is x2 by 2, and so.
+Okay, if you look at this cloud, you see that there is approximately a kind of idea that it is,
+They kind of want to be on some line. They are not on a line. Of course there is no line which passes through all these points.
+It is not possible because it is a random variable. It's a kind of rough situations.
+Still there is some line kind of like this. Maybe something like this.
+such that each of this oil is approximately on this side.
+Well, there is another situation. Something like this.
+Your cloud will be like this.
+In this case, it doesn't look like there is a light.
+And we humans, by the way, we humans, many humans, if given this picture, given this picture, ask which looks better like a lion, I think that everybody will say that this one, yeah?
+but how can we teach computer to ask such questions this is very important by some means
+this is called machine learning how can we teach computers suppose that we just download
+to computer coordinates of these points and coordinates of these points
+yeah there are two files right in one file we have coordinates of these points
+another file coordinates of those points
+and gas computer please tell me which is closer to the line and tell me what is this line
+again kind of important question and this kind of toy model for machine learning
+and regression analysis by the way is kind of in overlap of statistics and machine learning
+it is kind of advanced part of statistics
+yeah you have introductory probability statistics and now you're in
+regression class but from machine learning it's kind of
+the simplest possible moment okay
+so the question is you have some cloud points
+in this case in this case you don't have
+you don't you cannot draw a frame and just look when you look you don't know how your brain goes
+why our brain tells that this is closer to light than this and i even have approximately
+the problem is how can i which computations should i do to understand first of all to understand
+which line is kind of the best in this case and maybe in this case because if i have some formulas
+these formulas should work in all cases in this case in this case
+formulas should be it could give me something but somehow i should be able to estimate that in this
+case this line is kind of better approximation of my data than in this case you see i should be able
+to do this without looking at picture when i look at picture well i can do it in this case
+but suppose that you have one million points and not in two-dimensional space like that
+this is called simple linear regression but it could be more inputs more in general variables
+and you cannot visualize this if it is not in plane but in five-dimensional space okay so the problem
+Which computation should we do, so that we don't need to draw such pictures.
+We just do computations, find this line, which fits best, and then estimate if it is really good estimation.
+This is kind of a main problem of statistics, of regression analysis in the simplest possible case.
+Is it clear?
+Is it clear?
+Everybody okay with this?
+What do you have?
+Could be very data
+If you draw it as a picture here
+Or it could be something like this
+It could be
+To be more complicated
+In this case probably
+In this case, probably it is some more complicated language, it's not a linear equation, but somehow we need to be able to analyze such data, you have a lot of data, it may be one million, several million, such, yes, and you should know which computations to do, to understand this, okay?
+Okay, let me explain this in the simplest possible ways.
+So let me erase.
+So at the moment we are discussing that
+of single linear regression.
+Okay. So what is this, this is called regression light. Yeah. So let's put it wrong. Okay. But now let's get kind of.
+kind of 1, 2, 3, 4, 5 points.
+Of course, let's just see the subject.
+Regression line is a line which tries to approximate all this point with smallest possible mistake.
+Let me explain what does it mean and subject as what we have subject like this.
+Let me how to write an arbitrary line.
+It's a linear function, yeah.
+Y is equal to alpha plus Dx.
+Yeah.
+And the question is alpha and beta.
+So, analytically, I don't want to look at pictures and draw sass over.
+We are saying that this one is just a cloud of the line.
+I want to do computations.
+So instead of the line, I have a formula.
+y is equal to alpha plus d x.
+To find this line is to find alpha in this.
+It's a 10.
+And 12, 12.
+So alpha is at least a percent, a size one.
+d is the slope of this line.
+Okay, and I want this line, so I want to find such algebra so that this line kind of base possible approximation of this data, yeah, but I need to define what doesn't mean base possible, if I have two points of course I can just make a straight line which passes through the
+these two points no problems but if i have a lot of points what to do so let's say what we want
+everyone okay here that's right so what we want we want y1 d approximately alpha plus beta x1
+so this is for example this is my point with coordinates x1 y1
+for example and this
+is y which is alpha plus beta x1
+yeah this is my line this equation alpha plus beta x yeah so this point
+has coordinate y which is alpha plus beta x1 and this point is a point with coordinates x1 y1
+yeah and of course this r plus beta x1 it is here it is not necessarily equal to y1 to have this
+distance and similarly here and here and here and here we have a lot of mistakes yeah we want this
+So this would be approximately. This is approximately equal to this. This is what we want.
+Also we want that y2 is approximately equal to y plus b times 2.
+yn is approximately equal to y plus b times 2.
+We want to make this approximation best possible, kind of simultaneous
+We don't distinguish any points, we don't say that this is better than this
+All data for us are of the same position
+So somehow we want to find a line which fits best possible
+so all these distances simultaneously kind of should be smallest possible yeah
+everybody okay well let me write this is all that quick so alpha plus eta x
+x-bita alpha. So let me write my error. It is alpha plus bita x1 minus y1.
+Now, this is error for first data point.
+I want to take it square and I want to add all other errors.
+x of plus beta x2 minus y2 squared plus plus dot plus x plus beta xn minus yn squared.
+ok
+so I take error
+so this I want to be as small as possible
+this I want to be as small as possible as possible
+so if you have seen any statistic
+you know that the best kind of
+the most standard way
+to make all these kind of simultaneously smaller as possible
+possible to take some of these squares okay is that a wild idea in some way
+if you want this kind of square distance
+two points high dimensional space yeah take this error but i don't care if it's positive for that
+the best way to get relief from the side is to take a square
+of course it can take absolute value but mathematically it will be much harder to deal with such
+expression so standard the most standard way in statistics is to take square
+okay so this is 0 if upon the if y1 is exactly equal to alpha plus beta x1
+Okay, and this I denote by S alpha beta, so S alpha beta, I can also write it as sum alpha plus beta as i minus yi, square by i from 1 to f.
+Okay.
+So, kind of in-semitically or analytically when I tell you my wish that this line should fit the best.
+It's a little bit wet, yeah, but now I have just kind of more precise wish.
+My wish now is more precise.
+I want this to be the smallest possible.
+sum of squares of my error, I want to minimize each of these simultaneously, which means that sum of squares should be smaller as possible, okay, everybody remembers this, this can be called, in machine learning such set is called loss function, if you want, you can call it like this, or it's just sum of squares,
+okay loss or it could be a fine function
+we want to have smallest possible loss
+sometimes people say this function whatever
+yeah but you should understand that you want to find
+such that this is smallest possible. This is a analytical way of a formulation of what I just tried to explain.
+We assume that our line fits the best, if sum of squares: this square, this distance square, plus this distance square, plus this distance square, and so on,
+all data points should be smallest possible. Everybody okay?
+Please ask questions if you want to ask questions.
+and now we have kind of standard mathematical problem of finding the minimum
+we know this Xi, Yi are no. In a concrete situation, just announce. And we want to find alpha and beta.
+So find, the problem is to find alpha and beta such that
+"S" is the smallest possible.
+"Find" is another "Rose".
+"Find" is the "Linear".
+or this function as
+you have a kind of type of extension problems from hypers
+you have a function in two variables, you have only two variables
+because x and y are low
+you know for example weight, height, you have the data set
+you have to compute the sum
+this is a low sum, it could be 1 million here
+but it depends on your life and which are there
+and we need to find the size of eigenvectors that this function is lost
+everybody know how to find
+the minimum and maximum of a function
+who knows
+well
+I could have told to see, other people don't
+who doesn't know?
+from the logical point of view
+everybody A is a no
+who doesn't know?
+ok?
+so let's agree
+let's
+Let me explain it before. If I ask you such kind of questions, who knows Samsung or who has an idea about Samsung, and you raise your hand, you are safe.
+I am not going to ask you, tell me. What do you think? You are safe.
+But if you don't know or don't know, you are not safe.
+So please, I need your feedback, because otherwise, if I don't know what I know, what I don't know,
+what can I reach?
+So let's try again, who knows how to find minimum, minima, and maximum of maximum?
+For example, I know.
+Most people know, yeah?
+Very good.
+Of course, I'm not going to check.
+But I just need them there.
+Just rough idea.
+And now, I'm going to use a few beliefs that they know.
+More precisely, this question is a few beliefs that know.
+It's not the same thing.
+Okay?
+You should take, let me take the secret of the check, of course, as I promised.
+You need to take your index with respect to alpha and nita and the equation is here.
+Okay.
+For example, if you have something like s alpha-nita is equal to alpha square minus c alpha-nita plus 10 meter square.
+for example minus two alpha plus three vector
+i hope that this function has a minimum looks
+so side functions by the way which are quadratic this function is a quadratic polynomial in alpha
+if you expand and collect you will see it's alpha square alpha vector
+V^2 is a quadratic in two ways. And such a polynomial is not a maximum minimum, but it is a maximum minimum. It is a unique. So in this case, to find, in this case, this function has a minimum.
+So finally we need to equate here is VdA which is both 2A minus 3V minus 2 and we need to break through 0. And yes, VdB is equal to minus 3A plus VdB plus 3, break through 0.
+You need to solve this system of two equations and it will be minimum of your function.
+If it is minimum you need to investigate, maybe it is not minimum, maybe it is maximum.
+But in this case it is minimum.
+And in this case just from kind of common sense this function cannot have maximum.
+Because if I make alpha very big this function will be very big.
+And similarly, this is very big and very big.
+So functions like this in all directions, like this.
+And some ways can be needed.
+To find this minimum, we need to equate to zero derivative
+with respect to alpha.
+Is it real?
+Well, let's do this.
+You guys-- wait a minute.
+You guys are OK with such subs?
+Who is OK with such subs?
+Are you OK?
+but I can do it this way, but I think that it's more convenient
+it is for hypotraeal computations
+so let me do it this way
+okay
+let me erase this
+and then we can build stereotips, yeah?
+so what about d_S by d_i?
+This sum, alpha more round to m, here is this, this is 2, alpha plus beta xi minus yi.
+Okay?
+You know how to compare it, respect to alpha, this alpha plus alpha, so I can put here and that's all.
+what about here with respect to beta? yes, by d beta
+sum i for one to n
+so we have two
+i for plus beta x i minus y i
+you guys of course know chain rule, yeah?
+chain rule
+So you take derivative of the square, it will be 2 by this
+And now derivative of this, what you have here
+derivative with respect to beta will be on x_i
+Okay, derivative of this with respect to beta is x_i
+So you should write here x_i
+Okay
+And this I should apply to zero, and this I should apply to zero.
+Ok.
+Because there is a 5,000 beta I need to apply this and this to zero.
+Ok.
+So by the way, we stop at 560.
+I have no problem with wash here, so I will try to fix it
+So if you see that I continue to work here, I will try to follow all the time
+If you see that I am not going to stop, I am not going to stop, just quiet here, okay?
+Okay? Don't like this
+Okay?
+Because I have had all the knowledge that I am not good with those
+Okay, this is really fine, but if you tell me, it's not very useful for this variable.
+Okay, so let's invite this to you.
+So before I ask any questions about this, everybody wait.
+So we have this closed function, sum of squares of errors, which we want to minimize, and then I try to minimize it.
+okay
+okay so i have this sum
+5 from 1 to m
+I can only have this 2
+can't divide by 2
+so this is equal to 0
+so I can have 2
+so I have alpha
+plus
+beta
+xn minus
+yi
+yi
+So let's compute it.
+I want to collect alpha.
+So this would be .
+Let me collect alpha and b, yeah?
+Is it easy to collect alpha and b?
+So what about alpha?
+What coefficient do I have at alpha?
+It will be m, yeah?
+Because I have i from 1 to m.
+I add up this n times, OK?
+So if A is plus alpha, plus alpha, and x.
+Okay?
+So it is here in A and alpha.
+Okay?
+So I feel like beta will be 1 plus beta.
+And this will be sum of x i.
+I from 1 to 1.
+Okay?
+beta, I can take beta outside, I have the sum of oxide, and minus sum of my i.
+i from 1 to 1, and this is equal to 0.
+This is the first equation, and I want to make it a bit better.
+I want to write it as alpha plus beta 1 over n sum xii plus, sorry, i from 1 to n minus 1 over n sum by i, i from 1 to n equals 2.
+Ok, so you guys already have a lot of statistics courses, yeah, most of you, you probably recognize this, 1 over N sum of all your data, what is it, mean, people call this sample mean, yeah, there is a difference, there is a population mean, when I take all people,
+It helps me in Canada and make every single day in kind, it's a population.
+But there is a sample, this is my sample, my data which I erase, it's just a small sample.
+It could be in practice one thousand people, the power of a lot of billions.
+So there is called SampleMe, and there is also SampleMe.
+Remember this?
+And there is a notation we call the notation somewhere here, so x bar is sample here for x, and y bar is sample here for x.
+Is it the same as you have previously?
+Yeah, but you have some data, x with index, i-o with index, and draw a bar.
+Means, mean of all x's, 1 over a number of x's, and sum.
+Okay, 7 to b for x, 7 to b for y.
+So I like the equation like this: alpha plus beta x bar minus y bar,
+Okay, finally I have kind of a simple notation, simple equation, okay, instead of all this.
+Sums I have just this, x bar minus y bar, where x bar and y bar have kind of very clear need, okay?
+So let me write it somewhere, let me write it here, I can write it out of us,
+This is what I have right here. From here to here to this equation. One point. Everywhere. Well, let's do a similar thing for second equation. So for every equation.
+Well, let's do similar thing with another equation.
+Well, how can I write this equation?
+I want to drop this too, because I don't need it.
+Yeah, this equation.
+So I have sum.
+i from 1
+i plus
+liter x i
+minus y i
+multiplied by x i
+this should be
+complete
+rewrite example
+ok
+now let me rewrite it
+let me
+expand
+at alpha f
+Well, let me write this as a sum, just expand it.
+i of x i plus beta x i squared minus x i by i.
+Yeah, this will be complete.
+and just the square, alpha by x, beta by x, minus x, beta x square, minus y by x.
+Everybody okay?
+Well, so I can have alpha sum xi, i form 1 square, plus beta sum xi square,
+i from 1 to n minus sum as i like i from 1 to n.
+This will be good to you.
+I want to use my notation.
+I want to write this with statistics.
+So I want to have mean.
+I want to have mean, so this will be mean for xi, this will be mean for xi squared, this will be mean for xi squared, all I need to do is to divide by m, so I can write here 1 over m, 1 over m, 1 over m, I just write, I just divide by m, yeah, because I want everything in terms of mean, so now I have alpha x bar, because this is just x bar, okay,
+What is this? x^2 bar. Also a mean, it's not mean, it's kind of central analog of a second comment, not second comment of your random variable, we'll review this later, but probably you'll remember this.
+So by definition, let's write definition, 5 over n sum, x i square, i from 1 to m, and also x y1, equal to 1 over n sum, x i y5, i from 1 to m, okay?
+So a general principle, if you have something with indices, and you have 1 over n and some of this, just omit this index and write bar.
+Okay?
+So for example, x, y, y, and bar is about both.
+I just put indices for x and y, sum up from 1 to n, and make a average.
+Yeah?
+So I can like it as beta x squared minus xy bar, equal.
+So my second equation would be alpha x bar plus beta x squared bar, equal to xy bar.
+And how is the system of the version of the code?
+Everyone okay?
+If you have your specific data, you can see the code.
+Not much code, but you can see the calculator or the computer.
+we are going to compute there, there, there, there, there, there, there, those holes, yeah?
+It's still here, and then you have a question for it.
+Okay.
+Well, let us solve this system.
+I hope that it's not hard to solve such kind of systems.
+Any questions about this?
+We're going to go away.
+So I have this and this. What can I do? Let me write it. Okay. Alpha and X bar. Let me write the second equation. I want to write it.
+So it's important that this bar is over x^2.
+So I have x^2 as something compact thin,
+and then I take bar.
+Standard statistical way for sample mean,
+but now not for x, but for x^2.
+So we have a sample,
+some numbers,
+take x^2 and make mean.
+And this is equal to xy^1.
+I also have alpha plus beta S bar equal to Y bar, I need to solve this, and let me just tell you right away that in principle, beta is more important than alpha, because beta shows slope, what happens if it changes, how Y changes, if it changes X.
+So bit is more important than alpha, of course, but for statistics, for regression, bit are kind of more important.
+So let's find bit first. How to find bit? I need to re-tribute, so I multiply by x bar and sub-card.
+If I multiply this equation by X bar, I have X bar, here I have X bar square and here I have X bar by Y bar.
+So I have F and I subtract this minus F.
+Then I do it at once. Everybody, okay, we solve the system of the equations.
+Okay. Are you okay?
+So I have here alpha x-bar. Here I have beta by x-bar by x-bar again. And here I have x-bar by y-bar.
+And now I subtract this minuses. So alpha x-bar minus alpha x-bar will cancel out.
+So, for Vita is the fact Vita X^2 bar minus X bar square.
+And of course this is not the same as this.
+And this is equal to X Y bar minus X bar Y bar.
+x and beta is equal to xy bar minus x bar y bar over x squared bar minus x bar squared.
+And I could write here breakfast but is it clear from my reaction that here first I take bar and then square.
+and here first I take square and then make bar
+so here first I make sample mu for x and then square and take square of the sample mu
+here first I take x square, so I take square of each value of x
+and then take sample mu of this square itself
+ok, so this is not in the same equivalences
+Okay now we can find alpha complexes. Alpha is equal to y bar minus x bar multiplied by x, y bar minus x bar, y bar over x square bar minus x bar.
+okay this gives you life which kind of most heat
+okay
+so we are good we can find such life
+so why we have cold push
+we are done yeah
+time is almost
+we have 14 minutes
+so why it is not enough
+Even in principle, I don't tell you anything about statistics.
+You need to know if there's factors.
+Yeah?
+Some shortness.
+Some theoretical ideas.
+There's a couple of points, one of the classes line.
+Why we need statistics at all?
+For example, your prediction was?
+Probably a statistic, yeah?
+Why?
+Trust cycles.
+Okay?
+The problem is, like, well, not so simple.
+So main problem is not just draw the slide, so you have the explainer.
+So everyone okay with the sensations, because you have seen it before.
+so sometimes people do it so i find it was type of general i could write here type of hat
+so data hat
+and type of hat just a connection for this let's see the type of data which we found
+with a minimum of some squares of difference yeah so we have our line y equal to alpha x plus beta x
+and my eyes close to alpha plus beta x i and this error is small as possible yeah
+We are done. But the problem is that why in practice we need all this?
+In practice people are not often, especially dialogosmeticians, people are not often interested
+just to draw the slide for given data. They want to predict. For example this, maybe this is
+again this is still the example this hides some plates but when people obtain this line
+i'm a scientist after that they want to tell well your height is this let's compute which way you
+should have oh it's not really a weight yeah something like this we want to predict in more
+our important situation for example we have data for example size of house and price of this house
+for example yeah we have a lot of data for some city yeah a lot of houses for each you know it's
+size in meters for example and price and we know what we estimate which price should have some
+in your house. Let's assume that there is no other practice.
+So, you want to predict it, yeah? If you are going to predict something, you want to
+estimate error in your situation. So you have your data, you compute this alpha hat
+And now somebody asks you what happens if x equal to c. What is your prediction for y?
+You can compute this of course, but then you are asked what is the probability, for example, that your prediction is close to this.
+Yeah? And so on.
+Okay? So there are a lot of questions which arise in this situation.
+And then this, well, this data are kind of random, so we need to model this, yeah, we really need statistics for us, to answer more serious questions, okay?
+So we need to recall that x and y are random variables, so we need to know all these things about, basic things about random variables.
+Because we are going to model, if you have a sample, for example, it will become a sample x_1, x_n, for example, height for random people.
+For a statistician, there is a model of this.
+A statistician would say that, well, we have a random variable x.
+And this is a realisation or a result of experiments with this random variable.
+And if you have y-variate data, you have x1, y1, and so on
+Statisticians would say that we have a pair of random variables, x and y
+With some joint distribution and
+Yeah, I guess it will be a modular solution
+Okay, is that clear?
+So, I just explained to you today the main idea of regression analysis without any statistics
+But now we need to start modeling of this thing with statistical motions, okay?
+Because otherwise we just, well.
+Okay, let's start with about 7-5 minutes.
+So next what we are going to do is to make a review.
+I will be able to do this, I will be able to do my example, so I will be able to do my example, so I will be able to do my example, so I will be able to do my example, so I will be able to do my example.
+Okay, who doesn't want to have example, but who, 35, doesn't want.
+So it's maybe if they can do something.
+Okay, so let's talk about random variance.
+And this is really a view.
+okay so i just kind of feel more simple which i'm going to tell you it's just a kind of view
+a kind of view of what you should know
+well so what is random variation i'm not going to define this
+okay it's a view so we're supposed to know this but let's start with one half variable x
+First thing which people are learning about is that it could go two times: discreet and continuous.
+round of arrows that would be continuous
+and of course you know what is the difference
+So I don't have a lot of time for something serious
+Let me explain to you how all this my and your mathematician's way of visualizing the random variable
+So random variable means that you can make an experiment and have another
+Because there's always an experiment
+So if for example you can imagine that you can have some box
+which is random variable x
+and the box
+and here you have a button
+You can press this button, as many times as you want, and here you have the number.
+You press button and have a number here. Press it once more and have another number.
+You can't predict which number you have here. You know only probability.
+That's all. It's kind of a model of a lot of things. Again, I can throw dice, of course, instead of pressing this button here, I can do a lot of practical things, I can throw dice and have a number from 1 to 6 possibilities.
+If there are only finite and many, or infinitely many, but discrete possibilities for variable here, this is called discrete variable.
+Or if I take a random person and measure his height for weight, it will be continuous variable.
+Okay, so if you have just one random variable,
+I want to make like a first section of practices how I measure it, that's why I prepare to think about this in this way.
+But it's basically what you need to know to be able to compute any synth with your randomly.
+You need to know something which is called something, let me denote it by f, x of x.
+Sometimes they will call it x.
+This is called PDS or PRM.
+Probability Distribution Function or Probability Mass Function.
+Okay?
+In case of continuous variable, in case of descriptive variable.
+Okay?
+in this course, at least, in the beginning, we mostly will deal with continuous variable
+and this is a review, so I don't want to do everything for both cases
+okay, so let me just, from now, let me just consider all the continuous variable
+let me just lose the sense of full discrete case
+you just replace the graphs by subs
+okay so what does that mean probability distribution function? it means that probability that your variable x between a and b
+well for continuous variables smaller or smaller or equal
+let me write smaller or equal but
+for discrete variables in a bottom let me talk
+speak about this
+this is equal to integral from a to b of this partial f dx. And the discrete case, instead
+of integral, you have sum by all possible values of x. Okay? That will not write it
+out. Isn't it clear? And that's all in principle. If you can compute this, you can compute
+because all you have if you have just one variable you don't you're not interested in anything else
+you just want to predict what you have here but you cannot predict it exactly you want to know
+probabilities so basic question which you can ask i press this button what is the probability that
+that this result will be between 0 and 1
+ok, and you can compute it
+as integral from 0 and 1 to 1
+this function you know
+and you can compute as integral
+ok
+is it clear?
+ok, let's stop now, so next time I will do more

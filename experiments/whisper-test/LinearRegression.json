@@ -1,0 +1,6137 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 1
+	},
+	"params": {
+		"model": "models/ggml-large-v3-turbo.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 7000
+			},
+			"text": " it might be very daily"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:09,000"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 9000
+			},
+			"text": " What is it?"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,000",
+				"to": "00:00:13,000"
+			},
+			"offsets": {
+				"from": 9000,
+				"to": 13000
+			},
+			"text": " Well, suppose that I am interested"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,000",
+				"to": "00:00:17,000"
+			},
+			"offsets": {
+				"from": 13000,
+				"to": 17000
+			},
+			"text": " for example, I pick a random person"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:17,000",
+				"to": "00:00:20,000"
+			},
+			"offsets": {
+				"from": 17000,
+				"to": 20000
+			},
+			"text": " and measure his height and weight"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:20,000",
+				"to": "00:00:22,000"
+			},
+			"offsets": {
+				"from": 20000,
+				"to": 22000
+			},
+			"text": " for example"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:22,000",
+				"to": "00:00:25,000"
+			},
+			"offsets": {
+				"from": 22000,
+				"to": 25000
+			},
+			"text": " then I take another person randomly"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:25,000",
+				"to": "00:00:27,000"
+			},
+			"offsets": {
+				"from": 25000,
+				"to": 27000
+			},
+			"text": " not necessarily his class"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:27,000",
+				"to": "00:00:29,000"
+			},
+			"offsets": {
+				"from": 27000,
+				"to": 29000
+			},
+			"text": " just elsewhere"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:29,000",
+				"to": "00:00:32,000"
+			},
+			"offsets": {
+				"from": 29000,
+				"to": 32000
+			},
+			"text": " And again, measure height and weight."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:33,000",
+				"to": "00:00:35,000"
+			},
+			"offsets": {
+				"from": 33000,
+				"to": 35000
+			},
+			"text": " That was the same person."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:35,000",
+				"to": "00:00:38,000"
+			},
+			"offsets": {
+				"from": 35000,
+				"to": 38000
+			},
+			"text": " And do it all the time, randomly. I have data."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:38,000",
+				"to": "00:00:41,000"
+			},
+			"offsets": {
+				"from": 38000,
+				"to": 41000
+			},
+			"text": " How this data are organized into space."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:41,000",
+				"to": "00:00:43,000"
+			},
+			"offsets": {
+				"from": 41000,
+				"to": 43000
+			},
+			"text": " So I first put..."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:47,000",
+				"to": "00:00:51,000"
+			},
+			"offsets": {
+				"from": 47000,
+				"to": 51000
+			},
+			"text": " In the first person, for example..."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:51,000",
+				"to": "00:00:53,000"
+			},
+			"offsets": {
+				"from": 51000,
+				"to": 53000
+			},
+			"text": " So let me make..."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:53,000",
+				"to": "00:00:57,000"
+			},
+			"offsets": {
+				"from": 53000,
+				"to": 57000
+			},
+			"text": " Let me measure height in centimeters and weight in kilograms."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:57,000",
+				"to": "00:00:59,000"
+			},
+			"offsets": {
+				"from": 57000,
+				"to": 59000
+			},
+			"text": " I don't know other things"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:59,000",
+				"to": "00:01:01,000"
+			},
+			"offsets": {
+				"from": 59000,
+				"to": 61000
+			},
+			"text": " so for example first person one"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:01,000",
+				"to": "00:01:05,000"
+			},
+			"offsets": {
+				"from": 61000,
+				"to": 65000
+			},
+			"text": " 80 centimeters"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:05,000",
+				"to": "00:01:07,000"
+			},
+			"offsets": {
+				"from": 65000,
+				"to": 67000
+			},
+			"text": " and 80 kilograms"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:07,000",
+				"to": "00:01:09,000"
+			},
+			"offsets": {
+				"from": 67000,
+				"to": 69000
+			},
+			"text": " for example"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:09,000",
+				"to": "00:01:11,000"
+			},
+			"offsets": {
+				"from": 69000,
+				"to": 71000
+			},
+			"text": " then we write this data like this"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:11,000",
+				"to": "00:01:13,000"
+			},
+			"offsets": {
+				"from": 71000,
+				"to": 73000
+			},
+			"text": " first is height"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:13,000",
+				"to": "00:01:15,000"
+			},
+			"offsets": {
+				"from": 73000,
+				"to": 75000
+			},
+			"text": " second is weight"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:15,000",
+				"to": "00:01:17,000"
+			},
+			"offsets": {
+				"from": 75000,
+				"to": 77000
+			},
+			"text": " and we know that this person is such"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:17,000",
+				"to": "00:01:19,000"
+			},
+			"offsets": {
+				"from": 77000,
+				"to": 79000
+			},
+			"text": " higher than such"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:19,000",
+				"to": "00:01:21,000"
+			},
+			"offsets": {
+				"from": 79000,
+				"to": 81000
+			},
+			"text": " well another could have"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:21,000",
+				"to": "00:01:23,000"
+			},
+			"offsets": {
+				"from": 81000,
+				"to": 83000
+			},
+			"text": " 152"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:23,000",
+				"to": "00:01:25,000"
+			},
+			"offsets": {
+				"from": 83000,
+				"to": 85000
+			},
+			"text": " and also have 80 kilograms"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:25,000",
+				"to": "00:01:42,000"
+			},
+			"offsets": {
+				"from": 85000,
+				"to": 102000
+			},
+			"text": " grab another one, one is 40, and there is 75, and a lot of such data, ok?"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:42,000",
+				"to": "00:01:52,000"
+			},
+			"offsets": {
+				"from": 102000,
+				"to": 112000
+			},
+			"text": " and we have such question which, I personally think this question is a little too, but a lot of people are interested in this question"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:52,000",
+				"to": "00:01:57,320"
+			},
+			"offsets": {
+				"from": 112000,
+				"to": 117320
+			},
+			"text": " How our weight depends on our size."
+		},
+		{
+			"timestamps": {
+				"from": "00:01:57,320",
+				"to": "00:02:01,560"
+			},
+			"offsets": {
+				"from": 117320,
+				"to": 121560
+			},
+			"text": " I personally don't like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:01,560",
+				"to": "00:02:04,820"
+			},
+			"offsets": {
+				"from": 121560,
+				"to": 124820
+			},
+			"text": " But a lot of people this is important."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:04,820",
+				"to": "00:02:09,160"
+			},
+			"offsets": {
+				"from": 124820,
+				"to": 129160
+			},
+			"text": " I have 180 centimeters."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:09,160",
+				"to": "00:02:11,200"
+			},
+			"offsets": {
+				"from": 129160,
+				"to": 131200
+			},
+			"text": " Is it normal weight for me?"
+		},
+		{
+			"timestamps": {
+				"from": "00:02:11,200",
+				"to": "00:02:16,500"
+			},
+			"offsets": {
+				"from": 131200,
+				"to": 136500
+			},
+			"text": " Maybe I have two head, maybe I have two silver."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:16,500",
+				"to": "00:02:18,620"
+			},
+			"offsets": {
+				"from": 136500,
+				"to": 138620
+			},
+			"text": " What is the normal weight?"
+		},
+		{
+			"timestamps": {
+				"from": "00:02:18,620",
+				"to": "00:02:21,960"
+			},
+			"offsets": {
+				"from": 138620,
+				"to": 141960
+			},
+			"text": " Oh, for example, this weight is too much."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:21,960",
+				"to": "00:02:28,960"
+			},
+			"offsets": {
+				"from": 141960,
+				"to": 148960
+			},
+			"text": " Maybe, what about this, oh my god, how weight should depend on height?"
+		},
+		{
+			"timestamps": {
+				"from": "00:02:28,960",
+				"to": "00:02:35,960"
+			},
+			"offsets": {
+				"from": 148960,
+				"to": 155960
+			},
+			"text": " A lot of people, for a lot of people it's important, especially when I was a child."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:35,960",
+				"to": "00:02:45,960"
+			},
+			"offsets": {
+				"from": 155960,
+				"to": 165960
+			},
+			"text": " Long ago, I was provided with the formula that weight should be able to height minus one height."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:48,960",
+				"to": "00:03:17,960"
+			},
+			"offsets": {
+				"from": 168960,
+				"to": 197960
+			},
+			"text": " Yeah, my grandfather told me you are to not hate enough, yeah, because there is a simple formula, side is a spot, let's say, found this formula, take, let's take the height, subtract 100, this is weight you should have, if your weight is smaller you need to eat a lot, yeah, hate your weight, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:03:18,960",
+				"to": "00:03:42,960"
+			},
+			"offsets": {
+				"from": 198960,
+				"to": 222960
+			},
+			"text": " For example, well, it's not, but, so we want to know, well more generally we have something like x1, y1, x2, y2, a lot of dot, xn, yn, a lot of data"
+		},
+		{
+			"timestamps": {
+				"from": "00:03:42,960",
+				"to": "00:03:54,160"
+			},
+			"offsets": {
+				"from": 222960,
+				"to": 234160
+			},
+			"text": " Okay, so as statisticians, we will say we have x and y run variables"
+		},
+		{
+			"timestamps": {
+				"from": "00:04:01,840",
+				"to": "00:04:12,560"
+			},
+			"offsets": {
+				"from": 241840,
+				"to": 252560
+			},
+			"text": " Okay, I will tell you, well, in principle, we assume that it's not a variable, but I will make a new one"
+		},
+		{
+			"timestamps": {
+				"from": "00:04:12,560",
+				"to": "00:04:17,560"
+			},
+			"offsets": {
+				"from": 252560,
+				"to": 257560
+			},
+			"text": " Random variable means that we make an experiment and we have a realisation."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:17,560",
+				"to": "00:04:19,560"
+			},
+			"offsets": {
+				"from": 257560,
+				"to": 259560
+			},
+			"text": " This is random."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:19,560",
+				"to": "00:04:23,560"
+			},
+			"offsets": {
+				"from": 259560,
+				"to": 263560
+			},
+			"text": " We take random person, this is high, this is variable, this person."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:23,560",
+				"to": "00:04:25,560"
+			},
+			"offsets": {
+				"from": 263560,
+				"to": 265560
+			},
+			"text": " Random variable."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:25,560",
+				"to": "00:04:40,560"
+			},
+			"offsets": {
+				"from": 265560,
+				"to": 280560
+			},
+			"text": " But at the moment where x is called independent variable and y, dependent."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:42,560",
+				"to": "00:04:55,560"
+			},
+			"offsets": {
+				"from": 282560,
+				"to": 295560
+			},
+			"text": " Well, they are not, this is not independent and dependent and usual kind of way in physics, for example"
+		},
+		{
+			"timestamps": {
+				"from": "00:04:55,560",
+				"to": "00:05:04,560"
+			},
+			"offsets": {
+				"from": 295560,
+				"to": 304560
+			},
+			"text": " It's kind of statistical, so for given value of x, given realization of x could be a lot of y"
+		},
+		{
+			"timestamps": {
+				"from": "00:05:04,560",
+				"to": "00:05:15,760"
+			},
+			"offsets": {
+				"from": 304560,
+				"to": 315760
+			},
+			"text": " For example, another portion with the same height could be 0.50."
+		},
+		{
+			"timestamps": {
+				"from": "00:05:15,760",
+				"to": "00:05:23,600"
+			},
+			"offsets": {
+				"from": 315760,
+				"to": 323600
+			},
+			"text": " But we have this idea that maybe if we know it, then somehow we can estimate why."
+		},
+		{
+			"timestamps": {
+				"from": "00:05:23,600",
+				"to": "00:05:27,640"
+			},
+			"offsets": {
+				"from": 323600,
+				"to": 327640
+			},
+			"text": " Maybe not exactly, but there is some dependence."
+		},
+		{
+			"timestamps": {
+				"from": "00:05:27,640",
+				"to": "00:05:50,880"
+			},
+			"offsets": {
+				"from": 327640,
+				"to": 350880
+			},
+			"text": " Why somehow you have to do that? In statistical sense, not the sense of first year value. Okay? Regression analysis is about static events. Well, suppose that you have something like this. Let's put it here."
+		},
+		{
+			"timestamps": {
+				"from": "00:05:57,640",
+				"to": "00:06:05,640"
+			},
+			"offsets": {
+				"from": 357640,
+				"to": 365640
+			},
+			"text": " So there are a lot of ways how to represent invariate data, there are a lot of names for such ways, but I'm not going to finish this."
+		},
+		{
+			"timestamps": {
+				"from": "00:06:06,640",
+				"to": "00:06:10,640"
+			},
+			"offsets": {
+				"from": 366640,
+				"to": 370640
+			},
+			"text": " What is most important for us is the homework."
+		},
+		{
+			"timestamps": {
+				"from": "00:06:13,640",
+				"to": "00:06:21,640"
+			},
+			"offsets": {
+				"from": 373640,
+				"to": 381640
+			},
+			"text": " So you have these numbers that you don't make any numbers, so we just denote it by x1 by 1."
+		},
+		{
+			"timestamps": {
+				"from": "00:06:27,640",
+				"to": "00:06:29,640"
+			},
+			"offsets": {
+				"from": 387640,
+				"to": 389640
+			},
+			"text": " and then y"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:31,240",
+				"to": "00:06:33,240"
+			},
+			"offsets": {
+				"from": 391240,
+				"to": 393240
+			},
+			"text": " and then as we present this"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:34,440",
+				"to": "00:06:36,440"
+			},
+			"offsets": {
+				"from": 394440,
+				"to": 396440
+			},
+			"text": " on x, y plane"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:37,640",
+				"to": "00:06:38,640"
+			},
+			"offsets": {
+				"from": 397640,
+				"to": 398640
+			},
+			"text": " x"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:40,140",
+				"to": "00:06:41,140"
+			},
+			"offsets": {
+				"from": 400140,
+				"to": 401140
+			},
+			"text": " y"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:44,840",
+				"to": "00:06:45,640"
+			},
+			"offsets": {
+				"from": 404840,
+				"to": 405640
+			},
+			"text": " yeah"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:47,240",
+				"to": "00:06:49,640"
+			},
+			"offsets": {
+				"from": 407240,
+				"to": 409640
+			},
+			"text": " I just want to explain what does it mean"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:50,140",
+				"to": "00:06:53,140"
+			},
+			"offsets": {
+				"from": 410140,
+				"to": 413140
+			},
+			"text": " dependence in statistical frames"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:53,140",
+				"to": "00:07:05,860"
+			},
+			"offsets": {
+				"from": 413140,
+				"to": 425860
+			},
+			"text": " but let me just this can be considered as a point with coordinates x1 by 1"
+		},
+		{
+			"timestamps": {
+				"from": "00:07:05,860",
+				"to": "00:07:12,500"
+			},
+			"offsets": {
+				"from": 425860,
+				"to": 432500
+			},
+			"text": " could be somewhere here, could be another point here, another point here, another point here"
+		},
+		{
+			"timestamps": {
+				"from": "00:07:12,500",
+				"to": "00:07:16,020"
+			},
+			"offsets": {
+				"from": 432500,
+				"to": 436020
+			},
+			"text": " another point here, could be something like this"
+		},
+		{
+			"timestamps": {
+				"from": "00:07:16,020",
+				"to": "00:07:31,820"
+			},
+			"offsets": {
+				"from": 436020,
+				"to": 451820
+			},
+			"text": " This would be a kind of cloud for each of these, this could be x1 by 1, this is x2 by 2, and so."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:31,820",
+				"to": "00:07:42,820"
+			},
+			"offsets": {
+				"from": 451820,
+				"to": 462820
+			},
+			"text": " Okay, if you look at this cloud, you see that there is approximately a kind of idea that it is,"
+		},
+		{
+			"timestamps": {
+				"from": "00:07:42,820",
+				"to": "00:07:52,820"
+			},
+			"offsets": {
+				"from": 462820,
+				"to": 472820
+			},
+			"text": " They kind of want to be on some line. They are not on a line. Of course there is no line which passes through all these points."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:52,820",
+				"to": "00:07:58,820"
+			},
+			"offsets": {
+				"from": 472820,
+				"to": 478820
+			},
+			"text": " It is not possible because it is a random variable. It's a kind of rough situations."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:58,820",
+				"to": "00:08:05,820"
+			},
+			"offsets": {
+				"from": 478820,
+				"to": 485820
+			},
+			"text": " Still there is some line kind of like this. Maybe something like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:05,820",
+				"to": "00:08:12,820"
+			},
+			"offsets": {
+				"from": 485820,
+				"to": 492820
+			},
+			"text": " such that each of this oil is approximately on this side."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:14,820",
+				"to": "00:08:18,820"
+			},
+			"offsets": {
+				"from": 494820,
+				"to": 498820
+			},
+			"text": " Well, there is another situation. Something like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:20,820",
+				"to": "00:08:23,820"
+			},
+			"offsets": {
+				"from": 500820,
+				"to": 503820
+			},
+			"text": " Your cloud will be like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:28,820",
+				"to": "00:08:33,820"
+			},
+			"offsets": {
+				"from": 508820,
+				"to": 513820
+			},
+			"text": " In this case, it doesn't look like there is a light."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:34,820",
+				"to": "00:08:51,820"
+			},
+			"offsets": {
+				"from": 514820,
+				"to": 531820
+			},
+			"text": " And we humans, by the way, we humans, many humans, if given this picture, given this picture, ask which looks better like a lion, I think that everybody will say that this one, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:08:53,820",
+				"to": "00:09:02,460"
+			},
+			"offsets": {
+				"from": 533820,
+				"to": 542460
+			},
+			"text": " but how can we teach computer to ask such questions this is very important by some means"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:02,460",
+				"to": "00:09:08,220"
+			},
+			"offsets": {
+				"from": 542460,
+				"to": 548220
+			},
+			"text": " this is called machine learning how can we teach computers suppose that we just download"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:08,860",
+				"to": "00:09:13,340"
+			},
+			"offsets": {
+				"from": 548860,
+				"to": 553340
+			},
+			"text": " to computer coordinates of these points and coordinates of these points"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:14,300",
+				"to": "00:09:18,860"
+			},
+			"offsets": {
+				"from": 554300,
+				"to": 558860
+			},
+			"text": " yeah there are two files right in one file we have coordinates of these points"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:19,820",
+				"to": "00:09:22,940"
+			},
+			"offsets": {
+				"from": 559820,
+				"to": 562940
+			},
+			"text": " another file coordinates of those points"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:22,940",
+				"to": "00:09:28,300"
+			},
+			"offsets": {
+				"from": 562940,
+				"to": 568300
+			},
+			"text": " and gas computer please tell me which is closer to the line and tell me what is this line"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:30,060",
+				"to": "00:09:35,420"
+			},
+			"offsets": {
+				"from": 570060,
+				"to": 575420
+			},
+			"text": " again kind of important question and this kind of toy model for machine learning"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:36,700",
+				"to": "00:09:43,660"
+			},
+			"offsets": {
+				"from": 576700,
+				"to": 583660
+			},
+			"text": " and regression analysis by the way is kind of in overlap of statistics and machine learning"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:43,660",
+				"to": "00:09:47,820"
+			},
+			"offsets": {
+				"from": 583660,
+				"to": 587820
+			},
+			"text": " it is kind of advanced part of statistics"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:47,820",
+				"to": "00:09:52,460"
+			},
+			"offsets": {
+				"from": 587820,
+				"to": 592460
+			},
+			"text": " yeah you have introductory probability statistics and now you're in"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:52,460",
+				"to": "00:09:56,540"
+			},
+			"offsets": {
+				"from": 592460,
+				"to": 596540
+			},
+			"text": " regression class but from machine learning it's kind of"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:56,540",
+				"to": "00:10:01,420"
+			},
+			"offsets": {
+				"from": 596540,
+				"to": 601420
+			},
+			"text": " the simplest possible moment okay"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:01,900",
+				"to": "00:10:07,580"
+			},
+			"offsets": {
+				"from": 601900,
+				"to": 607580
+			},
+			"text": " so the question is you have some cloud points"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:07,580",
+				"to": "00:10:11,740"
+			},
+			"offsets": {
+				"from": 607580,
+				"to": 611740
+			},
+			"text": " in this case in this case you don't have"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:11,740",
+				"to": "00:10:18,940"
+			},
+			"offsets": {
+				"from": 611740,
+				"to": 618940
+			},
+			"text": " you don't you cannot draw a frame and just look when you look you don't know how your brain goes"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:19,660",
+				"to": "00:10:27,260"
+			},
+			"offsets": {
+				"from": 619660,
+				"to": 627260
+			},
+			"text": " why our brain tells that this is closer to light than this and i even have approximately"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:30,380",
+				"to": "00:10:39,340"
+			},
+			"offsets": {
+				"from": 630380,
+				"to": 639340
+			},
+			"text": " the problem is how can i which computations should i do to understand first of all to understand"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:39,340",
+				"to": "00:10:46,700"
+			},
+			"offsets": {
+				"from": 639340,
+				"to": 646700
+			},
+			"text": " which line is kind of the best in this case and maybe in this case because if i have some formulas"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:46,700",
+				"to": "00:10:51,100"
+			},
+			"offsets": {
+				"from": 646700,
+				"to": 651100
+			},
+			"text": " these formulas should work in all cases in this case in this case"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:51,740",
+				"to": "00:10:57,500"
+			},
+			"offsets": {
+				"from": 651740,
+				"to": 657500
+			},
+			"text": " formulas should be it could give me something but somehow i should be able to estimate that in this"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:57,500",
+				"to": "00:11:06,220"
+			},
+			"offsets": {
+				"from": 657500,
+				"to": 666220
+			},
+			"text": " case this line is kind of better approximation of my data than in this case you see i should be able"
+		},
+		{
+			"timestamps": {
+				"from": "00:11:06,220",
+				"to": "00:11:12,220"
+			},
+			"offsets": {
+				"from": 666220,
+				"to": 672220
+			},
+			"text": " to do this without looking at picture when i look at picture well i can do it in this case"
+		},
+		{
+			"timestamps": {
+				"from": "00:11:12,220",
+				"to": "00:11:18,380"
+			},
+			"offsets": {
+				"from": 672220,
+				"to": 678380
+			},
+			"text": " but suppose that you have one million points and not in two-dimensional space like that"
+		},
+		{
+			"timestamps": {
+				"from": "00:11:18,380",
+				"to": "00:11:25,020"
+			},
+			"offsets": {
+				"from": 678380,
+				"to": 685020
+			},
+			"text": " this is called simple linear regression but it could be more inputs more in general variables"
+		},
+		{
+			"timestamps": {
+				"from": "00:11:25,020",
+				"to": "00:11:32,220"
+			},
+			"offsets": {
+				"from": 685020,
+				"to": 692220
+			},
+			"text": " and you cannot visualize this if it is not in plane but in five-dimensional space okay so the problem"
+		},
+		{
+			"timestamps": {
+				"from": "00:11:32,220",
+				"to": "00:11:40,220"
+			},
+			"offsets": {
+				"from": 692220,
+				"to": 700220
+			},
+			"text": " Which computation should we do, so that we don't need to draw such pictures."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:40,220",
+				"to": "00:11:52,220"
+			},
+			"offsets": {
+				"from": 700220,
+				"to": 712220
+			},
+			"text": " We just do computations, find this line, which fits best, and then estimate if it is really good estimation."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:52,220",
+				"to": "00:12:00,220"
+			},
+			"offsets": {
+				"from": 712220,
+				"to": 720220
+			},
+			"text": " This is kind of a main problem of statistics, of regression analysis in the simplest possible case."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:00,220",
+				"to": "00:12:02,220"
+			},
+			"offsets": {
+				"from": 720220,
+				"to": 722220
+			},
+			"text": " Is it clear?"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:02,220",
+				"to": "00:12:04,220"
+			},
+			"offsets": {
+				"from": 722220,
+				"to": 724220
+			},
+			"text": " Is it clear?"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:04,220",
+				"to": "00:12:08,220"
+			},
+			"offsets": {
+				"from": 724220,
+				"to": 728220
+			},
+			"text": " Everybody okay with this?"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:08,220",
+				"to": "00:12:10,220"
+			},
+			"offsets": {
+				"from": 728220,
+				"to": 730220
+			},
+			"text": " What do you have?"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:10,220",
+				"to": "00:12:12,220"
+			},
+			"offsets": {
+				"from": 730220,
+				"to": 732220
+			},
+			"text": " Could be very data"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:12,220",
+				"to": "00:12:14,220"
+			},
+			"offsets": {
+				"from": 732220,
+				"to": 734220
+			},
+			"text": " If you draw it as a picture here"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:14,220",
+				"to": "00:12:18,220"
+			},
+			"offsets": {
+				"from": 734220,
+				"to": 738220
+			},
+			"text": " Or it could be something like this"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:18,220",
+				"to": "00:12:20,220"
+			},
+			"offsets": {
+				"from": 738220,
+				"to": 740220
+			},
+			"text": " It could be"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:24,220",
+				"to": "00:12:26,220"
+			},
+			"offsets": {
+				"from": 744220,
+				"to": 746220
+			},
+			"text": " To be more complicated"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:26,220",
+				"to": "00:12:28,220"
+			},
+			"offsets": {
+				"from": 746220,
+				"to": 748220
+			},
+			"text": " In this case probably"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:28,220",
+				"to": "00:12:52,160"
+			},
+			"offsets": {
+				"from": 748220,
+				"to": 772160
+			},
+			"text": " In this case, probably it is some more complicated language, it's not a linear equation, but somehow we need to be able to analyze such data, you have a lot of data, it may be one million, several million, such, yes, and you should know which computations to do, to understand this, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:12:54,260",
+				"to": "00:12:58,020"
+			},
+			"offsets": {
+				"from": 774260,
+				"to": 778020
+			},
+			"text": " Okay, let me explain this in the simplest possible ways."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:58,020",
+				"to": "00:12:59,400"
+			},
+			"offsets": {
+				"from": 778020,
+				"to": 779400
+			},
+			"text": " So let me erase."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:10,500",
+				"to": "00:13:12,780"
+			},
+			"offsets": {
+				"from": 790500,
+				"to": 792780
+			},
+			"text": " So at the moment we are discussing that"
+		},
+		{
+			"timestamps": {
+				"from": "00:13:12,780",
+				"to": "00:13:14,780"
+			},
+			"offsets": {
+				"from": 792780,
+				"to": 794780
+			},
+			"text": " of single linear regression."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:24,260",
+				"to": "00:13:53,260"
+			},
+			"offsets": {
+				"from": 804260,
+				"to": 833260
+			},
+			"text": " Okay. So what is this, this is called regression light. Yeah. So let's put it wrong. Okay. But now let's get kind of."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:53,260",
+				"to": "00:13:58,760"
+			},
+			"offsets": {
+				"from": 833260,
+				"to": 838760
+			},
+			"text": " kind of 1, 2, 3, 4, 5 points."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:58,760",
+				"to": "00:14:02,240"
+			},
+			"offsets": {
+				"from": 838760,
+				"to": 842240
+			},
+			"text": " Of course, let's just see the subject."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:02,240",
+				"to": "00:14:14,060"
+			},
+			"offsets": {
+				"from": 842240,
+				"to": 854060
+			},
+			"text": " Regression line is a line which tries to approximate all this point with smallest possible mistake."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:14,060",
+				"to": "00:14:20,260"
+			},
+			"offsets": {
+				"from": 854060,
+				"to": 860260
+			},
+			"text": " Let me explain what does it mean and subject as what we have subject like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:20,260",
+				"to": "00:14:24,260"
+			},
+			"offsets": {
+				"from": 860260,
+				"to": 864260
+			},
+			"text": " Let me how to write an arbitrary line."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:24,260",
+				"to": "00:14:26,260"
+			},
+			"offsets": {
+				"from": 864260,
+				"to": 866260
+			},
+			"text": " It's a linear function, yeah."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:26,260",
+				"to": "00:14:30,260"
+			},
+			"offsets": {
+				"from": 866260,
+				"to": 870260
+			},
+			"text": " Y is equal to alpha plus Dx."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:32,260",
+				"to": "00:14:34,260"
+			},
+			"offsets": {
+				"from": 872260,
+				"to": 874260
+			},
+			"text": " Yeah."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:34,260",
+				"to": "00:14:38,260"
+			},
+			"offsets": {
+				"from": 874260,
+				"to": 878260
+			},
+			"text": " And the question is alpha and beta."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:42,260",
+				"to": "00:14:48,260"
+			},
+			"offsets": {
+				"from": 882260,
+				"to": 888260
+			},
+			"text": " So, analytically, I don't want to look at pictures and draw sass over."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:48,260",
+				"to": "00:14:52,300"
+			},
+			"offsets": {
+				"from": 888260,
+				"to": 892300
+			},
+			"text": " We are saying that this one is just a cloud of the line."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:52,300",
+				"to": "00:14:54,800"
+			},
+			"offsets": {
+				"from": 892300,
+				"to": 894800
+			},
+			"text": " I want to do computations."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:54,800",
+				"to": "00:15:00,240"
+			},
+			"offsets": {
+				"from": 894800,
+				"to": 900240
+			},
+			"text": " So instead of the line, I have a formula."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:00,240",
+				"to": "00:15:02,700"
+			},
+			"offsets": {
+				"from": 900240,
+				"to": 902700
+			},
+			"text": " y is equal to alpha plus d x."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:02,700",
+				"to": "00:15:06,780"
+			},
+			"offsets": {
+				"from": 902700,
+				"to": 906780
+			},
+			"text": " To find this line is to find alpha in this."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:06,780",
+				"to": "00:15:08,600"
+			},
+			"offsets": {
+				"from": 906780,
+				"to": 908600
+			},
+			"text": " It's a 10."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:08,600",
+				"to": "00:15:10,020"
+			},
+			"offsets": {
+				"from": 908600,
+				"to": 910020
+			},
+			"text": " And 12, 12."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:10,020",
+				"to": "00:15:14,580"
+			},
+			"offsets": {
+				"from": 910020,
+				"to": 914580
+			},
+			"text": " So alpha is at least a percent, a size one."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:14,580",
+				"to": "00:15:18,020"
+			},
+			"offsets": {
+				"from": 914580,
+				"to": 918020
+			},
+			"text": " d is the slope of this line."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:18,020",
+				"to": "00:15:46,020"
+			},
+			"offsets": {
+				"from": 918020,
+				"to": 946020
+			},
+			"text": " Okay, and I want this line, so I want to find such algebra so that this line kind of base possible approximation of this data, yeah, but I need to define what doesn't mean base possible, if I have two points of course I can just make a straight line which passes through the"
+		},
+		{
+			"timestamps": {
+				"from": "00:15:48,020",
+				"to": "00:15:55,780"
+			},
+			"offsets": {
+				"from": 948020,
+				"to": 955780
+			},
+			"text": " these two points no problems but if i have a lot of points what to do so let's say what we want"
+		},
+		{
+			"timestamps": {
+				"from": "00:16:05,220",
+				"to": "00:16:17,620"
+			},
+			"offsets": {
+				"from": 965220,
+				"to": 977620
+			},
+			"text": " everyone okay here that's right so what we want we want y1 d approximately alpha plus beta x1"
+		},
+		{
+			"timestamps": {
+				"from": "00:16:21,460",
+				"to": "00:16:30,500"
+			},
+			"offsets": {
+				"from": 981460,
+				"to": 990500
+			},
+			"text": " so this is for example this is my point with coordinates x1 y1"
+		},
+		{
+			"timestamps": {
+				"from": "00:16:32,420",
+				"to": "00:16:34,580"
+			},
+			"offsets": {
+				"from": 992420,
+				"to": 994580
+			},
+			"text": " for example and this"
+		},
+		{
+			"timestamps": {
+				"from": "00:16:37,620",
+				"to": "00:16:44,420"
+			},
+			"offsets": {
+				"from": 997620,
+				"to": 1004420
+			},
+			"text": " is y which is alpha plus beta x1"
+		},
+		{
+			"timestamps": {
+				"from": "00:16:46,820",
+				"to": "00:16:53,940"
+			},
+			"offsets": {
+				"from": 1006820,
+				"to": 1013940
+			},
+			"text": " yeah this is my line this equation alpha plus beta x yeah so this point"
+		},
+		{
+			"timestamps": {
+				"from": "00:16:55,700",
+				"to": "00:17:02,260"
+			},
+			"offsets": {
+				"from": 1015700,
+				"to": 1022260
+			},
+			"text": " has coordinate y which is alpha plus beta x1 and this point is a point with coordinates x1 y1"
+		},
+		{
+			"timestamps": {
+				"from": "00:17:03,220",
+				"to": "00:17:09,380"
+			},
+			"offsets": {
+				"from": 1023220,
+				"to": 1029380
+			},
+			"text": " yeah and of course this r plus beta x1 it is here it is not necessarily equal to y1 to have this"
+		},
+		{
+			"timestamps": {
+				"from": "00:17:09,380",
+				"to": "00:17:20,980"
+			},
+			"offsets": {
+				"from": 1029380,
+				"to": 1040980
+			},
+			"text": " distance and similarly here and here and here and here we have a lot of mistakes yeah we want this"
+		},
+		{
+			"timestamps": {
+				"from": "00:17:20,980",
+				"to": "00:17:25,980"
+			},
+			"offsets": {
+				"from": 1040980,
+				"to": 1045980
+			},
+			"text": " So this would be approximately. This is approximately equal to this. This is what we want."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:25,980",
+				"to": "00:17:35,980"
+			},
+			"offsets": {
+				"from": 1045980,
+				"to": 1055980
+			},
+			"text": " Also we want that y2 is approximately equal to y plus b times 2."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:35,980",
+				"to": "00:17:42,980"
+			},
+			"offsets": {
+				"from": 1055980,
+				"to": 1062980
+			},
+			"text": " yn is approximately equal to y plus b times 2."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:42,980",
+				"to": "00:17:56,280"
+			},
+			"offsets": {
+				"from": 1062980,
+				"to": 1076280
+			},
+			"text": " We want to make this approximation best possible, kind of simultaneous"
+		},
+		{
+			"timestamps": {
+				"from": "00:17:56,280",
+				"to": "00:18:00,780"
+			},
+			"offsets": {
+				"from": 1076280,
+				"to": 1080780
+			},
+			"text": " We don't distinguish any points, we don't say that this is better than this"
+		},
+		{
+			"timestamps": {
+				"from": "00:18:00,780",
+				"to": "00:18:03,780"
+			},
+			"offsets": {
+				"from": 1080780,
+				"to": 1083780
+			},
+			"text": " All data for us are of the same position"
+		},
+		{
+			"timestamps": {
+				"from": "00:18:03,780",
+				"to": "00:18:09,780"
+			},
+			"offsets": {
+				"from": 1083780,
+				"to": 1089780
+			},
+			"text": " So somehow we want to find a line which fits best possible"
+		},
+		{
+			"timestamps": {
+				"from": "00:18:09,780",
+				"to": "00:18:16,740"
+			},
+			"offsets": {
+				"from": 1089780,
+				"to": 1096740
+			},
+			"text": " so all these distances simultaneously kind of should be smallest possible yeah"
+		},
+		{
+			"timestamps": {
+				"from": "00:18:18,260",
+				"to": "00:18:26,820"
+			},
+			"offsets": {
+				"from": 1098260,
+				"to": 1106820
+			},
+			"text": " everybody okay well let me write this is all that quick so alpha plus eta x"
+		},
+		{
+			"timestamps": {
+				"from": "00:18:26,820",
+				"to": "00:18:56,800"
+			},
+			"offsets": {
+				"from": 1106820,
+				"to": 1136800
+			},
+			"text": " x-bita alpha. So let me write my error. It is alpha plus bita x1 minus y1."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:56,820",
+				"to": "00:19:03,820"
+			},
+			"offsets": {
+				"from": 1136820,
+				"to": 1143820
+			},
+			"text": " Now, this is error for first data point."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:03,820",
+				"to": "00:19:13,820"
+			},
+			"offsets": {
+				"from": 1143820,
+				"to": 1153820
+			},
+			"text": " I want to take it square and I want to add all other errors."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:13,820",
+				"to": "00:19:29,320"
+			},
+			"offsets": {
+				"from": 1153820,
+				"to": 1169320
+			},
+			"text": " x of plus beta x2 minus y2 squared plus plus dot plus x plus beta xn minus yn squared."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:31,220",
+				"to": "00:19:34,220"
+			},
+			"offsets": {
+				"from": 1171220,
+				"to": 1174220
+			},
+			"text": " ok"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:37,220",
+				"to": "00:19:39,220"
+			},
+			"offsets": {
+				"from": 1177220,
+				"to": 1179220
+			},
+			"text": " so I take error"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:39,220",
+				"to": "00:19:42,220"
+			},
+			"offsets": {
+				"from": 1179220,
+				"to": 1182220
+			},
+			"text": " so this I want to be as small as possible"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:42,220",
+				"to": "00:19:45,220"
+			},
+			"offsets": {
+				"from": 1182220,
+				"to": 1185220
+			},
+			"text": " this I want to be as small as possible as possible"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:45,220",
+				"to": "00:19:49,220"
+			},
+			"offsets": {
+				"from": 1185220,
+				"to": 1189220
+			},
+			"text": " so if you have seen any statistic"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:49,220",
+				"to": "00:19:52,220"
+			},
+			"offsets": {
+				"from": 1189220,
+				"to": 1192220
+			},
+			"text": " you know that the best kind of"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:52,220",
+				"to": "00:19:54,220"
+			},
+			"offsets": {
+				"from": 1192220,
+				"to": 1194220
+			},
+			"text": " the most standard way"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:54,220",
+				"to": "00:19:58,220"
+			},
+			"offsets": {
+				"from": 1194220,
+				"to": 1198220
+			},
+			"text": " to make all these kind of simultaneously smaller as possible"
+		},
+		{
+			"timestamps": {
+				"from": "00:19:58,220",
+				"to": "00:20:06,940"
+			},
+			"offsets": {
+				"from": 1198220,
+				"to": 1206940
+			},
+			"text": " possible to take some of these squares okay is that a wild idea in some way"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:08,780",
+				"to": "00:20:11,580"
+			},
+			"offsets": {
+				"from": 1208780,
+				"to": 1211580
+			},
+			"text": " if you want this kind of square distance"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:13,500",
+				"to": "00:20:20,940"
+			},
+			"offsets": {
+				"from": 1213500,
+				"to": 1220940
+			},
+			"text": " two points high dimensional space yeah take this error but i don't care if it's positive for that"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:22,140",
+				"to": "00:20:25,820"
+			},
+			"offsets": {
+				"from": 1222140,
+				"to": 1225820
+			},
+			"text": " the best way to get relief from the side is to take a square"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:25,820",
+				"to": "00:20:31,340"
+			},
+			"offsets": {
+				"from": 1225820,
+				"to": 1231340
+			},
+			"text": " of course it can take absolute value but mathematically it will be much harder to deal with such"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:31,340",
+				"to": "00:20:38,700"
+			},
+			"offsets": {
+				"from": 1231340,
+				"to": 1238700
+			},
+			"text": " expression so standard the most standard way in statistics is to take square"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:38,700",
+				"to": "00:20:45,820"
+			},
+			"offsets": {
+				"from": 1238700,
+				"to": 1245820
+			},
+			"text": " okay so this is 0 if upon the if y1 is exactly equal to alpha plus beta x1"
+		},
+		{
+			"timestamps": {
+				"from": "00:20:45,820",
+				"to": "00:21:13,940"
+			},
+			"offsets": {
+				"from": 1245820,
+				"to": 1273940
+			},
+			"text": " Okay, and this I denote by S alpha beta, so S alpha beta, I can also write it as sum alpha plus beta as i minus yi, square by i from 1 to f."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:15,820",
+				"to": "00:21:16,820"
+			},
+			"offsets": {
+				"from": 1275820,
+				"to": 1276820
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:22,780",
+				"to": "00:21:31,820"
+			},
+			"offsets": {
+				"from": 1282780,
+				"to": 1291820
+			},
+			"text": " So, kind of in-semitically or analytically when I tell you my wish that this line should fit the best."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:31,820",
+				"to": "00:21:38,820"
+			},
+			"offsets": {
+				"from": 1291820,
+				"to": 1298820
+			},
+			"text": " It's a little bit wet, yeah, but now I have just kind of more precise wish."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:38,820",
+				"to": "00:21:40,820"
+			},
+			"offsets": {
+				"from": 1298820,
+				"to": 1300820
+			},
+			"text": " My wish now is more precise."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:40,820",
+				"to": "00:21:43,820"
+			},
+			"offsets": {
+				"from": 1300820,
+				"to": 1303820
+			},
+			"text": " I want this to be the smallest possible."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:43,820",
+				"to": "00:22:13,760"
+			},
+			"offsets": {
+				"from": 1303820,
+				"to": 1333760
+			},
+			"text": " sum of squares of my error, I want to minimize each of these simultaneously, which means that sum of squares should be smaller as possible, okay, everybody remembers this, this can be called, in machine learning such set is called loss function, if you want, you can call it like this, or it's just sum of squares,"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:13,820",
+				"to": "00:22:29,180"
+			},
+			"offsets": {
+				"from": 1333820,
+				"to": 1349180
+			},
+			"text": " okay loss or it could be a fine function"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:30,140",
+				"to": "00:22:32,620"
+			},
+			"offsets": {
+				"from": 1350140,
+				"to": 1352620
+			},
+			"text": " we want to have smallest possible loss"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:34,140",
+				"to": "00:22:37,020"
+			},
+			"offsets": {
+				"from": 1354140,
+				"to": 1357020
+			},
+			"text": " sometimes people say this function whatever"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:39,420",
+				"to": "00:22:42,700"
+			},
+			"offsets": {
+				"from": 1359420,
+				"to": 1362700
+			},
+			"text": " yeah but you should understand that you want to find"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:42,700",
+				"to": "00:22:52,700"
+			},
+			"offsets": {
+				"from": 1362700,
+				"to": 1372700
+			},
+			"text": " such that this is smallest possible. This is a analytical way of a formulation of what I just tried to explain."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:52,700",
+				"to": "00:23:07,700"
+			},
+			"offsets": {
+				"from": 1372700,
+				"to": 1387700
+			},
+			"text": " We assume that our line fits the best, if sum of squares: this square, this distance square, plus this distance square, plus this distance square, and so on,"
+		},
+		{
+			"timestamps": {
+				"from": "00:23:07,700",
+				"to": "00:23:16,700"
+			},
+			"offsets": {
+				"from": 1387700,
+				"to": 1396700
+			},
+			"text": " all data points should be smallest possible. Everybody okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:23:16,700",
+				"to": "00:23:23,700"
+			},
+			"offsets": {
+				"from": 1396700,
+				"to": 1403700
+			},
+			"text": " Please ask questions if you want to ask questions."
+		},
+		{
+			"timestamps": {
+				"from": "00:23:23,700",
+				"to": "00:23:45,700"
+			},
+			"offsets": {
+				"from": 1403700,
+				"to": 1425700
+			},
+			"text": " and now we have kind of standard mathematical problem of finding the minimum"
+		},
+		{
+			"timestamps": {
+				"from": "00:23:45,700",
+				"to": "00:23:58,700"
+			},
+			"offsets": {
+				"from": 1425700,
+				"to": 1438700
+			},
+			"text": " we know this Xi, Yi are no. In a concrete situation, just announce. And we want to find alpha and beta."
+		},
+		{
+			"timestamps": {
+				"from": "00:23:58,700",
+				"to": "00:24:11,700"
+			},
+			"offsets": {
+				"from": 1438700,
+				"to": 1451700
+			},
+			"text": " So find, the problem is to find alpha and beta such that"
+		},
+		{
+			"timestamps": {
+				"from": "00:24:11,700",
+				"to": "00:24:18,700"
+			},
+			"offsets": {
+				"from": 1451700,
+				"to": 1458700
+			},
+			"text": " \"S\" is the smallest possible."
+		},
+		{
+			"timestamps": {
+				"from": "00:24:25,700",
+				"to": "00:24:28,700"
+			},
+			"offsets": {
+				"from": 1465700,
+				"to": 1468700
+			},
+			"text": " \"Find\" is another \"Rose\"."
+		},
+		{
+			"timestamps": {
+				"from": "00:24:29,700",
+				"to": "00:24:35,700"
+			},
+			"offsets": {
+				"from": 1469700,
+				"to": 1475700
+			},
+			"text": " \"Find\" is the \"Linear\"."
+		},
+		{
+			"timestamps": {
+				"from": "00:24:36,700",
+				"to": "00:24:40,700"
+			},
+			"offsets": {
+				"from": 1476700,
+				"to": 1480700
+			},
+			"text": " or this function as"
+		},
+		{
+			"timestamps": {
+				"from": "00:24:40,700",
+				"to": "00:24:44,700"
+			},
+			"offsets": {
+				"from": 1480700,
+				"to": 1484700
+			},
+			"text": " you have a kind of type of extension problems from hypers"
+		},
+		{
+			"timestamps": {
+				"from": "00:24:44,700",
+				"to": "00:24:48,700"
+			},
+			"offsets": {
+				"from": 1484700,
+				"to": 1488700
+			},
+			"text": " you have a function in two variables, you have only two variables"
+		},
+		{
+			"timestamps": {
+				"from": "00:24:48,700",
+				"to": "00:24:52,700"
+			},
+			"offsets": {
+				"from": 1488700,
+				"to": 1492700
+			},
+			"text": " because x and y are low"
+		},
+		{
+			"timestamps": {
+				"from": "00:24:52,700",
+				"to": "00:24:56,700"
+			},
+			"offsets": {
+				"from": 1492700,
+				"to": 1496700
+			},
+			"text": " you know for example weight, height, you have the data set"
+		},
+		{
+			"timestamps": {
+				"from": "00:24:56,700",
+				"to": "00:25:00,700"
+			},
+			"offsets": {
+				"from": 1496700,
+				"to": 1500700
+			},
+			"text": " you have to compute the sum"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:00,700",
+				"to": "00:25:04,700"
+			},
+			"offsets": {
+				"from": 1500700,
+				"to": 1504700
+			},
+			"text": " this is a low sum, it could be 1 million here"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:04,700",
+				"to": "00:25:08,700"
+			},
+			"offsets": {
+				"from": 1504700,
+				"to": 1508700
+			},
+			"text": " but it depends on your life and which are there"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:08,700",
+				"to": "00:25:12,700"
+			},
+			"offsets": {
+				"from": 1508700,
+				"to": 1512700
+			},
+			"text": " and we need to find the size of eigenvectors that this function is lost"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:12,700",
+				"to": "00:25:16,700"
+			},
+			"offsets": {
+				"from": 1512700,
+				"to": 1516700
+			},
+			"text": " everybody know how to find"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:16,700",
+				"to": "00:25:20,700"
+			},
+			"offsets": {
+				"from": 1516700,
+				"to": 1520700
+			},
+			"text": " the minimum and maximum of a function"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:20,700",
+				"to": "00:25:24,700"
+			},
+			"offsets": {
+				"from": 1520700,
+				"to": 1524700
+			},
+			"text": " who knows"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:24,700",
+				"to": "00:25:28,700"
+			},
+			"offsets": {
+				"from": 1524700,
+				"to": 1528700
+			},
+			"text": " well"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:28,700",
+				"to": "00:25:32,700"
+			},
+			"offsets": {
+				"from": 1528700,
+				"to": 1532700
+			},
+			"text": " I could have told to see, other people don't"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:34,700",
+				"to": "00:25:36,700"
+			},
+			"offsets": {
+				"from": 1534700,
+				"to": 1536700
+			},
+			"text": " who doesn't know?"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:44,700",
+				"to": "00:25:46,700"
+			},
+			"offsets": {
+				"from": 1544700,
+				"to": 1546700
+			},
+			"text": " from the logical point of view"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:46,700",
+				"to": "00:25:48,700"
+			},
+			"offsets": {
+				"from": 1546700,
+				"to": 1548700
+			},
+			"text": " everybody A is a no"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:48,700",
+				"to": "00:25:50,700"
+			},
+			"offsets": {
+				"from": 1548700,
+				"to": 1550700
+			},
+			"text": " who doesn't know?"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:50,700",
+				"to": "00:25:52,700"
+			},
+			"offsets": {
+				"from": 1550700,
+				"to": 1552700
+			},
+			"text": " ok?"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:52,700",
+				"to": "00:25:54,700"
+			},
+			"offsets": {
+				"from": 1552700,
+				"to": 1554700
+			},
+			"text": " so let's agree"
+		},
+		{
+			"timestamps": {
+				"from": "00:25:54,700",
+				"to": "00:25:56,700"
+			},
+			"offsets": {
+				"from": 1554700,
+				"to": 1556700
+			},
+			"text": " let's"
+		},
+		{
+			"timestamps": {
+				"from": "00:26:02,700",
+				"to": "00:26:15,700"
+			},
+			"offsets": {
+				"from": 1562700,
+				"to": 1575700
+			},
+			"text": " Let me explain it before. If I ask you such kind of questions, who knows Samsung or who has an idea about Samsung, and you raise your hand, you are safe."
+		},
+		{
+			"timestamps": {
+				"from": "00:26:15,700",
+				"to": "00:26:24,700"
+			},
+			"offsets": {
+				"from": 1575700,
+				"to": 1584700
+			},
+			"text": " I am not going to ask you, tell me. What do you think? You are safe."
+		},
+		{
+			"timestamps": {
+				"from": "00:26:24,700",
+				"to": "00:26:31,700"
+			},
+			"offsets": {
+				"from": 1584700,
+				"to": 1591700
+			},
+			"text": " But if you don't know or don't know, you are not safe."
+		},
+		{
+			"timestamps": {
+				"from": "00:26:31,700",
+				"to": "00:26:40,700"
+			},
+			"offsets": {
+				"from": 1591700,
+				"to": 1600700
+			},
+			"text": " So please, I need your feedback, because otherwise, if I don't know what I know, what I don't know,"
+		},
+		{
+			"timestamps": {
+				"from": "00:26:40,700",
+				"to": "00:26:44,700"
+			},
+			"offsets": {
+				"from": 1600700,
+				"to": 1604700
+			},
+			"text": " what can I reach?"
+		},
+		{
+			"timestamps": {
+				"from": "00:26:44,700",
+				"to": "00:26:50,700"
+			},
+			"offsets": {
+				"from": 1604700,
+				"to": 1610700
+			},
+			"text": " So let's try again, who knows how to find minimum, minima, and maximum of maximum?"
+		},
+		{
+			"timestamps": {
+				"from": "00:26:50,700",
+				"to": "00:26:53,700"
+			},
+			"offsets": {
+				"from": 1610700,
+				"to": 1613700
+			},
+			"text": " For example, I know."
+		},
+		{
+			"timestamps": {
+				"from": "00:26:53,700",
+				"to": "00:26:55,700"
+			},
+			"offsets": {
+				"from": 1613700,
+				"to": 1615700
+			},
+			"text": " Most people know, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:26:55,700",
+				"to": "00:26:56,700"
+			},
+			"offsets": {
+				"from": 1615700,
+				"to": 1616700
+			},
+			"text": " Very good."
+		},
+		{
+			"timestamps": {
+				"from": "00:26:56,700",
+				"to": "00:26:58,700"
+			},
+			"offsets": {
+				"from": 1616700,
+				"to": 1618700
+			},
+			"text": " Of course, I'm not going to check."
+		},
+		{
+			"timestamps": {
+				"from": "00:26:58,700",
+				"to": "00:27:00,700"
+			},
+			"offsets": {
+				"from": 1618700,
+				"to": 1620700
+			},
+			"text": " But I just need them there."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:00,700",
+				"to": "00:27:01,700"
+			},
+			"offsets": {
+				"from": 1620700,
+				"to": 1621700
+			},
+			"text": " Just rough idea."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:01,700",
+				"to": "00:27:04,700"
+			},
+			"offsets": {
+				"from": 1621700,
+				"to": 1624700
+			},
+			"text": " And now, I'm going to use a few beliefs that they know."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:04,700",
+				"to": "00:27:09,700"
+			},
+			"offsets": {
+				"from": 1624700,
+				"to": 1629700
+			},
+			"text": " More precisely, this question is a few beliefs that know."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:09,700",
+				"to": "00:27:12,700"
+			},
+			"offsets": {
+				"from": 1629700,
+				"to": 1632700
+			},
+			"text": " It's not the same thing."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:13,700",
+				"to": "00:27:14,700"
+			},
+			"offsets": {
+				"from": 1633700,
+				"to": 1634700
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:27:18,700",
+				"to": "00:27:25,700"
+			},
+			"offsets": {
+				"from": 1638700,
+				"to": 1645700
+			},
+			"text": " You should take, let me take the secret of the check, of course, as I promised."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:25,700",
+				"to": "00:27:29,700"
+			},
+			"offsets": {
+				"from": 1645700,
+				"to": 1649700
+			},
+			"text": " You need to take your index with respect to alpha and nita and the equation is here."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:29,700",
+				"to": "00:27:31,700"
+			},
+			"offsets": {
+				"from": 1649700,
+				"to": 1651700
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:31,700",
+				"to": "00:27:47,700"
+			},
+			"offsets": {
+				"from": 1651700,
+				"to": 1667700
+			},
+			"text": " For example, if you have something like s alpha-nita is equal to alpha square minus c alpha-nita plus 10 meter square."
+		},
+		{
+			"timestamps": {
+				"from": "00:27:48,700",
+				"to": "00:27:53,900"
+			},
+			"offsets": {
+				"from": 1668700,
+				"to": 1673900
+			},
+			"text": " for example minus two alpha plus three vector"
+		},
+		{
+			"timestamps": {
+				"from": "00:27:56,540",
+				"to": "00:28:00,140"
+			},
+			"offsets": {
+				"from": 1676540,
+				"to": 1680140
+			},
+			"text": " i hope that this function has a minimum looks"
+		},
+		{
+			"timestamps": {
+				"from": "00:28:04,140",
+				"to": "00:28:09,660"
+			},
+			"offsets": {
+				"from": 1684140,
+				"to": 1689660
+			},
+			"text": " so side functions by the way which are quadratic this function is a quadratic polynomial in alpha"
+		},
+		{
+			"timestamps": {
+				"from": "00:28:10,700",
+				"to": "00:28:15,260"
+			},
+			"offsets": {
+				"from": 1690700,
+				"to": 1695260
+			},
+			"text": " if you expand and collect you will see it's alpha square alpha vector"
+		},
+		{
+			"timestamps": {
+				"from": "00:28:15,260",
+				"to": "00:28:39,260"
+			},
+			"offsets": {
+				"from": 1695260,
+				"to": 1719260
+			},
+			"text": " V^2 is a quadratic in two ways. And such a polynomial is not a maximum minimum, but it is a maximum minimum. It is a unique. So in this case, to find, in this case, this function has a minimum."
+		},
+		{
+			"timestamps": {
+				"from": "00:28:39,260",
+				"to": "00:29:04,260"
+			},
+			"offsets": {
+				"from": 1719260,
+				"to": 1744260
+			},
+			"text": " So finally we need to equate here is VdA which is both 2A minus 3V minus 2 and we need to break through 0. And yes, VdB is equal to minus 3A plus VdB plus 3, break through 0."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:04,260",
+				"to": "00:29:11,260"
+			},
+			"offsets": {
+				"from": 1744260,
+				"to": 1751260
+			},
+			"text": " You need to solve this system of two equations and it will be minimum of your function."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:11,260",
+				"to": "00:29:17,260"
+			},
+			"offsets": {
+				"from": 1751260,
+				"to": 1757260
+			},
+			"text": " If it is minimum you need to investigate, maybe it is not minimum, maybe it is maximum."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:17,260",
+				"to": "00:29:19,260"
+			},
+			"offsets": {
+				"from": 1757260,
+				"to": 1759260
+			},
+			"text": " But in this case it is minimum."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:19,260",
+				"to": "00:29:26,260"
+			},
+			"offsets": {
+				"from": 1759260,
+				"to": 1766260
+			},
+			"text": " And in this case just from kind of common sense this function cannot have maximum."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:26,260",
+				"to": "00:29:32,260"
+			},
+			"offsets": {
+				"from": 1766260,
+				"to": 1772260
+			},
+			"text": " Because if I make alpha very big this function will be very big."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:32,260",
+				"to": "00:29:34,700"
+			},
+			"offsets": {
+				"from": 1772260,
+				"to": 1774700
+			},
+			"text": " And similarly, this is very big and very big."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:34,700",
+				"to": "00:29:39,060"
+			},
+			"offsets": {
+				"from": 1774700,
+				"to": 1779060
+			},
+			"text": " So functions like this in all directions, like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:39,060",
+				"to": "00:29:41,400"
+			},
+			"offsets": {
+				"from": 1779060,
+				"to": 1781400
+			},
+			"text": " And some ways can be needed."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:41,400",
+				"to": "00:29:44,720"
+			},
+			"offsets": {
+				"from": 1781400,
+				"to": 1784720
+			},
+			"text": " To find this minimum, we need to equate to zero derivative"
+		},
+		{
+			"timestamps": {
+				"from": "00:29:44,720",
+				"to": "00:29:47,340"
+			},
+			"offsets": {
+				"from": 1784720,
+				"to": 1787340
+			},
+			"text": " with respect to alpha."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:47,340",
+				"to": "00:29:49,040"
+			},
+			"offsets": {
+				"from": 1787340,
+				"to": 1789040
+			},
+			"text": " Is it real?"
+		},
+		{
+			"timestamps": {
+				"from": "00:29:49,040",
+				"to": "00:29:50,860"
+			},
+			"offsets": {
+				"from": 1789040,
+				"to": 1790860
+			},
+			"text": " Well, let's do this."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:50,860",
+				"to": "00:29:51,940"
+			},
+			"offsets": {
+				"from": 1790860,
+				"to": 1791940
+			},
+			"text": " You guys-- wait a minute."
+		},
+		{
+			"timestamps": {
+				"from": "00:29:51,940",
+				"to": "00:29:55,400"
+			},
+			"offsets": {
+				"from": 1791940,
+				"to": 1795400
+			},
+			"text": " You guys are OK with such subs?"
+		},
+		{
+			"timestamps": {
+				"from": "00:29:55,400",
+				"to": "00:29:57,740"
+			},
+			"offsets": {
+				"from": 1795400,
+				"to": 1797740
+			},
+			"text": " Who is OK with such subs?"
+		},
+		{
+			"timestamps": {
+				"from": "00:29:57,740",
+				"to": "00:29:59,760"
+			},
+			"offsets": {
+				"from": 1797740,
+				"to": 1799760
+			},
+			"text": " Are you OK?"
+		},
+		{
+			"timestamps": {
+				"from": "00:29:59,760",
+				"to": "00:30:04,260"
+			},
+			"offsets": {
+				"from": 1799760,
+				"to": 1804260
+			},
+			"text": " but I can do it this way, but I think that it's more convenient"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:04,260",
+				"to": "00:30:07,260"
+			},
+			"offsets": {
+				"from": 1804260,
+				"to": 1807260
+			},
+			"text": " it is for hypotraeal computations"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:07,260",
+				"to": "00:30:09,760"
+			},
+			"offsets": {
+				"from": 1807260,
+				"to": 1809760
+			},
+			"text": " so let me do it this way"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:09,760",
+				"to": "00:30:10,760"
+			},
+			"offsets": {
+				"from": 1809760,
+				"to": 1810760
+			},
+			"text": " okay"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:10,760",
+				"to": "00:30:14,760"
+			},
+			"offsets": {
+				"from": 1810760,
+				"to": 1814760
+			},
+			"text": " let me erase this"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:18,760",
+				"to": "00:30:21,760"
+			},
+			"offsets": {
+				"from": 1818760,
+				"to": 1821760
+			},
+			"text": " and then we can build stereotips, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:21,760",
+				"to": "00:30:26,760"
+			},
+			"offsets": {
+				"from": 1821760,
+				"to": 1826760
+			},
+			"text": " so what about d_S by d_i?"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:28,760",
+				"to": "00:30:46,760"
+			},
+			"offsets": {
+				"from": 1828760,
+				"to": 1846760
+			},
+			"text": " This sum, alpha more round to m, here is this, this is 2, alpha plus beta xi minus yi."
+		},
+		{
+			"timestamps": {
+				"from": "00:30:48,760",
+				"to": "00:30:49,760"
+			},
+			"offsets": {
+				"from": 1848760,
+				"to": 1849760
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:30:51,760",
+				"to": "00:30:57,760"
+			},
+			"offsets": {
+				"from": 1851760,
+				"to": 1857760
+			},
+			"text": " You know how to compare it, respect to alpha, this alpha plus alpha, so I can put here and that's all."
+		},
+		{
+			"timestamps": {
+				"from": "00:30:58,760",
+				"to": "00:31:04,760"
+			},
+			"offsets": {
+				"from": 1858760,
+				"to": 1864760
+			},
+			"text": " what about here with respect to beta? yes, by d beta"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:06,760",
+				"to": "00:31:09,760"
+			},
+			"offsets": {
+				"from": 1866760,
+				"to": 1869760
+			},
+			"text": " sum i for one to n"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:11,760",
+				"to": "00:31:13,760"
+			},
+			"offsets": {
+				"from": 1871760,
+				"to": 1873760
+			},
+			"text": " so we have two"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:14,760",
+				"to": "00:31:18,760"
+			},
+			"offsets": {
+				"from": 1874760,
+				"to": 1878760
+			},
+			"text": " i for plus beta x i minus y i"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:21,760",
+				"to": "00:31:24,760"
+			},
+			"offsets": {
+				"from": 1881760,
+				"to": 1884760
+			},
+			"text": " you guys of course know chain rule, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:24,760",
+				"to": "00:31:26,760"
+			},
+			"offsets": {
+				"from": 1884760,
+				"to": 1886760
+			},
+			"text": " chain rule"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:26,760",
+				"to": "00:31:31,680"
+			},
+			"offsets": {
+				"from": 1886760,
+				"to": 1891680
+			},
+			"text": " So you take derivative of the square, it will be 2 by this"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:31,680",
+				"to": "00:31:36,740"
+			},
+			"offsets": {
+				"from": 1891680,
+				"to": 1896740
+			},
+			"text": " And now derivative of this, what you have here"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:36,740",
+				"to": "00:31:39,740"
+			},
+			"offsets": {
+				"from": 1896740,
+				"to": 1899740
+			},
+			"text": " derivative with respect to beta will be on x_i"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:39,740",
+				"to": "00:31:45,740"
+			},
+			"offsets": {
+				"from": 1899740,
+				"to": 1905740
+			},
+			"text": " Okay, derivative of this with respect to beta is x_i"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:45,740",
+				"to": "00:31:47,740"
+			},
+			"offsets": {
+				"from": 1905740,
+				"to": 1907740
+			},
+			"text": " So you should write here x_i"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:49,740",
+				"to": "00:31:52,740"
+			},
+			"offsets": {
+				"from": 1909740,
+				"to": 1912740
+			},
+			"text": " Okay"
+		},
+		{
+			"timestamps": {
+				"from": "00:31:52,740",
+				"to": "00:31:58,740"
+			},
+			"offsets": {
+				"from": 1912740,
+				"to": 1918740
+			},
+			"text": " And this I should apply to zero, and this I should apply to zero."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:00,740",
+				"to": "00:32:01,740"
+			},
+			"offsets": {
+				"from": 1920740,
+				"to": 1921740
+			},
+			"text": " Ok."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:02,740",
+				"to": "00:32:07,740"
+			},
+			"offsets": {
+				"from": 1922740,
+				"to": 1927740
+			},
+			"text": " Because there is a 5,000 beta I need to apply this and this to zero."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:09,740",
+				"to": "00:32:10,740"
+			},
+			"offsets": {
+				"from": 1929740,
+				"to": 1930740
+			},
+			"text": " Ok."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:14,740",
+				"to": "00:32:18,740"
+			},
+			"offsets": {
+				"from": 1934740,
+				"to": 1938740
+			},
+			"text": " So by the way, we stop at 560."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:19,740",
+				"to": "00:32:23,980"
+			},
+			"offsets": {
+				"from": 1939740,
+				"to": 1943980
+			},
+			"text": " I have no problem with wash here, so I will try to fix it"
+		},
+		{
+			"timestamps": {
+				"from": "00:32:23,980",
+				"to": "00:32:27,980"
+			},
+			"offsets": {
+				"from": 1943980,
+				"to": 1947980
+			},
+			"text": " So if you see that I continue to work here, I will try to follow all the time"
+		},
+		{
+			"timestamps": {
+				"from": "00:32:27,980",
+				"to": "00:32:34,300"
+			},
+			"offsets": {
+				"from": 1947980,
+				"to": 1954300
+			},
+			"text": " If you see that I am not going to stop, I am not going to stop, just quiet here, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:32:34,300",
+				"to": "00:32:37,180"
+			},
+			"offsets": {
+				"from": 1954300,
+				"to": 1957180
+			},
+			"text": " Okay? Don't like this"
+		},
+		{
+			"timestamps": {
+				"from": "00:32:42,620",
+				"to": "00:32:43,660"
+			},
+			"offsets": {
+				"from": 1962620,
+				"to": 1963660
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:32:43,660",
+				"to": "00:32:47,820"
+			},
+			"offsets": {
+				"from": 1963660,
+				"to": 1967820
+			},
+			"text": " Because I have had all the knowledge that I am not good with those"
+		},
+		{
+			"timestamps": {
+				"from": "00:32:47,820",
+				"to": "00:32:55,340"
+			},
+			"offsets": {
+				"from": 1967820,
+				"to": 1975340
+			},
+			"text": " Okay, this is really fine, but if you tell me, it's not very useful for this variable."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:55,340",
+				"to": "00:32:59,340"
+			},
+			"offsets": {
+				"from": 1975340,
+				"to": 1979340
+			},
+			"text": " Okay, so let's invite this to you."
+		},
+		{
+			"timestamps": {
+				"from": "00:32:59,340",
+				"to": "00:33:05,340"
+			},
+			"offsets": {
+				"from": 1979340,
+				"to": 1985340
+			},
+			"text": " So before I ask any questions about this, everybody wait."
+		},
+		{
+			"timestamps": {
+				"from": "00:33:05,340",
+				"to": "00:33:15,260"
+			},
+			"offsets": {
+				"from": 1985340,
+				"to": 1995260
+			},
+			"text": " So we have this closed function, sum of squares of errors, which we want to minimize, and then I try to minimize it."
+		},
+		{
+			"timestamps": {
+				"from": "00:33:15,260",
+				"to": "00:33:29,260"
+			},
+			"offsets": {
+				"from": 1995260,
+				"to": 2009260
+			},
+			"text": " okay"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:34,700",
+				"to": "00:33:37,100"
+			},
+			"offsets": {
+				"from": 2014700,
+				"to": 2017100
+			},
+			"text": " okay so i have this sum"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:39,980",
+				"to": "00:33:41,980"
+			},
+			"offsets": {
+				"from": 2019980,
+				"to": 2021980
+			},
+			"text": " 5 from 1 to m"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:41,980",
+				"to": "00:33:43,980"
+			},
+			"offsets": {
+				"from": 2021980,
+				"to": 2023980
+			},
+			"text": " I can only have this 2"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:43,980",
+				"to": "00:33:45,980"
+			},
+			"offsets": {
+				"from": 2023980,
+				"to": 2025980
+			},
+			"text": " can't divide by 2"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:45,980",
+				"to": "00:33:47,980"
+			},
+			"offsets": {
+				"from": 2025980,
+				"to": 2027980
+			},
+			"text": " so this is equal to 0"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:47,980",
+				"to": "00:33:49,980"
+			},
+			"offsets": {
+				"from": 2027980,
+				"to": 2029980
+			},
+			"text": " so I can have 2"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:49,980",
+				"to": "00:33:51,980"
+			},
+			"offsets": {
+				"from": 2029980,
+				"to": 2031980
+			},
+			"text": " so I have alpha"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:51,980",
+				"to": "00:33:53,980"
+			},
+			"offsets": {
+				"from": 2031980,
+				"to": 2033980
+			},
+			"text": " plus"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:53,980",
+				"to": "00:33:55,980"
+			},
+			"offsets": {
+				"from": 2033980,
+				"to": 2035980
+			},
+			"text": " beta"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:55,980",
+				"to": "00:33:57,980"
+			},
+			"offsets": {
+				"from": 2035980,
+				"to": 2037980
+			},
+			"text": " xn minus"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:57,980",
+				"to": "00:33:59,980"
+			},
+			"offsets": {
+				"from": 2037980,
+				"to": 2039980
+			},
+			"text": " yi"
+		},
+		{
+			"timestamps": {
+				"from": "00:33:59,980",
+				"to": "00:34:01,980"
+			},
+			"offsets": {
+				"from": 2039980,
+				"to": 2041980
+			},
+			"text": " yi"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:07,980",
+				"to": "00:34:10,380"
+			},
+			"offsets": {
+				"from": 2047980,
+				"to": 2050380
+			},
+			"text": " So let's compute it."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:10,380",
+				"to": "00:34:11,880"
+			},
+			"offsets": {
+				"from": 2050380,
+				"to": 2051880
+			},
+			"text": " I want to collect alpha."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:11,880",
+				"to": "00:34:14,180"
+			},
+			"offsets": {
+				"from": 2051880,
+				"to": 2054180
+			},
+			"text": " So this would be ."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:14,180",
+				"to": "00:34:18,100"
+			},
+			"offsets": {
+				"from": 2054180,
+				"to": 2058100
+			},
+			"text": " Let me collect alpha and b, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:18,100",
+				"to": "00:34:21,520"
+			},
+			"offsets": {
+				"from": 2058100,
+				"to": 2061520
+			},
+			"text": " Is it easy to collect alpha and b?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:21,520",
+				"to": "00:34:22,520"
+			},
+			"offsets": {
+				"from": 2061520,
+				"to": 2062520
+			},
+			"text": " So what about alpha?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:22,520",
+				"to": "00:34:25,900"
+			},
+			"offsets": {
+				"from": 2062520,
+				"to": 2065900
+			},
+			"text": " What coefficient do I have at alpha?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:25,900",
+				"to": "00:34:28,200"
+			},
+			"offsets": {
+				"from": 2065900,
+				"to": 2068200
+			},
+			"text": " It will be m, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:28,200",
+				"to": "00:34:32,240"
+			},
+			"offsets": {
+				"from": 2068200,
+				"to": 2072240
+			},
+			"text": " Because I have i from 1 to m."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:32,240",
+				"to": "00:34:36,880"
+			},
+			"offsets": {
+				"from": 2072240,
+				"to": 2076880
+			},
+			"text": " I add up this n times, OK?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:36,880",
+				"to": "00:34:40,800"
+			},
+			"offsets": {
+				"from": 2076880,
+				"to": 2080800
+			},
+			"text": " So if A is plus alpha, plus alpha, and x."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:41,980",
+				"to": "00:34:42,400"
+			},
+			"offsets": {
+				"from": 2081980,
+				"to": 2082400
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:43,240",
+				"to": "00:34:45,140"
+			},
+			"offsets": {
+				"from": 2083240,
+				"to": 2085140
+			},
+			"text": " So it is here in A and alpha."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:47,520",
+				"to": "00:34:48,040"
+			},
+			"offsets": {
+				"from": 2087520,
+				"to": 2088040
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:34:50,960",
+				"to": "00:34:54,240"
+			},
+			"offsets": {
+				"from": 2090960,
+				"to": 2094240
+			},
+			"text": " So I feel like beta will be 1 plus beta."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:55,340",
+				"to": "00:34:57,140"
+			},
+			"offsets": {
+				"from": 2095340,
+				"to": 2097140
+			},
+			"text": " And this will be sum of x i."
+		},
+		{
+			"timestamps": {
+				"from": "00:34:58,520",
+				"to": "00:35:01,120"
+			},
+			"offsets": {
+				"from": 2098520,
+				"to": 2101120
+			},
+			"text": " I from 1 to 1."
+		},
+		{
+			"timestamps": {
+				"from": "00:35:03,460",
+				"to": "00:35:04,060"
+			},
+			"offsets": {
+				"from": 2103460,
+				"to": 2104060
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:35:06,160",
+				"to": "00:35:17,160"
+			},
+			"offsets": {
+				"from": 2106160,
+				"to": 2117160
+			},
+			"text": " beta, I can take beta outside, I have the sum of oxide, and minus sum of my i."
+		},
+		{
+			"timestamps": {
+				"from": "00:35:17,160",
+				"to": "00:35:23,160"
+			},
+			"offsets": {
+				"from": 2117160,
+				"to": 2123160
+			},
+			"text": " i from 1 to 1, and this is equal to 0."
+		},
+		{
+			"timestamps": {
+				"from": "00:35:23,160",
+				"to": "00:35:33,160"
+			},
+			"offsets": {
+				"from": 2123160,
+				"to": 2133160
+			},
+			"text": " This is the first equation, and I want to make it a bit better."
+		},
+		{
+			"timestamps": {
+				"from": "00:35:33,160",
+				"to": "00:35:56,440"
+			},
+			"offsets": {
+				"from": 2133160,
+				"to": 2156440
+			},
+			"text": " I want to write it as alpha plus beta 1 over n sum xii plus, sorry, i from 1 to n minus 1 over n sum by i, i from 1 to n equals 2."
+		},
+		{
+			"timestamps": {
+				"from": "00:35:58,060",
+				"to": "00:36:24,940"
+			},
+			"offsets": {
+				"from": 2158060,
+				"to": 2184940
+			},
+			"text": " Ok, so you guys already have a lot of statistics courses, yeah, most of you, you probably recognize this, 1 over N sum of all your data, what is it, mean, people call this sample mean, yeah, there is a difference, there is a population mean, when I take all people,"
+		},
+		{
+			"timestamps": {
+				"from": "00:36:26,080",
+				"to": "00:36:33,080"
+			},
+			"offsets": {
+				"from": 2186080,
+				"to": 2193080
+			},
+			"text": " It helps me in Canada and make every single day in kind, it's a population."
+		},
+		{
+			"timestamps": {
+				"from": "00:36:33,080",
+				"to": "00:36:40,080"
+			},
+			"offsets": {
+				"from": 2193080,
+				"to": 2200080
+			},
+			"text": " But there is a sample, this is my sample, my data which I erase, it's just a small sample."
+		},
+		{
+			"timestamps": {
+				"from": "00:36:40,080",
+				"to": "00:36:45,080"
+			},
+			"offsets": {
+				"from": 2200080,
+				"to": 2205080
+			},
+			"text": " It could be in practice one thousand people, the power of a lot of billions."
+		},
+		{
+			"timestamps": {
+				"from": "00:36:45,080",
+				"to": "00:36:50,080"
+			},
+			"offsets": {
+				"from": 2205080,
+				"to": 2210080
+			},
+			"text": " So there is called SampleMe, and there is also SampleMe."
+		},
+		{
+			"timestamps": {
+				"from": "00:36:50,080",
+				"to": "00:36:53,080"
+			},
+			"offsets": {
+				"from": 2210080,
+				"to": 2213080
+			},
+			"text": " Remember this?"
+		},
+		{
+			"timestamps": {
+				"from": "00:36:53,080",
+				"to": "00:37:14,080"
+			},
+			"offsets": {
+				"from": 2213080,
+				"to": 2234080
+			},
+			"text": " And there is a notation we call the notation somewhere here, so x bar is sample here for x, and y bar is sample here for x."
+		},
+		{
+			"timestamps": {
+				"from": "00:37:20,080",
+				"to": "00:37:23,080"
+			},
+			"offsets": {
+				"from": 2240080,
+				"to": 2243080
+			},
+			"text": " Is it the same as you have previously?"
+		},
+		{
+			"timestamps": {
+				"from": "00:37:23,080",
+				"to": "00:37:30,080"
+			},
+			"offsets": {
+				"from": 2243080,
+				"to": 2250080
+			},
+			"text": " Yeah, but you have some data, x with index, i-o with index, and draw a bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:37:30,080",
+				"to": "00:37:36,080"
+			},
+			"offsets": {
+				"from": 2250080,
+				"to": 2256080
+			},
+			"text": " Means, mean of all x's, 1 over a number of x's, and sum."
+		},
+		{
+			"timestamps": {
+				"from": "00:37:36,080",
+				"to": "00:37:40,080"
+			},
+			"offsets": {
+				"from": 2256080,
+				"to": 2260080
+			},
+			"text": " Okay, 7 to b for x, 7 to b for y."
+		},
+		{
+			"timestamps": {
+				"from": "00:37:40,080",
+				"to": "00:37:49,080"
+			},
+			"offsets": {
+				"from": 2260080,
+				"to": 2269080
+			},
+			"text": " So I like the equation like this: alpha plus beta x bar minus y bar,"
+		},
+		{
+			"timestamps": {
+				"from": "00:37:49,080",
+				"to": "00:38:00,100"
+			},
+			"offsets": {
+				"from": 2269080,
+				"to": 2280100
+			},
+			"text": " Okay, finally I have kind of a simple notation, simple equation, okay, instead of all this."
+		},
+		{
+			"timestamps": {
+				"from": "00:38:00,100",
+				"to": "00:38:10,160"
+			},
+			"offsets": {
+				"from": 2280100,
+				"to": 2290160
+			},
+			"text": " Sums I have just this, x bar minus y bar, where x bar and y bar have kind of very clear need, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:38:10,160",
+				"to": "00:38:19,040"
+			},
+			"offsets": {
+				"from": 2290160,
+				"to": 2299040
+			},
+			"text": " So let me write it somewhere, let me write it here, I can write it out of us,"
+		},
+		{
+			"timestamps": {
+				"from": "00:38:19,040",
+				"to": "00:38:46,040"
+			},
+			"offsets": {
+				"from": 2299040,
+				"to": 2326040
+			},
+			"text": " This is what I have right here. From here to here to this equation. One point. Everywhere. Well, let's do a similar thing for second equation. So for every equation."
+		},
+		{
+			"timestamps": {
+				"from": "00:38:49,040",
+				"to": "00:38:56,040"
+			},
+			"offsets": {
+				"from": 2329040,
+				"to": 2336040
+			},
+			"text": " Well, let's do similar thing with another equation."
+		},
+		{
+			"timestamps": {
+				"from": "00:38:56,040",
+				"to": "00:39:02,040"
+			},
+			"offsets": {
+				"from": 2336040,
+				"to": 2342040
+			},
+			"text": " Well, how can I write this equation?"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:02,040",
+				"to": "00:39:06,040"
+			},
+			"offsets": {
+				"from": 2342040,
+				"to": 2346040
+			},
+			"text": " I want to drop this too, because I don't need it."
+		},
+		{
+			"timestamps": {
+				"from": "00:39:06,040",
+				"to": "00:39:09,040"
+			},
+			"offsets": {
+				"from": 2346040,
+				"to": 2349040
+			},
+			"text": " Yeah, this equation."
+		},
+		{
+			"timestamps": {
+				"from": "00:39:09,040",
+				"to": "00:39:11,040"
+			},
+			"offsets": {
+				"from": 2349040,
+				"to": 2351040
+			},
+			"text": " So I have sum."
+		},
+		{
+			"timestamps": {
+				"from": "00:39:11,040",
+				"to": "00:39:15,160"
+			},
+			"offsets": {
+				"from": 2351040,
+				"to": 2355160
+			},
+			"text": " i from 1"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:15,160",
+				"to": "00:39:18,300"
+			},
+			"offsets": {
+				"from": 2355160,
+				"to": 2358300
+			},
+			"text": " i plus"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:18,300",
+				"to": "00:39:21,080"
+			},
+			"offsets": {
+				"from": 2358300,
+				"to": 2361080
+			},
+			"text": " liter x i"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:21,080",
+				"to": "00:39:22,540"
+			},
+			"offsets": {
+				"from": 2361080,
+				"to": 2362540
+			},
+			"text": " minus y i"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:22,540",
+				"to": "00:39:24,680"
+			},
+			"offsets": {
+				"from": 2362540,
+				"to": 2364680
+			},
+			"text": " multiplied by x i"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:24,680",
+				"to": "00:39:26,980"
+			},
+			"offsets": {
+				"from": 2364680,
+				"to": 2366980
+			},
+			"text": " this should be"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:26,980",
+				"to": "00:39:27,380"
+			},
+			"offsets": {
+				"from": 2366980,
+				"to": 2367380
+			},
+			"text": " complete"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:27,380",
+				"to": "00:39:30,140"
+			},
+			"offsets": {
+				"from": 2367380,
+				"to": 2370140
+			},
+			"text": " rewrite example"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:30,140",
+				"to": "00:39:32,000"
+			},
+			"offsets": {
+				"from": 2370140,
+				"to": 2372000
+			},
+			"text": " ok"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:32,000",
+				"to": "00:39:34,600"
+			},
+			"offsets": {
+				"from": 2372000,
+				"to": 2374600
+			},
+			"text": " now let me rewrite it"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:34,600",
+				"to": "00:39:36,120"
+			},
+			"offsets": {
+				"from": 2374600,
+				"to": 2376120
+			},
+			"text": " let me"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:36,120",
+				"to": "00:39:37,020"
+			},
+			"offsets": {
+				"from": 2376120,
+				"to": 2377020
+			},
+			"text": " expand"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:37,020",
+				"to": "00:39:40,100"
+			},
+			"offsets": {
+				"from": 2377020,
+				"to": 2380100
+			},
+			"text": " at alpha f"
+		},
+		{
+			"timestamps": {
+				"from": "00:39:40,100",
+				"to": "00:39:49,100"
+			},
+			"offsets": {
+				"from": 2380100,
+				"to": 2389100
+			},
+			"text": " Well, let me write this as a sum, just expand it."
+		},
+		{
+			"timestamps": {
+				"from": "00:39:49,100",
+				"to": "00:40:01,100"
+			},
+			"offsets": {
+				"from": 2389100,
+				"to": 2401100
+			},
+			"text": " i of x i plus beta x i squared minus x i by i."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:01,100",
+				"to": "00:40:05,100"
+			},
+			"offsets": {
+				"from": 2401100,
+				"to": 2405100
+			},
+			"text": " Yeah, this will be complete."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:05,100",
+				"to": "00:40:13,100"
+			},
+			"offsets": {
+				"from": 2405100,
+				"to": 2413100
+			},
+			"text": " and just the square, alpha by x, beta by x, minus x, beta x square, minus y by x."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:13,100",
+				"to": "00:40:16,100"
+			},
+			"offsets": {
+				"from": 2413100,
+				"to": 2416100
+			},
+			"text": " Everybody okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:40:16,100",
+				"to": "00:40:33,100"
+			},
+			"offsets": {
+				"from": 2416100,
+				"to": 2433100
+			},
+			"text": " Well, so I can have alpha sum xi, i form 1 square, plus beta sum xi square,"
+		},
+		{
+			"timestamps": {
+				"from": "00:40:33,100",
+				"to": "00:40:43,100"
+			},
+			"offsets": {
+				"from": 2433100,
+				"to": 2443100
+			},
+			"text": " i from 1 to n minus sum as i like i from 1 to n."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:45,100",
+				"to": "00:40:47,100"
+			},
+			"offsets": {
+				"from": 2445100,
+				"to": 2447100
+			},
+			"text": " This will be good to you."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:51,100",
+				"to": "00:40:53,100"
+			},
+			"offsets": {
+				"from": 2451100,
+				"to": 2453100
+			},
+			"text": " I want to use my notation."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:53,100",
+				"to": "00:40:55,100"
+			},
+			"offsets": {
+				"from": 2453100,
+				"to": 2455100
+			},
+			"text": " I want to write this with statistics."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:57,100",
+				"to": "00:40:59,100"
+			},
+			"offsets": {
+				"from": 2457100,
+				"to": 2459100
+			},
+			"text": " So I want to have mean."
+		},
+		{
+			"timestamps": {
+				"from": "00:40:59,100",
+				"to": "00:41:28,800"
+			},
+			"offsets": {
+				"from": 2459100,
+				"to": 2488800
+			},
+			"text": " I want to have mean, so this will be mean for xi, this will be mean for xi squared, this will be mean for xi squared, all I need to do is to divide by m, so I can write here 1 over m, 1 over m, 1 over m, I just write, I just divide by m, yeah, because I want everything in terms of mean, so now I have alpha x bar, because this is just x bar, okay,"
+		},
+		{
+			"timestamps": {
+				"from": "00:41:29,100",
+				"to": "00:41:52,100"
+			},
+			"offsets": {
+				"from": 2489100,
+				"to": 2512100
+			},
+			"text": " What is this? x^2 bar. Also a mean, it's not mean, it's kind of central analog of a second comment, not second comment of your random variable, we'll review this later, but probably you'll remember this."
+		},
+		{
+			"timestamps": {
+				"from": "00:41:52,100",
+				"to": "00:42:11,920"
+			},
+			"offsets": {
+				"from": 2512100,
+				"to": 2531920
+			},
+			"text": " So by definition, let's write definition, 5 over n sum, x i square, i from 1 to m, and also x y1, equal to 1 over n sum, x i y5, i from 1 to m, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:42:12,360",
+				"to": "00:42:22,740"
+			},
+			"offsets": {
+				"from": 2532360,
+				"to": 2542740
+			},
+			"text": " So a general principle, if you have something with indices, and you have 1 over n and some of this, just omit this index and write bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:42:23,860",
+				"to": "00:42:24,160"
+			},
+			"offsets": {
+				"from": 2543860,
+				"to": 2544160
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:42:24,980",
+				"to": "00:42:29,720"
+			},
+			"offsets": {
+				"from": 2544980,
+				"to": 2549720
+			},
+			"text": " So for example, x, y, y, and bar is about both."
+		},
+		{
+			"timestamps": {
+				"from": "00:42:30,500",
+				"to": "00:42:37,560"
+			},
+			"offsets": {
+				"from": 2550500,
+				"to": 2557560
+			},
+			"text": " I just put indices for x and y, sum up from 1 to n, and make a average."
+		},
+		{
+			"timestamps": {
+				"from": "00:42:38,520",
+				"to": "00:42:38,760"
+			},
+			"offsets": {
+				"from": 2558520,
+				"to": 2558760
+			},
+			"text": " Yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:42:38,760",
+				"to": "00:42:53,000"
+			},
+			"offsets": {
+				"from": 2558760,
+				"to": 2573000
+			},
+			"text": " So I can like it as beta x squared minus xy bar, equal."
+		},
+		{
+			"timestamps": {
+				"from": "00:42:54,620",
+				"to": "00:43:04,100"
+			},
+			"offsets": {
+				"from": 2574620,
+				"to": 2584100
+			},
+			"text": " So my second equation would be alpha x bar plus beta x squared bar, equal to xy bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:05,980",
+				"to": "00:43:10,980"
+			},
+			"offsets": {
+				"from": 2585980,
+				"to": 2590980
+			},
+			"text": " And how is the system of the version of the code?"
+		},
+		{
+			"timestamps": {
+				"from": "00:43:18,980",
+				"to": "00:43:20,980"
+			},
+			"offsets": {
+				"from": 2598980,
+				"to": 2600980
+			},
+			"text": " Everyone okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:43:21,980",
+				"to": "00:43:25,980"
+			},
+			"offsets": {
+				"from": 2601980,
+				"to": 2605980
+			},
+			"text": " If you have your specific data, you can see the code."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:26,980",
+				"to": "00:43:30,980"
+			},
+			"offsets": {
+				"from": 2606980,
+				"to": 2610980
+			},
+			"text": " Not much code, but you can see the calculator or the computer."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:30,980",
+				"to": "00:43:34,820"
+			},
+			"offsets": {
+				"from": 2610980,
+				"to": 2614820
+			},
+			"text": " we are going to compute there, there, there, there, there, there, there, those holes, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:43:36,560",
+				"to": "00:43:38,660"
+			},
+			"offsets": {
+				"from": 2616560,
+				"to": 2618660
+			},
+			"text": " It's still here, and then you have a question for it."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:40,500",
+				"to": "00:43:40,820"
+			},
+			"offsets": {
+				"from": 2620500,
+				"to": 2620820
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:41,860",
+				"to": "00:43:43,860"
+			},
+			"offsets": {
+				"from": 2621860,
+				"to": 2623860
+			},
+			"text": " Well, let us solve this system."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:44,820",
+				"to": "00:43:49,300"
+			},
+			"offsets": {
+				"from": 2624820,
+				"to": 2629300
+			},
+			"text": " I hope that it's not hard to solve such kind of systems."
+		},
+		{
+			"timestamps": {
+				"from": "00:43:49,940",
+				"to": "00:43:51,140"
+			},
+			"offsets": {
+				"from": 2629940,
+				"to": 2631140
+			},
+			"text": " Any questions about this?"
+		},
+		{
+			"timestamps": {
+				"from": "00:43:52,500",
+				"to": "00:43:53,140"
+			},
+			"offsets": {
+				"from": 2632500,
+				"to": 2633140
+			},
+			"text": " We're going to go away."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:00,980",
+				"to": "00:44:23,200"
+			},
+			"offsets": {
+				"from": 2640980,
+				"to": 2663200
+			},
+			"text": " So I have this and this. What can I do? Let me write it. Okay. Alpha and X bar. Let me write the second equation. I want to write it."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:23,200",
+				"to": "00:44:30,200"
+			},
+			"offsets": {
+				"from": 2663200,
+				"to": 2670200
+			},
+			"text": " So it's important that this bar is over x^2."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:30,200",
+				"to": "00:44:34,200"
+			},
+			"offsets": {
+				"from": 2670200,
+				"to": 2674200
+			},
+			"text": " So I have x^2 as something compact thin,"
+		},
+		{
+			"timestamps": {
+				"from": "00:44:34,200",
+				"to": "00:44:36,200"
+			},
+			"offsets": {
+				"from": 2674200,
+				"to": 2676200
+			},
+			"text": " and then I take bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:36,200",
+				"to": "00:44:39,200"
+			},
+			"offsets": {
+				"from": 2676200,
+				"to": 2679200
+			},
+			"text": " Standard statistical way for sample mean,"
+		},
+		{
+			"timestamps": {
+				"from": "00:44:39,200",
+				"to": "00:44:42,200"
+			},
+			"offsets": {
+				"from": 2679200,
+				"to": 2682200
+			},
+			"text": " but now not for x, but for x^2."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:42,200",
+				"to": "00:44:44,200"
+			},
+			"offsets": {
+				"from": 2682200,
+				"to": 2684200
+			},
+			"text": " So we have a sample,"
+		},
+		{
+			"timestamps": {
+				"from": "00:44:44,200",
+				"to": "00:44:46,200"
+			},
+			"offsets": {
+				"from": 2684200,
+				"to": 2686200
+			},
+			"text": " some numbers,"
+		},
+		{
+			"timestamps": {
+				"from": "00:44:46,200",
+				"to": "00:44:49,200"
+			},
+			"offsets": {
+				"from": 2686200,
+				"to": 2689200
+			},
+			"text": " take x^2 and make mean."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:49,200",
+				"to": "00:44:52,200"
+			},
+			"offsets": {
+				"from": 2689200,
+				"to": 2692200
+			},
+			"text": " And this is equal to xy^1."
+		},
+		{
+			"timestamps": {
+				"from": "00:44:53,200",
+				"to": "00:45:22,200"
+			},
+			"offsets": {
+				"from": 2693200,
+				"to": 2722200
+			},
+			"text": " I also have alpha plus beta S bar equal to Y bar, I need to solve this, and let me just tell you right away that in principle, beta is more important than alpha, because beta shows slope, what happens if it changes, how Y changes, if it changes X."
+		},
+		{
+			"timestamps": {
+				"from": "00:45:22,200",
+				"to": "00:45:31,300"
+			},
+			"offsets": {
+				"from": 2722200,
+				"to": 2731300
+			},
+			"text": " So bit is more important than alpha, of course, but for statistics, for regression, bit are kind of more important."
+		},
+		{
+			"timestamps": {
+				"from": "00:45:31,300",
+				"to": "00:45:42,300"
+			},
+			"offsets": {
+				"from": 2731300,
+				"to": 2742300
+			},
+			"text": " So let's find bit first. How to find bit? I need to re-tribute, so I multiply by x bar and sub-card."
+		},
+		{
+			"timestamps": {
+				"from": "00:45:42,300",
+				"to": "00:45:55,300"
+			},
+			"offsets": {
+				"from": 2742300,
+				"to": 2755300
+			},
+			"text": " If I multiply this equation by X bar, I have X bar, here I have X bar square and here I have X bar by Y bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:45:55,300",
+				"to": "00:45:59,300"
+			},
+			"offsets": {
+				"from": 2755300,
+				"to": 2759300
+			},
+			"text": " So I have F and I subtract this minus F."
+		},
+		{
+			"timestamps": {
+				"from": "00:45:59,300",
+				"to": "00:46:04,300"
+			},
+			"offsets": {
+				"from": 2759300,
+				"to": 2764300
+			},
+			"text": " Then I do it at once. Everybody, okay, we solve the system of the equations."
+		},
+		{
+			"timestamps": {
+				"from": "00:46:04,300",
+				"to": "00:46:08,300"
+			},
+			"offsets": {
+				"from": 2764300,
+				"to": 2768300
+			},
+			"text": " Okay. Are you okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:46:08,300",
+				"to": "00:46:19,300"
+			},
+			"offsets": {
+				"from": 2768300,
+				"to": 2779300
+			},
+			"text": " So I have here alpha x-bar. Here I have beta by x-bar by x-bar again. And here I have x-bar by y-bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:46:19,300",
+				"to": "00:46:26,300"
+			},
+			"offsets": {
+				"from": 2779300,
+				"to": 2786300
+			},
+			"text": " And now I subtract this minuses. So alpha x-bar minus alpha x-bar will cancel out."
+		},
+		{
+			"timestamps": {
+				"from": "00:46:26,300",
+				"to": "00:46:34,300"
+			},
+			"offsets": {
+				"from": 2786300,
+				"to": 2794300
+			},
+			"text": " So, for Vita is the fact Vita X^2 bar minus X bar square."
+		},
+		{
+			"timestamps": {
+				"from": "00:46:36,300",
+				"to": "00:46:39,300"
+			},
+			"offsets": {
+				"from": 2796300,
+				"to": 2799300
+			},
+			"text": " And of course this is not the same as this."
+		},
+		{
+			"timestamps": {
+				"from": "00:46:40,300",
+				"to": "00:46:48,300"
+			},
+			"offsets": {
+				"from": 2800300,
+				"to": 2808300
+			},
+			"text": " And this is equal to X Y bar minus X bar Y bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:46:52,300",
+				"to": "00:47:11,300"
+			},
+			"offsets": {
+				"from": 2812300,
+				"to": 2831300
+			},
+			"text": " x and beta is equal to xy bar minus x bar y bar over x squared bar minus x bar squared."
+		},
+		{
+			"timestamps": {
+				"from": "00:47:11,300",
+				"to": "00:47:19,300"
+			},
+			"offsets": {
+				"from": 2831300,
+				"to": 2839300
+			},
+			"text": " And I could write here breakfast but is it clear from my reaction that here first I take bar and then square."
+		},
+		{
+			"timestamps": {
+				"from": "00:47:19,300",
+				"to": "00:47:22,300"
+			},
+			"offsets": {
+				"from": 2839300,
+				"to": 2842300
+			},
+			"text": " and here first I take square and then make bar"
+		},
+		{
+			"timestamps": {
+				"from": "00:47:24,300",
+				"to": "00:47:31,300"
+			},
+			"offsets": {
+				"from": 2844300,
+				"to": 2851300
+			},
+			"text": " so here first I make sample mu for x and then square and take square of the sample mu"
+		},
+		{
+			"timestamps": {
+				"from": "00:47:31,300",
+				"to": "00:47:36,300"
+			},
+			"offsets": {
+				"from": 2851300,
+				"to": 2856300
+			},
+			"text": " here first I take x square, so I take square of each value of x"
+		},
+		{
+			"timestamps": {
+				"from": "00:47:36,300",
+				"to": "00:47:41,300"
+			},
+			"offsets": {
+				"from": 2856300,
+				"to": 2861300
+			},
+			"text": " and then take sample mu of this square itself"
+		},
+		{
+			"timestamps": {
+				"from": "00:47:41,300",
+				"to": "00:47:45,300"
+			},
+			"offsets": {
+				"from": 2861300,
+				"to": 2865300
+			},
+			"text": " ok, so this is not in the same equivalences"
+		},
+		{
+			"timestamps": {
+				"from": "00:47:45,300",
+				"to": "00:48:07,300"
+			},
+			"offsets": {
+				"from": 2865300,
+				"to": 2887300
+			},
+			"text": " Okay now we can find alpha complexes. Alpha is equal to y bar minus x bar multiplied by x, y bar minus x bar, y bar over x square bar minus x bar."
+		},
+		{
+			"timestamps": {
+				"from": "00:48:15,300",
+				"to": "00:48:21,300"
+			},
+			"offsets": {
+				"from": 2895300,
+				"to": 2901300
+			},
+			"text": " okay this gives you life which kind of most heat"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:21,300",
+				"to": "00:48:23,300"
+			},
+			"offsets": {
+				"from": 2901300,
+				"to": 2903300
+			},
+			"text": " okay"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:27,300",
+				"to": "00:48:30,300"
+			},
+			"offsets": {
+				"from": 2907300,
+				"to": 2910300
+			},
+			"text": " so we are good we can find such life"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:30,300",
+				"to": "00:48:32,300"
+			},
+			"offsets": {
+				"from": 2910300,
+				"to": 2912300
+			},
+			"text": " so why we have cold push"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:32,300",
+				"to": "00:48:34,300"
+			},
+			"offsets": {
+				"from": 2912300,
+				"to": 2914300
+			},
+			"text": " we are done yeah"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:34,300",
+				"to": "00:48:36,300"
+			},
+			"offsets": {
+				"from": 2914300,
+				"to": 2916300
+			},
+			"text": " time is almost"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:36,300",
+				"to": "00:48:40,300"
+			},
+			"offsets": {
+				"from": 2916300,
+				"to": 2920300
+			},
+			"text": " we have 14 minutes"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:40,300",
+				"to": "00:48:42,300"
+			},
+			"offsets": {
+				"from": 2920300,
+				"to": 2922300
+			},
+			"text": " so why it is not enough"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:42,300",
+				"to": "00:48:46,320"
+			},
+			"offsets": {
+				"from": 2922300,
+				"to": 2926320
+			},
+			"text": " Even in principle, I don't tell you anything about statistics."
+		},
+		{
+			"timestamps": {
+				"from": "00:48:46,320",
+				"to": "00:48:49,260"
+			},
+			"offsets": {
+				"from": 2926320,
+				"to": 2929260
+			},
+			"text": " You need to know if there's factors."
+		},
+		{
+			"timestamps": {
+				"from": "00:48:49,260",
+				"to": "00:48:50,260"
+			},
+			"offsets": {
+				"from": 2929260,
+				"to": 2930260
+			},
+			"text": " Yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:50,260",
+				"to": "00:48:51,260"
+			},
+			"offsets": {
+				"from": 2930260,
+				"to": 2931260
+			},
+			"text": " Some shortness."
+		},
+		{
+			"timestamps": {
+				"from": "00:48:51,260",
+				"to": "00:48:53,260"
+			},
+			"offsets": {
+				"from": 2931260,
+				"to": 2933260
+			},
+			"text": " Some theoretical ideas."
+		},
+		{
+			"timestamps": {
+				"from": "00:48:53,260",
+				"to": "00:48:56,260"
+			},
+			"offsets": {
+				"from": 2933260,
+				"to": 2936260
+			},
+			"text": " There's a couple of points, one of the classes line."
+		},
+		{
+			"timestamps": {
+				"from": "00:48:56,260",
+				"to": "00:48:58,260"
+			},
+			"offsets": {
+				"from": 2936260,
+				"to": 2938260
+			},
+			"text": " Why we need statistics at all?"
+		},
+		{
+			"timestamps": {
+				"from": "00:48:58,260",
+				"to": "00:49:01,260"
+			},
+			"offsets": {
+				"from": 2938260,
+				"to": 2941260
+			},
+			"text": " For example, your prediction was?"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:01,260",
+				"to": "00:49:04,260"
+			},
+			"offsets": {
+				"from": 2941260,
+				"to": 2944260
+			},
+			"text": " Probably a statistic, yeah?"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:04,260",
+				"to": "00:49:05,260"
+			},
+			"offsets": {
+				"from": 2944260,
+				"to": 2945260
+			},
+			"text": " Why?"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:05,260",
+				"to": "00:49:07,260"
+			},
+			"offsets": {
+				"from": 2945260,
+				"to": 2947260
+			},
+			"text": " Trust cycles."
+		},
+		{
+			"timestamps": {
+				"from": "00:49:07,260",
+				"to": "00:49:09,260"
+			},
+			"offsets": {
+				"from": 2947260,
+				"to": 2949260
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:09,260",
+				"to": "00:49:12,260"
+			},
+			"offsets": {
+				"from": 2949260,
+				"to": 2952260
+			},
+			"text": " The problem is, like, well, not so simple."
+		},
+		{
+			"timestamps": {
+				"from": "00:49:12,260",
+				"to": "00:49:23,220"
+			},
+			"offsets": {
+				"from": 2952260,
+				"to": 2963220
+			},
+			"text": " So main problem is not just draw the slide, so you have the explainer."
+		},
+		{
+			"timestamps": {
+				"from": "00:49:23,220",
+				"to": "00:49:36,220"
+			},
+			"offsets": {
+				"from": 2963220,
+				"to": 2976220
+			},
+			"text": " So everyone okay with the sensations, because you have seen it before."
+		},
+		{
+			"timestamps": {
+				"from": "00:49:36,220",
+				"to": "00:49:44,060"
+			},
+			"offsets": {
+				"from": 2976220,
+				"to": 2984060
+			},
+			"text": " so sometimes people do it so i find it was type of general i could write here type of hat"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:47,260",
+				"to": "00:49:48,460"
+			},
+			"offsets": {
+				"from": 2987260,
+				"to": 2988460
+			},
+			"text": " so data hat"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:50,860",
+				"to": "00:49:56,380"
+			},
+			"offsets": {
+				"from": 2990860,
+				"to": 2996380
+			},
+			"text": " and type of hat just a connection for this let's see the type of data which we found"
+		},
+		{
+			"timestamps": {
+				"from": "00:49:56,380",
+				"to": "00:50:08,460"
+			},
+			"offsets": {
+				"from": 2996380,
+				"to": 3008460
+			},
+			"text": " with a minimum of some squares of difference yeah so we have our line y equal to alpha x plus beta x"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:11,020",
+				"to": "00:50:21,100"
+			},
+			"offsets": {
+				"from": 3011020,
+				"to": 3021100
+			},
+			"text": " and my eyes close to alpha plus beta x i and this error is small as possible yeah"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:22,300",
+				"to": "00:50:28,700"
+			},
+			"offsets": {
+				"from": 3022300,
+				"to": 3028700
+			},
+			"text": " We are done. But the problem is that why in practice we need all this?"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:30,300",
+				"to": "00:50:36,220"
+			},
+			"offsets": {
+				"from": 3030300,
+				"to": 3036220
+			},
+			"text": " In practice people are not often, especially dialogosmeticians, people are not often interested"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:36,220",
+				"to": "00:50:44,220"
+			},
+			"offsets": {
+				"from": 3036220,
+				"to": 3044220
+			},
+			"text": " just to draw the slide for given data. They want to predict. For example this, maybe this is"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:44,220",
+				"to": "00:50:50,220"
+			},
+			"offsets": {
+				"from": 3044220,
+				"to": 3050220
+			},
+			"text": " again this is still the example this hides some plates but when people obtain this line"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:50,220",
+				"to": "00:50:57,580"
+			},
+			"offsets": {
+				"from": 3050220,
+				"to": 3057580
+			},
+			"text": " i'm a scientist after that they want to tell well your height is this let's compute which way you"
+		},
+		{
+			"timestamps": {
+				"from": "00:50:57,580",
+				"to": "00:51:06,860"
+			},
+			"offsets": {
+				"from": 3057580,
+				"to": 3066860
+			},
+			"text": " should have oh it's not really a weight yeah something like this we want to predict in more"
+		},
+		{
+			"timestamps": {
+				"from": "00:51:06,860",
+				"to": "00:51:13,900"
+			},
+			"offsets": {
+				"from": 3066860,
+				"to": 3073900
+			},
+			"text": " our important situation for example we have data for example size of house and price of this house"
+		},
+		{
+			"timestamps": {
+				"from": "00:51:14,700",
+				"to": "00:51:25,180"
+			},
+			"offsets": {
+				"from": 3074700,
+				"to": 3085180
+			},
+			"text": " for example yeah we have a lot of data for some city yeah a lot of houses for each you know it's"
+		},
+		{
+			"timestamps": {
+				"from": "00:51:25,980",
+				"to": "00:51:34,140"
+			},
+			"offsets": {
+				"from": 3085980,
+				"to": 3094140
+			},
+			"text": " size in meters for example and price and we know what we estimate which price should have some"
+		},
+		{
+			"timestamps": {
+				"from": "00:51:34,780",
+				"to": "00:51:43,020"
+			},
+			"offsets": {
+				"from": 3094780,
+				"to": 3103020
+			},
+			"text": " in your house. Let's assume that there is no other practice."
+		},
+		{
+			"timestamps": {
+				"from": "00:51:43,020",
+				"to": "00:51:50,140"
+			},
+			"offsets": {
+				"from": 3103020,
+				"to": 3110140
+			},
+			"text": " So, you want to predict it, yeah? If you are going to predict something, you want to"
+		},
+		{
+			"timestamps": {
+				"from": "00:51:50,140",
+				"to": "00:51:57,420"
+			},
+			"offsets": {
+				"from": 3110140,
+				"to": 3117420
+			},
+			"text": " estimate error in your situation. So you have your data, you compute this alpha hat"
+		},
+		{
+			"timestamps": {
+				"from": "00:51:57,420",
+				"to": "00:52:07,820"
+			},
+			"offsets": {
+				"from": 3117420,
+				"to": 3127820
+			},
+			"text": " And now somebody asks you what happens if x equal to c. What is your prediction for y?"
+		},
+		{
+			"timestamps": {
+				"from": "00:52:07,820",
+				"to": "00:52:17,820"
+			},
+			"offsets": {
+				"from": 3127820,
+				"to": 3137820
+			},
+			"text": " You can compute this of course, but then you are asked what is the probability, for example, that your prediction is close to this."
+		},
+		{
+			"timestamps": {
+				"from": "00:52:17,820",
+				"to": "00:52:21,420"
+			},
+			"offsets": {
+				"from": 3137820,
+				"to": 3141420
+			},
+			"text": " Yeah? And so on."
+		},
+		{
+			"timestamps": {
+				"from": "00:52:21,420",
+				"to": "00:52:27,020"
+			},
+			"offsets": {
+				"from": 3141420,
+				"to": 3147020
+			},
+			"text": " Okay? So there are a lot of questions which arise in this situation."
+		},
+		{
+			"timestamps": {
+				"from": "00:52:27,020",
+				"to": "00:52:41,020"
+			},
+			"offsets": {
+				"from": 3147020,
+				"to": 3161020
+			},
+			"text": " And then this, well, this data are kind of random, so we need to model this, yeah, we really need statistics for us, to answer more serious questions, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:52:41,020",
+				"to": "00:52:52,020"
+			},
+			"offsets": {
+				"from": 3161020,
+				"to": 3172020
+			},
+			"text": " So we need to recall that x and y are random variables, so we need to know all these things about, basic things about random variables."
+		},
+		{
+			"timestamps": {
+				"from": "00:52:52,020",
+				"to": "00:53:05,020"
+			},
+			"offsets": {
+				"from": 3172020,
+				"to": 3185020
+			},
+			"text": " Because we are going to model, if you have a sample, for example, it will become a sample x_1, x_n, for example, height for random people."
+		},
+		{
+			"timestamps": {
+				"from": "00:53:05,020",
+				"to": "00:53:09,020"
+			},
+			"offsets": {
+				"from": 3185020,
+				"to": 3189020
+			},
+			"text": " For a statistician, there is a model of this."
+		},
+		{
+			"timestamps": {
+				"from": "00:53:09,020",
+				"to": "00:53:14,020"
+			},
+			"offsets": {
+				"from": 3189020,
+				"to": 3194020
+			},
+			"text": " A statistician would say that, well, we have a random variable x."
+		},
+		{
+			"timestamps": {
+				"from": "00:53:14,020",
+				"to": "00:53:21,020"
+			},
+			"offsets": {
+				"from": 3194020,
+				"to": 3201020
+			},
+			"text": " And this is a realisation or a result of experiments with this random variable."
+		},
+		{
+			"timestamps": {
+				"from": "00:53:21,020",
+				"to": "00:53:28,020"
+			},
+			"offsets": {
+				"from": 3201020,
+				"to": 3208020
+			},
+			"text": " And if you have y-variate data, you have x1, y1, and so on"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:28,020",
+				"to": "00:53:32,020"
+			},
+			"offsets": {
+				"from": 3208020,
+				"to": 3212020
+			},
+			"text": " Statisticians would say that we have a pair of random variables, x and y"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:32,020",
+				"to": "00:53:35,020"
+			},
+			"offsets": {
+				"from": 3212020,
+				"to": 3215020
+			},
+			"text": " With some joint distribution and"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:35,020",
+				"to": "00:53:38,020"
+			},
+			"offsets": {
+				"from": 3215020,
+				"to": 3218020
+			},
+			"text": " Yeah, I guess it will be a modular solution"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:38,020",
+				"to": "00:53:42,020"
+			},
+			"offsets": {
+				"from": 3218020,
+				"to": 3222020
+			},
+			"text": " Okay, is that clear?"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:42,020",
+				"to": "00:53:50,020"
+			},
+			"offsets": {
+				"from": 3222020,
+				"to": 3230020
+			},
+			"text": " So, I just explained to you today the main idea of regression analysis without any statistics"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:50,020",
+				"to": "00:53:58,020"
+			},
+			"offsets": {
+				"from": 3230020,
+				"to": 3238020
+			},
+			"text": " But now we need to start modeling of this thing with statistical motions, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:53:58,020",
+				"to": "00:54:04,020"
+			},
+			"offsets": {
+				"from": 3238020,
+				"to": 3244020
+			},
+			"text": " Because otherwise we just, well."
+		},
+		{
+			"timestamps": {
+				"from": "00:54:04,020",
+				"to": "00:54:09,020"
+			},
+			"offsets": {
+				"from": 3244020,
+				"to": 3249020
+			},
+			"text": " Okay, let's start with about 7-5 minutes."
+		},
+		{
+			"timestamps": {
+				"from": "00:54:09,020",
+				"to": "00:54:14,020"
+			},
+			"offsets": {
+				"from": 3249020,
+				"to": 3254020
+			},
+			"text": " So next what we are going to do is to make a review."
+		},
+		{
+			"timestamps": {
+				"from": "00:54:20,020",
+				"to": "00:54:43,020"
+			},
+			"offsets": {
+				"from": 3260020,
+				"to": 3283020
+			},
+			"text": " I will be able to do this, I will be able to do my example, so I will be able to do my example, so I will be able to do my example, so I will be able to do my example, so I will be able to do my example."
+		},
+		{
+			"timestamps": {
+				"from": "00:54:43,020",
+				"to": "00:54:49,020"
+			},
+			"offsets": {
+				"from": 3283020,
+				"to": 3289020
+			},
+			"text": " Okay, who doesn't want to have example, but who, 35, doesn't want."
+		},
+		{
+			"timestamps": {
+				"from": "00:54:49,020",
+				"to": "00:54:54,020"
+			},
+			"offsets": {
+				"from": 3289020,
+				"to": 3294020
+			},
+			"text": " So it's maybe if they can do something."
+		},
+		{
+			"timestamps": {
+				"from": "00:54:54,020",
+				"to": "00:54:58,020"
+			},
+			"offsets": {
+				"from": 3294020,
+				"to": 3298020
+			},
+			"text": " Okay, so let's talk about random variance."
+		},
+		{
+			"timestamps": {
+				"from": "00:55:06,020",
+				"to": "00:55:08,020"
+			},
+			"offsets": {
+				"from": 3306020,
+				"to": 3308020
+			},
+			"text": " And this is really a view."
+		},
+		{
+			"timestamps": {
+				"from": "00:55:12,020",
+				"to": "00:55:18,580"
+			},
+			"offsets": {
+				"from": 3312020,
+				"to": 3318580
+			},
+			"text": " okay so i just kind of feel more simple which i'm going to tell you it's just a kind of view"
+		},
+		{
+			"timestamps": {
+				"from": "00:55:18,580",
+				"to": "00:55:20,740"
+			},
+			"offsets": {
+				"from": 3318580,
+				"to": 3320740
+			},
+			"text": " a kind of view of what you should know"
+		},
+		{
+			"timestamps": {
+				"from": "00:55:24,740",
+				"to": "00:55:28,660"
+			},
+			"offsets": {
+				"from": 3324740,
+				"to": 3328660
+			},
+			"text": " well so what is random variation i'm not going to define this"
+		},
+		{
+			"timestamps": {
+				"from": "00:55:28,660",
+				"to": "00:55:35,620"
+			},
+			"offsets": {
+				"from": 3328660,
+				"to": 3335620
+			},
+			"text": " okay it's a view so we're supposed to know this but let's start with one half variable x"
+		},
+		{
+			"timestamps": {
+				"from": "00:55:38,500",
+				"to": "00:55:46,100"
+			},
+			"offsets": {
+				"from": 3338500,
+				"to": 3346100
+			},
+			"text": " First thing which people are learning about is that it could go two times: discreet and continuous."
+		},
+		{
+			"timestamps": {
+				"from": "00:55:50,100",
+				"to": "00:56:02,580"
+			},
+			"offsets": {
+				"from": 3350100,
+				"to": 3362580
+			},
+			"text": " round of arrows that would be continuous"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:14,660",
+				"to": "00:56:18,580"
+			},
+			"offsets": {
+				"from": 3374660,
+				"to": 3378580
+			},
+			"text": " and of course you know what is the difference"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:18,980",
+				"to": "00:56:22,460"
+			},
+			"offsets": {
+				"from": 3378980,
+				"to": 3382460
+			},
+			"text": " So I don't have a lot of time for something serious"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:22,460",
+				"to": "00:56:29,900"
+			},
+			"offsets": {
+				"from": 3382460,
+				"to": 3389900
+			},
+			"text": " Let me explain to you how all this my and your mathematician's way of visualizing the random variable"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:29,900",
+				"to": "00:56:34,860"
+			},
+			"offsets": {
+				"from": 3389900,
+				"to": 3394860
+			},
+			"text": " So random variable means that you can make an experiment and have another"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:34,860",
+				"to": "00:56:36,860"
+			},
+			"offsets": {
+				"from": 3394860,
+				"to": 3396860
+			},
+			"text": " Because there's always an experiment"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:36,860",
+				"to": "00:56:41,860"
+			},
+			"offsets": {
+				"from": 3396860,
+				"to": 3401860
+			},
+			"text": " So if for example you can imagine that you can have some box"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:41,860",
+				"to": "00:56:44,220"
+			},
+			"offsets": {
+				"from": 3401860,
+				"to": 3404220
+			},
+			"text": " which is random variable x"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:44,220",
+				"to": "00:56:45,780"
+			},
+			"offsets": {
+				"from": 3404220,
+				"to": 3405780
+			},
+			"text": " and the box"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:45,780",
+				"to": "00:56:47,780"
+			},
+			"offsets": {
+				"from": 3405780,
+				"to": 3407780
+			},
+			"text": " and here you have a button"
+		},
+		{
+			"timestamps": {
+				"from": "00:56:48,980",
+				"to": "00:56:58,980"
+			},
+			"offsets": {
+				"from": 3408980,
+				"to": 3418980
+			},
+			"text": " You can press this button, as many times as you want, and here you have the number."
+		},
+		{
+			"timestamps": {
+				"from": "00:56:58,980",
+				"to": "00:57:06,980"
+			},
+			"offsets": {
+				"from": 3418980,
+				"to": 3426980
+			},
+			"text": " You press button and have a number here. Press it once more and have another number."
+		},
+		{
+			"timestamps": {
+				"from": "00:57:06,980",
+				"to": "00:57:12,980"
+			},
+			"offsets": {
+				"from": 3426980,
+				"to": 3432980
+			},
+			"text": " You can't predict which number you have here. You know only probability."
+		},
+		{
+			"timestamps": {
+				"from": "00:57:12,980",
+				"to": "00:57:36,980"
+			},
+			"offsets": {
+				"from": 3432980,
+				"to": 3456980
+			},
+			"text": " That's all. It's kind of a model of a lot of things. Again, I can throw dice, of course, instead of pressing this button here, I can do a lot of practical things, I can throw dice and have a number from 1 to 6 possibilities."
+		},
+		{
+			"timestamps": {
+				"from": "00:57:36,980",
+				"to": "00:57:46,980"
+			},
+			"offsets": {
+				"from": 3456980,
+				"to": 3466980
+			},
+			"text": " If there are only finite and many, or infinitely many, but discrete possibilities for variable here, this is called discrete variable."
+		},
+		{
+			"timestamps": {
+				"from": "00:57:46,980",
+				"to": "00:57:53,980"
+			},
+			"offsets": {
+				"from": 3466980,
+				"to": 3473980
+			},
+			"text": " Or if I take a random person and measure his height for weight, it will be continuous variable."
+		},
+		{
+			"timestamps": {
+				"from": "00:57:53,980",
+				"to": "00:57:59,980"
+			},
+			"offsets": {
+				"from": 3473980,
+				"to": 3479980
+			},
+			"text": " Okay, so if you have just one random variable,"
+		},
+		{
+			"timestamps": {
+				"from": "00:57:59,980",
+				"to": "00:58:08,980"
+			},
+			"offsets": {
+				"from": 3479980,
+				"to": 3488980
+			},
+			"text": " I want to make like a first section of practices how I measure it, that's why I prepare to think about this in this way."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:08,980",
+				"to": "00:58:16,980"
+			},
+			"offsets": {
+				"from": 3488980,
+				"to": 3496980
+			},
+			"text": " But it's basically what you need to know to be able to compute any synth with your randomly."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:16,980",
+				"to": "00:58:26,980"
+			},
+			"offsets": {
+				"from": 3496980,
+				"to": 3506980
+			},
+			"text": " You need to know something which is called something, let me denote it by f, x of x."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:26,980",
+				"to": "00:58:29,980"
+			},
+			"offsets": {
+				"from": 3506980,
+				"to": 3509980
+			},
+			"text": " Sometimes they will call it x."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:29,980",
+				"to": "00:58:40,980"
+			},
+			"offsets": {
+				"from": 3509980,
+				"to": 3520980
+			},
+			"text": " This is called PDS or PRM."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:40,980",
+				"to": "00:58:46,980"
+			},
+			"offsets": {
+				"from": 3520980,
+				"to": 3526980
+			},
+			"text": " Probability Distribution Function or Probability Mass Function."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:46,980",
+				"to": "00:58:47,980"
+			},
+			"offsets": {
+				"from": 3526980,
+				"to": 3527980
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:58:47,980",
+				"to": "00:58:51,980"
+			},
+			"offsets": {
+				"from": 3527980,
+				"to": 3531980
+			},
+			"text": " In case of continuous variable, in case of descriptive variable."
+		},
+		{
+			"timestamps": {
+				"from": "00:58:51,980",
+				"to": "00:58:53,980"
+			},
+			"offsets": {
+				"from": 3531980,
+				"to": 3533980
+			},
+			"text": " Okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:58:53,980",
+				"to": "00:59:00,980"
+			},
+			"offsets": {
+				"from": 3533980,
+				"to": 3540980
+			},
+			"text": " in this course, at least, in the beginning, we mostly will deal with continuous variable"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:00,980",
+				"to": "00:59:05,980"
+			},
+			"offsets": {
+				"from": 3540980,
+				"to": 3545980
+			},
+			"text": " and this is a review, so I don't want to do everything for both cases"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:05,980",
+				"to": "00:59:12,980"
+			},
+			"offsets": {
+				"from": 3545980,
+				"to": 3552980
+			},
+			"text": " okay, so let me just, from now, let me just consider all the continuous variable"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:12,980",
+				"to": "00:59:15,980"
+			},
+			"offsets": {
+				"from": 3552980,
+				"to": 3555980
+			},
+			"text": " let me just lose the sense of full discrete case"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:15,980",
+				"to": "00:59:19,980"
+			},
+			"offsets": {
+				"from": 3555980,
+				"to": 3559980
+			},
+			"text": " you just replace the graphs by subs"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:19,980",
+				"to": "00:59:32,980"
+			},
+			"offsets": {
+				"from": 3559980,
+				"to": 3572980
+			},
+			"text": " okay so what does that mean probability distribution function? it means that probability that your variable x between a and b"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:32,980",
+				"to": "00:59:38,980"
+			},
+			"offsets": {
+				"from": 3572980,
+				"to": 3578980
+			},
+			"text": " well for continuous variables smaller or smaller or equal"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:38,980",
+				"to": "00:59:40,980"
+			},
+			"offsets": {
+				"from": 3578980,
+				"to": 3580980
+			},
+			"text": " let me write smaller or equal but"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:40,980",
+				"to": "00:59:43,980"
+			},
+			"offsets": {
+				"from": 3580980,
+				"to": 3583980
+			},
+			"text": " for discrete variables in a bottom let me talk"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:43,980",
+				"to": "00:59:45,980"
+			},
+			"offsets": {
+				"from": 3583980,
+				"to": 3585980
+			},
+			"text": " speak about this"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:45,980",
+				"to": "00:59:58,100"
+			},
+			"offsets": {
+				"from": 3585980,
+				"to": 3598100
+			},
+			"text": " this is equal to integral from a to b of this partial f dx. And the discrete case, instead"
+		},
+		{
+			"timestamps": {
+				"from": "00:59:58,100",
+				"to": "01:00:05,480"
+			},
+			"offsets": {
+				"from": 3598100,
+				"to": 3605480
+			},
+			"text": " of integral, you have sum by all possible values of x. Okay? That will not write it"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:05,480",
+				"to": "01:00:12,300"
+			},
+			"offsets": {
+				"from": 3605480,
+				"to": 3612300
+			},
+			"text": " out. Isn't it clear? And that's all in principle. If you can compute this, you can compute"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:12,300",
+				"to": "01:00:21,420"
+			},
+			"offsets": {
+				"from": 3612300,
+				"to": 3621420
+			},
+			"text": " because all you have if you have just one variable you don't you're not interested in anything else"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:21,420",
+				"to": "01:00:27,100"
+			},
+			"offsets": {
+				"from": 3621420,
+				"to": 3627100
+			},
+			"text": " you just want to predict what you have here but you cannot predict it exactly you want to know"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:27,100",
+				"to": "01:00:33,420"
+			},
+			"offsets": {
+				"from": 3627100,
+				"to": 3633420
+			},
+			"text": " probabilities so basic question which you can ask i press this button what is the probability that"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:33,420",
+				"to": "01:00:37,920"
+			},
+			"offsets": {
+				"from": 3633420,
+				"to": 3637920
+			},
+			"text": " that this result will be between 0 and 1"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:37,920",
+				"to": "01:00:40,920"
+			},
+			"offsets": {
+				"from": 3637920,
+				"to": 3640920
+			},
+			"text": " ok, and you can compute it"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:40,920",
+				"to": "01:00:43,920"
+			},
+			"offsets": {
+				"from": 3640920,
+				"to": 3643920
+			},
+			"text": " as integral from 0 and 1 to 1"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:43,920",
+				"to": "01:00:45,920"
+			},
+			"offsets": {
+				"from": 3643920,
+				"to": 3645920
+			},
+			"text": " this function you know"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:45,920",
+				"to": "01:00:48,420"
+			},
+			"offsets": {
+				"from": 3645920,
+				"to": 3648420
+			},
+			"text": " and you can compute as integral"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:48,420",
+				"to": "01:00:50,420"
+			},
+			"offsets": {
+				"from": 3648420,
+				"to": 3650420
+			},
+			"text": " ok"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:50,920",
+				"to": "01:00:52,920"
+			},
+			"offsets": {
+				"from": 3650920,
+				"to": 3652920
+			},
+			"text": " is it clear?"
+		},
+		{
+			"timestamps": {
+				"from": "01:00:55,920",
+				"to": "01:00:59,100"
+			},
+			"offsets": {
+				"from": 3655920,
+				"to": 3659100
+			},
+			"text": " ok, let's stop now, so next time I will do more"
+		}
+	]
+}

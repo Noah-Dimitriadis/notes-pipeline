@@ -1,0 +1,166 @@
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+import tempfile
+import warnings
+from pathlib import Path
+from typing import Protocol
+
+from ..config import Config
+from ..models import Segment, Transcript
+from .audio import wav_duration
+
+_MIN_MEAN_CONFIDENCE = 0.5
+_MAX_IDENTICAL_RUN = 20
+_WORD_STUTTER_RE = re.compile(r"\b(\w+)\b(?:[\s,]+\1\b){3,}", re.IGNORECASE)
+
+
+class TranscriberError(RuntimeError):
+    """Raised for a clear, single-sentence transcription failure."""
+
+
+class TranscriptQualityWarning(UserWarning):
+    """Issued when a transcript shows signs of a known engine degeneration mode."""
+
+
+class Transcriber(Protocol):
+    def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript: ...
+
+
+def get_transcriber(cfg: Config) -> Transcriber:
+    if cfg.transcriber == "whisper":
+        return WhisperTranscriber(cfg)
+    if cfg.transcriber == "remote":
+        return RemoteTranscriber(cfg)
+    raise TranscriberError(f"Unknown transcriber: {cfg.transcriber!r}")
+
+
+class WhisperTranscriber:
+    def __init__(self, cfg: Config):
+        self.cfg = cfg
+
+    def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript:
+        # `vocabulary` is accepted for Transcriber-protocol compatibility but
+        # deliberately unused here. -mc 0 and --prompt are mutually exclusive
+        # (max-context zero means no prompt tokens reach the decoder at all),
+        # and dropping -mc 0 to let seeding through was tested directly
+        # against Benchmark B (turbo, default max-context, real deck
+        # vocabulary as --prompt): it produced a 377-segment repetition loop
+        # and *reduced* jargon recall everywhere else in the transcript too
+        # (e.g. UNESCO 2->0, accountability 4->1, beneficence 3->1 vs the
+        # -mc 0 baseline) — not an isolated failure a retry could contain.
+        # Jargon correction stays M6's job (Claude reconciling the deck
+        # against the transcript), exactly as M3 already specifies.
+        del vocabulary
+        with tempfile.TemporaryDirectory() as tmpdir:
+            outbase = Path(tmpdir) / "out"
+            args = [
+                str(self.cfg.whisper_bin),
+                "-m", str(self.cfg.whisper_model),
+                "-f", str(wav),
+                "-l", "en",
+                "-t", str(self.cfg.whisper_threads),
+                "-np",
+                "-mc", "0",
+                "-oj",
+                "-of", str(outbase),
+            ]
+
+            try:
+                result = subprocess.run(args, capture_output=True, text=True)
+            except FileNotFoundError:
+                raise TranscriberError(
+                    f"whisper-cli not found at {self.cfg.whisper_bin!r}. "
+                    "Check whisper_bin in your config, or install whisper.cpp."
+                ) from None
+            if result.returncode != 0:
+                detail = result.stderr.strip().splitlines()[-1] if result.stderr.strip() else "unknown whisper-cli error"
+                raise TranscriberError(f"whisper-cli failed on {wav}: {detail}")
+
+            data = json.loads(outbase.with_suffix(".json").read_text())
+
+        segments = [
+            Segment(
+                start=seg["offsets"]["from"] / 1000,
+                end=seg["offsets"]["to"] / 1000,
+                text=seg["text"].strip(),
+            )
+            for seg in data["transcription"]
+        ]
+        transcript = Transcript(
+            segments=segments,
+            duration=wav_duration(wav),
+            engine="whisper large-v3-turbo",
+            language=data.get("result", {}).get("language", "en"),
+        )
+        check_quality(transcript)
+        return transcript
+
+
+class RemoteTranscriber:
+    def __init__(self, cfg: Config):
+        if not cfg.remote_url:
+            raise TranscriberError("transcriber is set to 'remote' but no remote_url is configured.")
+        self.cfg = cfg
+
+    def transcribe(self, wav: Path, *, vocabulary: list[str] | None = None) -> Transcript:
+        import httpx2
+
+        with open(wav, "rb") as f:
+            response = httpx2.post(
+                self.cfg.remote_url,
+                files={"audio": (wav.name, f, "audio/wav")},
+                data={"vocabulary": json.dumps(vocabulary)} if vocabulary else None,
+                timeout=None,
+            )
+        response.raise_for_status()
+        data = response.json()
+
+        segments = [Segment(**seg) for seg in data["segments"]]
+        transcript = Transcript(
+            segments=segments,
+            duration=data.get("duration", wav_duration(wav)),
+            engine=data.get("engine", "remote"),
+            language=data.get("language", "en"),
+        )
+        check_quality(transcript)
+        return transcript
+
+
+def check_quality(transcript: Transcript) -> None:
+    """Issue a TranscriptQualityWarning if the transcript shows signs of a
+    known engine degeneration mode. Catch a bad transcript here, not by
+    reading a hallucinated note file three weeks later."""
+    reasons: list[str] = []
+
+    run_len = 1
+    max_run = 1
+    for i in range(1, len(transcript.segments)):
+        if transcript.segments[i].text.strip() == transcript.segments[i - 1].text.strip():
+            run_len += 1
+            max_run = max(max_run, run_len)
+        else:
+            run_len = 1
+    if max_run > _MAX_IDENTICAL_RUN:
+        reasons.append(f"{max_run} consecutive identical segments (repetition loop)")
+
+    for seg in transcript.segments:
+        match = _WORD_STUTTER_RE.search(seg.text)
+        if match:
+            reasons.append(f"word repeated 4+ times in a row at {seg.start:.1f}s: {seg.text!r}")
+            break
+
+    confidences = [s.confidence for s in transcript.segments if s.confidence is not None]
+    if confidences:
+        mean_confidence = sum(confidences) / len(confidences)
+        if mean_confidence < _MIN_MEAN_CONFIDENCE:
+            reasons.append(f"mean confidence {mean_confidence:.2f} below {_MIN_MEAN_CONFIDENCE}")
+
+    if reasons:
+        warnings.warn(
+            "Transcript quality check failed: " + "; ".join(reasons),
+            TranscriptQualityWarning,
+            stacklevel=2,
+        )

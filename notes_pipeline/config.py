@@ -13,10 +13,11 @@ from pydantic_settings import (
 )
 
 DEFAULT_CONFIG_PATH = Path.home() / ".config" / "notes-pipeline" / "config.toml"
+DEFAULT_ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Config(BaseSettings):
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore", env_file=DEFAULT_ENV_PATH)
 
     anthropic_api_key: SecretStr
     model: str = "claude-opus-5"
@@ -39,8 +40,10 @@ class Config(BaseSettings):
     ) -> tuple[PydanticBaseSettingsSource, ...]:
         toml_settings = TomlConfigSettingsSource(settings_cls, toml_file=DEFAULT_CONFIG_PATH)
         # config.toml overrides plain env vars, per PLAN.md; explicit kwargs
-        # (used by tests) still win over both.
-        return (init_settings, toml_settings, env_settings, file_secret_settings)
+        # (used by tests) still win over both. Real process env beats .env
+        # (a `.env` file sets local dev defaults; an exported env var is an
+        # explicit override), so dotenv sits last before file secrets.
+        return (init_settings, toml_settings, env_settings, dotenv_settings, file_secret_settings)
 
 
 class ConfigError(SystemExit):

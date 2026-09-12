@@ -409,7 +409,7 @@ sentence.
 
 ---
 
-### M5 — Transcription
+### M5 — Transcription ✅ DONE (see note below on vocabulary seeding)
 **Depends on:** M1, M4
 **Creates:** `notes_pipeline/stages/transcribe.py`
 
@@ -464,7 +464,7 @@ one jargon term. A synthetic looping transcript trips the quality guard.
 
 ---
 
-### M6 — Synthesis
+### M6 — Synthesis ✅ DONE
 **Depends on:** M1, M3, M5
 **Creates:** `notes_pipeline/stages/synthesize.py`, `prompts/base.md`, `prompts/courses/`
 
@@ -521,7 +521,7 @@ a cache read.
 
 ---
 
-### M7 — Emit
+### M7 — Emit ✅ DONE
 **Depends on:** M1, M6
 **Creates:** `notes_pipeline/stages/emit.py`
 

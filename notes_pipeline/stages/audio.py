@@ -31,9 +31,9 @@ def prepare(src: Path, dst: Path) -> float:
         detail = result.stderr.strip().splitlines()[-1] if result.stderr.strip() else "unknown ffmpeg error"
         raise AudioError(f"ffmpeg failed to process {src}: {detail}")
 
-    return _wav_duration(dst)
+    return wav_duration(dst)
 
 
-def _wav_duration(wav_path: Path) -> float:
+def wav_duration(wav_path: Path) -> float:
     with wave.open(str(wav_path), "rb") as f:
         return f.getnframes() / f.getframerate()
