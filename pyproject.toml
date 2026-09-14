@@ -21,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 notes = "notes_pipeline.cli:app"
+notes-mcp = "notes_pipeline.mcp_server:main"
 
 [tool.setuptools.packages.find]
 include = ["notes_pipeline*"]
