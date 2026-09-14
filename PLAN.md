@@ -120,6 +120,8 @@ notes-pipeline/
     config.py            # M0
     models.py            # M1
     store.py  cache.py   # M2
+    library.py            # course.toml discovery + path resolution, shared by M8 and M9
+    pipeline.py            # the build pipeline itself (M3-M7), UI-agnostic; M8 and M9 each supply a Reporter
     stages/
       slides.py          # M3
       audio.py           # M4
@@ -409,7 +411,7 @@ sentence.
 
 ---
 
-### M5 — Transcription ✅ DONE (see note below on vocabulary seeding)
+### M5 — Transcription ✅ DONE
 **Depends on:** M1, M4
 **Creates:** `notes_pipeline/stages/transcribe.py`
 
@@ -440,12 +442,19 @@ Parse `OUTBASE.json` → `transcription[].offsets` (milliseconds).
   unseeded run. Max-context zero means zero prompt tokens reach the decoder,
   so vocabulary seeding is silently a no-op. Do not ship code that sets both
   and assumes seeding is working.
-- **Unresolved:** whether `turbo` needs `-mc 0` at all. The loop was only ever
-  observed on `large-v3`. The experiment to run: `turbo` at default `-mc`
-  with `--prompt`, checked against the quality guard. If it holds, seeding
-  becomes available and `-mc 0` can be reserved as the fallback for a
-  recording that actually loops.
-- `--prompt` caps at roughly `n_text_ctx/2` (~224) tokens — truncate.
+- **Resolved: `turbo` needs `-mc 0` too, permanently — not just as a fallback.**
+  Ran the experiment: `turbo` at default `-mc` with `--prompt` (deck
+  vocabulary), against Benchmark B. Result was worse than the `-mc 0`
+  baseline, not better — a 377-segment repetition loop (the same failure
+  mode `-mc 0` exists to prevent, so it is not `large-v3`-specific after
+  all), and jargon recall *dropped* even outside the loop (UNESCO 2→0,
+  accountability 4→1, beneficence 3→1). `-mc 0` stays on unconditionally.
+  Vocabulary seeding via `--prompt` is dead; jargon correction is entirely
+  M6's job (Claude reconciling deck vocabulary against the raw transcript),
+  which is already how `synthesize.py` works. See
+  `testlecture/whisper_seeded.json` / `whisper_carry.json` for the run
+  artifacts, and the comment in `stages/transcribe.py`'s
+  `WhisperTranscriber.transcribe` for the inline record.
 
 #### Quality guard (both engines)
 
@@ -585,9 +594,9 @@ notes append --audio P2 --note N.md [--deck D] [--notes N2] [--assets ...] [--ou
 
 ---
 
-### M9 — MCP server
+### M9 — MCP server ✅ DONE
 **Depends on:** M8
-**Creates:** `notes_pipeline/mcp_server.py`
+**Creates:** `notes_pipeline/mcp_server.py`, `notes_pipeline/pipeline.py`, `notes_pipeline/library.py`
 
 FastMCP, stdio transport. Registered with
 `claude mcp add notes -- <repo>/.venv/bin/notes-mcp`.
@@ -602,19 +611,46 @@ is too long for a synchronous tool call. So builds are jobs.
 ```python
 @mcp.tool() def list_courses() -> list[dict]
 @mcp.tool() def list_lectures(course: str | None = None) -> list[dict]
-@mcp.tool() def build_lecture(lecture_dir: str, force: bool = False) -> dict   # -> {"job_id": ...}
+@mcp.tool() def build_lecture(course: str, number: int, force: bool = False) -> dict   # -> {"job_id": ...}
 @mcp.tool() def job_status(job_id: str) -> dict                                # -> stage, progress, result path
-@mcp.tool() def get_notes(lecture_dir: str) -> str                             # the markdown
+@mcp.tool() def get_notes(course: str, number: int) -> str                     # the markdown
 @mcp.tool() def search_notes(query: str, course: str | None = None) -> list[dict]
 ```
 
-`build_lecture` starts a background job and returns immediately; Claude Code
-polls `job_status`. `get_notes` is the one that gets used constantly — it is how
-"synthesise these then quiz me on the output" actually works.
+**Deviation from the original spec above:** `build_lecture`/`get_notes` take
+`(course, number)`, not a `lecture_dir` string. The library layout (§5) is
+flat and course-root based, keyed by `course.toml` + a lecture number — there
+is no per-lecture directory to point at. `(course, number)` is exactly what
+`notes build <course> <n>` already resolves on the CLI side, so both entry
+points share one resolver (`library.py`) instead of inventing a second path
+convention.
 
-**Acceptance:** driven end-to-end from a Claude Code session — build a lecture,
-poll to completion, pull the notes back, and get a quiz out of it without
-touching the terminal.
+`build_lecture` starts a background job (a plain thread — the server is a
+single long-lived subprocess of one Claude Code session, so no job queue is
+needed) and returns immediately; Claude Code polls `job_status`. `get_notes`
+is the one that gets used constantly — it is how "synthesise these then quiz
+me on the output" actually works. `list_lectures` reports every lecture number
+discoverable from `audio/` under a course's `pattern`, each flagged
+`built: bool`, not just the ones already in the store — so Claude Code can see
+what's buildable, not only what's built.
+
+To avoid the build logic drifting between the CLI and the MCP server, the
+stage-by-stage pipeline (slides → audio → transcribe → synthesize → emit,
+previously inlined in `cli.py`'s `_run_build`) was extracted into
+`pipeline.run_build()`, parameterized by a `Reporter` protocol. `cli.py`
+supplies a `TerminalReporter` (identical output to before — verified against
+the cached COSC-4V88 Week 1 run); `mcp_server.py` supplies a `JobReporter`
+that updates the `Job` a background thread is running, for `job_status` to
+read. Course/path resolution (`course.toml` lookup, `Week{n}`-pattern
+matching) was similarly extracted from `cli.py` into `library.py`.
+
+**Acceptance:** driven end-to-end — verified directly (not just imported):
+`tools/list` over the real stdio JSON-RPC transport returns all six tools;
+`build_lecture` → `job_status` polled to `"done"` → `get_notes` → `search_notes`
+all exercised against the cached COSC-4V88 Week 1 lecture. Registered with
+`claude mcp add notes -- <repo>/.venv/bin/notes-mcp` and confirmed `✔ Connected`
+via `claude mcp list`. Not yet driven from *inside* a live Claude Code chat
+turn (say "synthesise this, then quiz me") — do that as a first real use.
 
 ---
 
@@ -647,16 +683,19 @@ Transcription is free.
 
 ## 10. Deferred
 
-- **FastAPI + Next.js frontend.** `POST /jobs`, `GET /jobs/{id}`,
-  SSE `/jobs/{id}/events`. The job model in M9 is designed so this drops in
-  without restructuring anything.
-- **Remote transcription** against the 9060 XT box once it is running Ubuntu on
-  the tailnet. `RemoteTranscriber` is the seam. **This is now worth doing** —
-  whisper is the accuracy default and costs ~6 min per lecture on the Mac; a
-  Vulkan `-DGGML_VULKAN=1` build on gfx1200 should cut that to roughly 2 min,
-  and moves the load off the laptop entirely. **If that service is built, it
-  must return timestamped segments as JSON — not markdown, not flat text.**
-  Rule B depends on timestamps and they cannot be recovered once discarded.
+- **FastAPI + Next.js frontend.** Superseded by a full design — see §14. Not
+  yet built.
+- **Remote transcription** against the 9060 XT box for the *personal Mac
+  pipeline* (M0–M9), independent of the hosted multi-user service in §14 —
+  `notes build` on the Mac calling out to the box's whisper instead of running
+  it locally. `RemoteTranscriber` is the seam (M5). Worth revisiting once §14's
+  `api` service exists, since it will already have whisper behind an HTTP
+  endpoint on that box for the hosted pipeline — a minimal transcribe-only
+  route for personal use may be nearly free to add on top. Vulkan
+  `-DGGML_VULKAN=1` on gfx1200 should cut the ~6 min Mac transcription time to
+  roughly 2 min. **If built, it must return timestamped segments as JSON —
+  not markdown, not flat text.** Rule B depends on timestamps and they cannot
+  be recovered once discarded.
 - **Obsidian vault integration**, after the vault refactor.
 
 ---
@@ -717,3 +756,371 @@ Already in the repo and working:
 > in that module's section are the definition of done — implement against them
 > and verify each one before you finish. Do not modify other modules' files;
 > if an interface in `models.py` is wrong, say so rather than working around it.
+
+---
+
+## 14. Hosted multi-user service (planned)
+
+Everything in §§1–13 is the personal, single-user, Mac-local pipeline and is
+**done and unaffected by this section.** This is a second, separate surface:
+a handful of named friends, each with their own Anthropic key, using a web
+dropbox and/or a remote MCP connector, hosted on the 9060 XT box (Ubuntu +
+Tailscale) — which is also a gaming PC, so it's off sometimes. Public TLS,
+DNS, and routing live one layer out, on the always-on **goosenest02** k3s
+cluster, which already has cert-manager and DNS management set up — see
+14.1/14.2. Designed in conversation before any of it was built — not yet
+implemented. Treat this section the way §§0–9 were treated before they were
+built: a spec to implement one module at a time, not a description of
+working code.
+
+### 14.1 Decisions (locked)
+
+| Decision | Choice | Why |
+|---|---|---|
+| Where the pipeline runs | The 9060 XT box, in Docker Compose | Frees the pipeline from the Mac; one shared GPU for whisper across all hosted users |
+| Where the public edge runs | goosenest02's k3s cluster (ingress-nginx + cert-manager, already set up), **not** the gaming box | The gaming box is a gaming PC first — it's off sometimes. goosenest02 is always on, and already owns cert/DNS management, so reuse it rather than duplicating TLS setup on a second machine |
+| How the edge reaches the pipeline | Over Tailscale only — the gaming box publishes **zero public ports**, not even conditionally | Strictly better than the original single-box design: the box most worth protecting now has no public listener at all, on top of the fallback UX benefit |
+| When the box is off | ingress-nginx's built-in custom-error-backend serves a static "the pipeline's host is off — text me" page on 502/503/504 | Native ingress-nginx feature for exactly this; no bespoke proxy/health-check code, no wake button (explicitly not wanted — human-in-the-loop by design) |
+| Exposure | Public internet, not tailnet-only | Friends shouldn't need to install Tailscale to use a website |
+| Auth | Google OAuth via Auth.js (web) and FastMCP's `GoogleProvider` (MCP) | Zero identity infra to run; friends already have Google accounts; "OSS" is the auth library, not the IdP |
+| Access control | Explicit per-email allowlist, not open signup | A handful of named friends, not the general public |
+| Sessions | Database-backed, not JWT | Must be able to instantly revoke a friend's access by disabling their row |
+| API keys | Each user supplies their own Anthropic key; encrypted at rest, never round-tripped to the browser after saving | Their usage, their bill; the box never becomes a shared-cost liability |
+| Ingestion | Web dropbox upload only — **not** an MCP tool | A browser-only friend has no server-side file path to point a tool at, and MCP tool calls aren't shaped for large binary uploads |
+| Remote MCP tool surface | Read/search/quiz only: `list_my_lectures`, `get_notes`, `search_notes`, `job_status` | Matches what's actually possible remotely; building happens on the website. No fallback page equivalent exists for this surface — when the box is off, a tool call just fails with a connection error, and that's fine |
+| Admin | A second instance of the same web app, bound to the gaming box's loopback interface only | SSO-gated *and* network-unreachable except via SSH tunnel — two independent layers, not one. Untouched by the goosenest02/k3s refactor — never routed through it |
+| DB | SQLite, shared Docker volume, WAL mode | Matches the existing single-user pipeline's storage decision (§1); still bought nothing to switch to Postgres at this scale |
+| Concurrency | One global build worker across all users | One GPU — concurrent whisper runs would just contend with each other, not go faster |
+
+### 14.2 Architecture
+
+Two machines now. **goosenest02** (always-on, k3s) is the only thing with a
+public IP in this picture; the gaming box is reachable from it only over
+Tailscale, and has no public listener at all — not even conditionally on
+being "up."
+
+```
+  Public internet
+        │
+        ▼
+  goosenest02 — k3s cluster (ingress-nginx + cert-manager, already exists —
+                              this project is just another Ingress on it)
+        │
+        ├─ Ingress: notes.<domain>  →  ExternalName/Tailscale-reachable
+        │            /               →  backend pointing at the gaming
+        │            /mcp            →  box's stable Tailscale hostname
+        │                              (e.g. gamingbox.tailXXXX.ts.net)
+        │
+        └─ ingress-nginx custom-http-errors (502/503/504) → a tiny always-on
+           in-cluster Deployment+Service serving one static page: "the
+           pipeline's host is off right now — text me and I'll turn it
+           back on." No wake button, no health-check-triggered automation
+           — deliberately just a message, so it's still you who decides
+           when the box comes back on.
+
+           No Tailscale operator or subnet router is installed on this
+           cluster — Tailscale runs on the goosenest02 host only, which is
+           itself a tailnet member. Whether the ingress-nginx pod can reach
+           the gaming box's tailnet IP directly (plain pod egress through
+           the node) or needs a host-level forwarder instead (mirroring how
+           Postgres/`tailscale serve` already works on this box) is settled
+           in M11 §14.5, not guessed at here.
+
+  ══════════════════════════ Tailscale (private, WireGuard) ═════════════════
+
+  9060 XT box — Docker Compose, ZERO published public ports
+        │
+        ├─ web (Next.js) ──────────┐  bound to the box's Tailscale
+        ├─ api (FastAPI+FastMCP)   │  interface only — reachable from
+        │    mounted at /mcp       │  goosenest02 over the tailnet,
+        │    GoogleProvider +      │  from nowhere else
+        │    email-allowlist       │
+        │    TokenVerifier;        │
+        │    single build-worker   │
+        │    queue; whisper-cli    │  web → api's /api/* stays exactly
+        │    (GPU passthrough)     │  as before: Docker-internal network
+        │                          │  on the gaming box, never touches
+        │                          │  goosenest02 or the public internet
+        ▼                          ▼
+  auth.db (Node-only:        notes.db (shared): lectures, stage_cache,
+  sessions, accounts —       notes (+ user_id), and the one hand-defined
+  Auth.js's own schema)      `users` table both web and api read/write
+                             directly (email, disabled,
+                             encrypted_anthropic_key, is_admin)
+
+  admin — same image as `web`, different entrypoint/env. Compose publishes
+  it as 127.0.0.1:8090:3000 — bound to the gaming box's own loopback
+  interface only, never on its Tailscale interface, never routed through
+  goosenest02. Reached only via `ssh -L 8090:localhost:8090 you@box`, then
+  a fresh Google sign-in (separate origin ⇒ separate session cookie)
+  checked against ADMIN_EMAIL.
+```
+
+Both Docker volumes (`auth.db`'s and `notes.db`'s) plus uploaded audio and
+the whisper model live in named Compose volumes on the gaming box, so a
+container crash or `docker compose down` doesn't lose data.
+
+### 14.3 Data model delta
+
+```sql
+-- notes.db: existing lectures/stage_cache/notes tables (§ M2) gain a
+-- user_id column, scoping every row to whoever uploaded it.
+ALTER TABLE lectures ADD COLUMN user_id TEXT;
+ALTER TABLE notes    ADD COLUMN user_id TEXT;
+
+-- notes.db: one new table, intentionally tiny and hand-written (no ORM,
+-- no migration framework) on EITHER side — this is the one place Python
+-- and Node touch the same rows, and the schema needs to stay stable
+-- precisely because two languages depend on it.
+CREATE TABLE users(
+    email TEXT PRIMARY KEY,
+    disabled INTEGER NOT NULL DEFAULT 0,
+    is_admin INTEGER NOT NULL DEFAULT 0,
+    encrypted_anthropic_key TEXT,          -- AES-256-GCM ciphertext, base64
+    key_nonce TEXT,                        -- base64, one per key
+    created_at TEXT NOT NULL
+);
+```
+
+Both the web app's Auth.js `signIn` callback and the `api` service's MCP
+token verifier ask the same question against this one table: does a
+non-disabled row exist for this Google-verified email? Encrypting/decrypting
+`encrypted_anthropic_key` is Python's job only (it already owns AES-GCM
+logic nowhere else) — the web app's "paste your API key" settings page
+calls `POST /api/me/anthropic-key` on the `api` service rather than writing
+ciphertext into `notes.db` itself, so the encryption implementation exists
+in exactly one place.
+
+Web-app lectures don't use the course.toml/`pattern` convention from §5 at
+all — that's specific to the Mac-local flat-folder library. An uploaded
+lecture is just `{id: uuid, user_id, title (user-entered, defaults to the
+filename), created_at}`; `pipeline.run_build` still works unmodified, just
+called with synthetic `course_code`/`number` values instead of ones resolved
+from a course.toml.
+
+**Required change to `pipeline.py`:** `Config.anthropic_api_key` is
+currently a single value loaded once at process start (fine for one
+person's CLI). `run_build` needs an optional per-call key override so each
+hosted build uses *that user's* key, not a global one baked into `Config`.
+Small, mechanical — not yet done.
+
+### 14.4 Repo layout delta
+
+```
+notes-pipeline/
+  notes_pipeline/            # unchanged (§4) — M0-M9, personal pipeline
+    webapi.py                 # M13 — FastAPI + FastMCP, multi-tenant
+  web/                        # M14/M15 — Next.js; `web` and `admin` are two
+                               # running instances of this one codebase
+  deploy/
+    docker-compose.yml        # M10 — gaming box: web, admin, api
+    k8s/                       # M11 — goosenest02: Ingress, the
+                               # Tailscale-reachable backend, the fallback
+                               # Deployment+Service, ingress-nginx
+                               # custom-http-errors config
+```
+
+### 14.5 Modules
+
+---
+
+#### M10 — Gaming-box Docker Compose skeleton
+**Depends on:** M9
+**Creates:** `deploy/docker-compose.yml`
+
+Three services (`web`, `admin`, `api` — no `caddy`; TLS/routing now lives on
+goosenest02, see M11) per §14.2. Named volumes for `notes.db`, `auth.db`,
+uploaded audio, and the whisper model. GPU device passthrough to `api`
+(`/dev/dri`, `/dev/kfd`, `render` group membership) for the Vulkan
+whisper.cpp build. Every container runs as a non-root user with
+capabilities dropped and resource limits set. `web` and `api` bind to the
+box's **Tailscale interface only** — reachable from goosenest02 over the
+tailnet, from nowhere else, and never published to `0.0.0.0`. `admin`
+publishes to `127.0.0.1` only. The host forwards **no public ports at all**;
+SSH stays Tailscale-only.
+
+**Acceptance:** `docker compose up` brings up all three services; `api` can
+invoke `whisper-cli` with working GPU access; from any machine off the
+tailnet, nothing on the box is reachable, full stop; from goosenest02, `web`
+and `api` are reachable over Tailscale; `admin` is reachable from neither —
+loopback only.
+
+---
+
+#### M11 — goosenest02: ingress + off-box fallback
+**Depends on:** M10
+**Creates:** `deploy/k8s/` — an `Ingress`, the Tailscale-reachable backend
+for `web`/`api`, and the fallback `Deployment`+`Service`
+
+Reuses the cluster's existing ingress-nginx + cert-manager setup — this is
+just another `Ingress` on it, with TLS handled the way every other app on
+that cluster already gets it. Two routes: `notes.<domain>/` → the gaming
+box's `web` port, `notes.<domain>/mcp` → its `api` port. The backend target
+is the box's stable Tailscale hostname, not a raw IP (Tailscale IPs are
+stable too, but the hostname survives re-registration).
+
+The fallback is ingress-nginx's built-in `custom-http-errors` +
+`default-backend-service` mechanism — when the box is off, connecting to it
+fails and nginx returns 502/503/504, which this feature intercepts and
+serves from a small always-on in-cluster Deployment instead: one static
+HTML page, "the pipeline's host is off right now — text me and I'll turn it
+back on," nothing dynamic, no wake button (deliberately not built — see
+§14.1: this stays a human-in-the-loop step, not automated). This is a
+native ingress-nginx feature built for exactly this case, not bespoke
+health-check code.
+
+**How the Ingress backend actually reaches the gaming box's tailnet IP —
+confirmed constraints, from the goosenest02 cluster's real config (not the
+Tailscale Kubernetes operator, not a subnet router; neither is installed):**
+Tailscale runs on the goosenest02 **host**, not in-cluster — the node itself
+is a tailnet member (`100.97.74.58`). The only mechanism actually in use
+today is inbound: klipper/NodePort exposing a pod's port on the node's IPs
+(including its tailnet IP), the same pattern the Postgres/`tailscale serve`
+setup uses for a host-bound process. Neither of those is quite what this
+module needs — they make something reachable *from* the tailnet; this needs
+an ingress-nginx *pod* to reach *out* to a different tailnet peer (the
+gaming box) as a proxy backend. That's a different direction your existing
+setup doesn't directly answer. Two candidates, in the order to actually try
+them when this module is built:
+
+1. **Plain pod egress.** k3s's default CNI typically masquerades
+   pod-originated traffic for any destination outside the pod/service CIDR
+   through the node — which would let it ride the node's already-existing
+   route to `100.64.0.0/10` via `tailscale0` for free, no operator, no
+   NodePort, no `--advertise-routes`. Verify with one command before relying
+   on it: `kubectl exec` into any pod and curl the gaming box's tailnet IP.
+   If it connects, the Ingress backend is just an `ExternalName` Service
+   pointing at the gaming box's Tailscale hostname — nothing else to build.
+2. **Fallback, mirroring the existing Postgres pattern** if (1) doesn't
+   work: a small forwarder run directly on the goosenest02 **host** (not a
+   pod) — the host already has full tailnet peer connectivity, same as it
+   does for Postgres, no extra config needed there — and a Service with
+   manually-specified `Endpoints` pointing at the node's IP, which is the
+   standard way to route a k8s Ingress to something running outside the pod
+   network on the same host without needing any pod-to-tailnet reachability
+   at all.
+
+**Acceptance:** with the gaming box up, `notes.<domain>/` and `/mcp` proxy
+through correctly over TLS; with the gaming box powered off, the same URLs
+return the static fallback page instead of a raw gateway-timeout error;
+`admin` is not reachable through this Ingress at all — it was never wired
+into it.
+
+---
+
+#### M12 — Shared `users` table and key encryption
+**Depends on:** M2, M10
+**Creates:** additions to `notes_pipeline/store.py` (the `users` table +
+`ALTER TABLE ... ADD COLUMN user_id`), a small encryption helper module
+
+AES-256-GCM helpers (`encrypt_key(plaintext, master_key) -> (ciphertext,
+nonce)`, `decrypt_key(ciphertext, nonce, master_key) -> plaintext`), master
+key from an env var, never logged, never returned by any API response.
+
+**Acceptance:** round-trips through encrypt/decrypt; a disabled user's row
+is excluded from an "is this email active" query; schema matches §14.3
+exactly, since M13 and M14 both depend on it verbatim.
+
+---
+
+#### M13 — `api` service: multi-tenant FastAPI + remote MCP
+**Depends on:** M9, M12
+**Creates:** `notes_pipeline/webapi.py`
+
+```python
+# internal only — never reaches goosenest02's Ingress or the public internet
+POST /api/lectures                 # multipart upload -> queues a build job
+GET  /api/lectures                 # this user's lecture/job history
+GET  /api/lectures/{id}/notes      # download the generated markdown
+GET  /api/jobs/{id}
+POST /api/me/anthropic-key         # encrypt + store this user's key
+
+# mounted at /mcp — the only path of this service goosenest02's Ingress proxies publicly
+@mcp.tool() def list_my_lectures() -> list[dict]
+@mcp.tool() def get_notes(lecture_id: str) -> str
+@mcp.tool() def search_notes(query: str) -> list[dict]
+@mcp.tool() def job_status(job_id: str) -> dict
+```
+
+`FastMCP(auth=GoogleProvider(...))`, with a custom `TokenVerifier` subclass
+wrapping Google's that additionally rejects any token whose verified
+`claims["email"]` isn't an active row in `users` — confirmed feasible
+directly against the installed `fastmcp` 4.0.3 source before committing to
+this design. `http_app()`'s `allowed_hosts`/`host_origin_protection` locked
+to the real domain, as a DNS-rebinding guard. One global build-worker queue
+processes uploads FIFO across all users, with a small per-user pending-job
+cap so one person can't monopolize the only GPU.
+
+Every tool/route resolves the calling user from their verified session/token
+— never trusts a client-supplied user id.
+
+**Acceptance:** an upload completes a full build and is downloadable; a
+request to any `/api/*` or `/mcp` route without valid auth is rejected; a
+non-allowlisted Google account is rejected during the MCP OAuth flow itself,
+not after; `tools/list` over real HTTP returns exactly the four read tools.
+
+---
+
+#### M14 — `web`: dropbox + job history
+**Depends on:** M13
+**Creates:** `web/` (Next.js, Auth.js)
+
+Auth.js with `GoogleProvider`, database session strategy, a `signIn`
+callback querying the shared `users` table. Three pages: upload (streams
+multipart straight through to `api`'s `/api/lectures`, no buffering a whole
+audio file in the Next.js process), job history (poll `job_status`, list
+past lectures, download button hitting `/api/lectures/{id}/notes`), and a
+settings page to paste in an Anthropic key (posts to `api`, never stores
+ciphertext itself).
+
+**Acceptance:** an allowlisted Google account can sign in, upload, watch
+progress, and download; a non-allowlisted account is rejected with a clear
+message; disabling a user (M15) kills their live session within one request.
+
+---
+
+#### M15 — `admin`: loopback-only user management
+**Depends on:** M14, M12
+**Creates:** an `admin` entrypoint on the same `web` codebase; the `admin`
+Compose service
+
+Same Next.js build as `web`, gated additionally on
+`session.user.email === env.ADMIN_EMAIL`. One page: list users (email,
+created_at, disabled, has-a-key?), add-by-email, and a disable/re-enable
+toggle. "Remove" is soft-disable, not delete — keeps a departed friend's
+lecture history intact rather than orphaning rows; a hard-delete can be
+added later if actually wanted.
+
+**Acceptance:** unreachable via `curl` from any host other than the box
+itself; reachable via `ssh -L 8090:localhost:8090`; requires its own Google
+sign-in matching `ADMIN_EMAIL`; adding a user lets them sign in on `web`
+moments later; disabling one ends their session immediately.
+
+---
+
+#### M16 — Hardening pass
+**Depends on:** M10–M15
+**Creates:** nothing new — a verification pass against the checklist below
+
+- The gaming box forwards **no public ports, period** — not 80/443, not
+  anything. Confirmed by scanning it from off the tailnet. SSH reachable
+  only over Tailscale.
+- Tailscale ACLs restrict which tailnet nodes can reach the gaming box's
+  `web`/`api` ports to goosenest02 specifically, not every device on the
+  tailnet.
+- `unattended-upgrades` (or equivalent) enabled on the gaming box's host OS.
+- Every gaming-box container: non-root user, dropped capabilities,
+  memory/CPU limits.
+- Secrets (Google client secret, the AES master key, `ADMIN_EMAIL`) live in
+  an `.env` the Compose stack reads, `chmod 600`, never committed —
+  `.gitignore` updated before this module is considered done.
+- goosenest02's Ingress sends standard security headers (HSTS, etc.) — same
+  bar as every other app already on that cluster.
+- MCP `allowed_hosts` genuinely locked to the production domain, not `*`.
+- Single build-worker queue verified under two simultaneous uploads from
+  different users — second one waits, doesn't contend for the GPU.
+- Per-user pending-job cap verified — a burst of uploads from one account
+  gets throttled, not queued unbounded.
+
+**Acceptance:** every item above independently verified, not just present
+in config.
