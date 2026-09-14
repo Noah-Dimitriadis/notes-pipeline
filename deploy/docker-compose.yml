@@ -1,0 +1,96 @@
+# M10 — gaming-box skeleton (§14.5). No `caddy` service — public TLS/routing
+# now lives on goosenest02's k3s cluster (M11), reaching this box only over
+# Tailscale. `web` and `api` bind to the box's Tailscale interface only;
+# `admin` binds to loopback only. Nothing here is published to 0.0.0.0.
+#
+# TAILSCALE_IP, RENDER_GID, VIDEO_GID must be set in deploy/.env on the box
+# itself (see .env.example) — they're specific to that machine and can't be
+# baked in here. Written and reviewed on a Mac, not yet run or verified on
+# real hardware; treat the GPU/group-id/network-binding specifics as
+# needing on-box confirmation, not as already working.
+
+name: notes-pipeline
+
+networks:
+  internal:
+    driver: bridge
+    # NOT `internal: true` — api needs real outbound access (Anthropic API,
+    # Google OAuth token verification). The security boundary here is
+    # inbound: every `ports:` mapping below binds to the Tailscale interface
+    # or loopback only, never 0.0.0.0, so nothing on this network is
+    # reachable from outside except through those specific bindings.
+
+volumes:
+  notes-db:
+  auth-db:
+  uploads:
+  whisper-model:
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/api/Dockerfile
+      args:
+        RENDER_GID: ${RENDER_GID}
+        VIDEO_GID: ${VIDEO_GID}
+    image: notes-pipeline-api:local
+    restart: unless-stopped
+    networks: [internal]
+    # Tailscale interface only — reachable from goosenest02 over the
+    # tailnet, from nowhere else, never on 0.0.0.0.
+    ports:
+      - "${TAILSCALE_IP}:8000:8000"
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/kfd:/dev/kfd
+    volumes:
+      - notes-db:/data/notes-db
+      - uploads:/data/uploads
+      - whisper-model:/models:ro
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 8g
+    cpus: 4.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    image: notes-pipeline-web-placeholder:local
+    restart: unless-stopped
+    networks: [internal]
+    # Tailscale interface only — see api's note above.
+    ports:
+      - "${TAILSCALE_IP}:3000:3000"
+    volumes:
+      - auth-db:/data/auth-db
+      - notes-db:/data/notes-db # the shared `users` table — §14.3
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1g
+    cpus: 1.0
+
+  admin:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    image: notes-pipeline-web-placeholder:local
+    restart: unless-stopped
+    networks: [internal]
+    # Host loopback ONLY — not the Tailscale interface, not 0.0.0.0.
+    # Reached via `ssh -L 8090:localhost:8090 you@box`. See §14.2/M15.
+    ports:
+      - "127.0.0.1:8090:3000"
+    volumes:
+      - auth-db:/data/auth-db
+      - notes-db:/data/notes-db # the shared `users` table — §14.3
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 0.5
