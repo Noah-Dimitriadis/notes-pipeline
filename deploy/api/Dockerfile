@@ -11,11 +11,15 @@
 # only needs /dev/dri + libvulkan.
 
 # ---- stage 1: build whisper.cpp with Vulkan -------------------------------
-FROM debian:bookworm-slim AS whisper-builder
+# trixie, not bookworm: bookworm's libvulkan-dev (1.3.239) predates the
+# VK_EXT_layer_settings API ggml-vulkan's instance init now uses, and fails
+# to compile with "'LayerSettingEXT' is not a member of 'vk'". Matches the
+# runtime stage below, which is python:3.13-slim (also trixie-based).
+FROM debian:trixie-slim AS whisper-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake git ca-certificates \
-        libvulkan-dev glslang-tools pkg-config \
+        libvulkan-dev glslang-tools glslc spirv-headers spirv-tools pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Pin a specific tag before this ever gets built for real — HEAD is not
