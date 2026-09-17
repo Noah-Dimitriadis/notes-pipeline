@@ -135,9 +135,11 @@ e.g. copy `testlecture/lecture.wav` over):
   needed, just don't be surprised by it.
 - TLS and DNS are goosenest02's job (M11), not this box's — this box
   never needs a certificate of its own.
-- Once M13 (`notes_pipeline/webapi.py`) exists, `deploy/api/Dockerfile`'s
-  `CMD` needs to change from the placeholder to the real app — nothing
-  else in that Dockerfile should need to change.
+- M13 is done — `deploy/api/Dockerfile`'s `CMD` now runs the real
+  `notes_pipeline.webapi:app` via uvicorn. `deploy/.env` needs the new
+  `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`/`MCP_BASE_URL`/`ALLOWED_HOST`/
+  `KEY_MASTER_KEY`/`INTERNAL_API_SECRET`/`ADMIN_EMAIL` values filled in
+  (see `.env.example`) before `docker compose up` will serve real traffic.
 - Once M14/M15 (the real Next.js app) exist, `deploy/web/Dockerfile`
   should be replaced outright, not built on top of.
 - If the box is ever reimaged or Docker is reinstalled: `RENDER_GID` /

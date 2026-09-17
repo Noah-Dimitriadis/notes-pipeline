@@ -41,6 +41,22 @@ services:
     # tailnet, from nowhere else, never on 0.0.0.0.
     ports:
       - "${TAILSCALE_IP}:8000:8000"
+    # M13's webapi.py reads all of these from the process environment
+    # (config.Config + web_config.WebConfig, both pydantic-settings).
+    # deploy/.env holds the real values on the box; see .env.example.
+    env_file: .env
+    environment:
+      # Baked into this image's layout (see Dockerfile above), not
+      # machine-specific, so set directly here rather than via deploy/.env.
+      WHISPER_BIN: /usr/local/bin/whisper-cli
+      WHISPER_MODEL: /models/ggml-large-v3-turbo.bin
+      DB_PATH: /data/notes-db/notes.db
+      UPLOADS_ROOT: /data/uploads
+      # Unused by hosted builds (every build overrides it per-call with the
+      # uploading user's own key — see pipeline.run_build's `api_key`), but
+      # Config.anthropic_api_key has no default, so a placeholder is needed.
+      ANTHROPIC_API_KEY: unused-hosted-mode
+      LIBRARY_ROOT: /data/uploads
     devices:
       - /dev/dri:/dev/dri
       - /dev/kfd:/dev/kfd
@@ -60,14 +76,22 @@ services:
 
   web:
     build:
-      context: web
-      dockerfile: Dockerfile
-    image: notes-pipeline-web-placeholder:local
+      # Repo-root context, not `deploy/web` — the real M14 app lives at
+      # top-level `web/` (PLAN.md §14.4), same shape as `api` above.
+      context: ..
+      dockerfile: deploy/web/Dockerfile
+    image: notes-pipeline-web:local
     restart: unless-stopped
     networks: [internal]
     # Tailscale interface only — see api's note above.
     ports:
       - "${TAILSCALE_IP}:3000:3000"
+    env_file: .env
+    environment:
+      DB_PATH: /data/notes-db/notes.db
+      AUTH_DB_PATH: /data/auth-db/auth.db
+      API_INTERNAL_URL: http://api:8000
+      APP_MODE: web
     volumes:
       - auth-db:/data/auth-db
       - notes-db:/data/notes-db # the shared `users` table — §14.3
@@ -78,15 +102,21 @@ services:
 
   admin:
     build:
-      context: web
-      dockerfile: Dockerfile
-    image: notes-pipeline-web-placeholder:local
+      context: ..
+      dockerfile: deploy/web/Dockerfile
+    image: notes-pipeline-web:local
     restart: unless-stopped
     networks: [internal]
     # Host loopback ONLY — not the Tailscale interface, not 0.0.0.0.
     # Reached via `ssh -L 8090:localhost:8090 you@box`. See §14.2/M15.
     ports:
       - "127.0.0.1:8090:3000"
+    env_file: .env
+    environment:
+      DB_PATH: /data/notes-db/notes.db
+      AUTH_DB_PATH: /data/auth-db/auth.db
+      API_INTERNAL_URL: http://api:8000
+      APP_MODE: admin
     volumes:
       - auth-db:/data/auth-db
       - notes-db:/data/notes-db # the shared `users` table — §14.3

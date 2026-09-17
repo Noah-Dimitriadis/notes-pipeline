@@ -17,6 +17,12 @@ dependencies = [
     "typer",
     "httpx2",
     "pyyaml",
+    # M13 (§14.5) — the hosted multi-tenant `api` service only. Unused by
+    # the personal CLI/MCP entry points (M0-M9).
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "cryptography",
 ]
 
 [project.scripts]

@@ -78,12 +78,21 @@ def run_build(
     no_cache: bool,
     cfg: Config,
     reporter: Optional[Reporter] = None,
+    api_key: Optional[str] = None,
+    user_id: Optional[str] = None,
 ) -> Path:
     """Run the full slides -> audio -> transcribe -> synthesize -> emit
     pipeline for one lecture, reporting stage-by-stage progress through
-    `reporter`. Shared by the CLI's `build` command and the MCP server's
-    `build_lecture` job runner so caching and stage behaviour can't drift
-    between the two entry points."""
+    `reporter`. Shared by the CLI's `build` command, the MCP server's
+    `build_lecture` job runner, and the hosted service's (M13) build worker,
+    so caching and stage behaviour can't drift between entry points.
+
+    `api_key`, if given, is used for the synthesis call instead of
+    `cfg.anthropic_api_key` — the hosted service has no single global key
+    (§14.1: "each user supplies their own"), so its build worker always
+    passes the uploading user's own decrypted key here rather than relying
+    on `cfg`. `user_id` similarly scopes the resulting `lectures`/`notes`
+    rows (§14.3); both are no-ops for the personal CLI/MCP entry points."""
     reporter = reporter or NullReporter()
 
     if notes is not None and notes.resolve() == out.resolve():
@@ -168,6 +177,7 @@ def run_build(
             deck=deck_obj, transcript=transcript, my_notes=my_notes_text,
             extras=read_assets(assets), course=course_code, cfg=cfg,
             on_progress=reporter.synthesize_progress,
+            api_key=api_key,
         )
         elapsed = time.time() - start
         if not no_cache:
@@ -191,7 +201,7 @@ def run_build(
     }
     meta = {k: v for k, v in meta.items() if v is not None}
     result = emit_notes(markdown, lecture, meta, out)
-    store.add_lecture(lecture)
-    store.add_note(lecture_id, result, model=cfg.model, prompt_version=STAGE_VERSION)
+    store.add_lecture(lecture, user_id=user_id)
+    store.add_note(lecture_id, result, model=cfg.model, prompt_version=STAGE_VERSION, user_id=user_id)
     reporter.emit_done(result)
     return result

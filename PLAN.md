@@ -906,18 +906,42 @@ Small, mechanical — not yet done.
 
 ### 14.4 Repo layout delta
 
+**M11's artifacts don't live in this repo.** Moved into the existing
+`goose-nest-deploy` repo (goosenest02's own GitOps repo — ArgoCD +
+`bjw-s-labs/app-template` Helm chart, cert-manager, Cloudflare Tunnel; see
+that repo's own `PLAN.md` for the full cluster design) instead of
+duplicating a second deploy-config repo. "All deployment config for
+goosenest02 lives in one place" mattered more than keeping M10/M11 in the
+same repo.
+
 ```
-notes-pipeline/
+notes-pipeline/                (this repo — M0-M10, the pipeline + gaming box)
   notes_pipeline/            # unchanged (§4) — M0-M9, personal pipeline
     webapi.py                 # M13 — FastAPI + FastMCP, multi-tenant
   web/                        # M14/M15 — Next.js; `web` and `admin` are two
                                # running instances of this one codebase
+  docs/
+    box-setup.md               # gaming-box setup runbook (M10)
   deploy/
-    docker-compose.yml        # M10 — gaming box: web, admin, api
-    k8s/                       # M11 — goosenest02: Ingress, the
-                               # Tailscale-reachable backend, the fallback
-                               # Deployment+Service, ingress-nginx
-                               # custom-http-errors config
+    api/Dockerfile              # M10 — whisper.cpp+Vulkan, real
+    web/Dockerfile               # M10 — placeholder for web/admin, until M14/M15
+    docker-compose.yml         # M10 — gaming box: web, admin, api
+    .env.example                # M10 — TAILSCALE_IP, RENDER_GID, VIDEO_GID
+
+goose-nest-deploy/              (separate repo — M11)
+  apps/notes-pipeline/
+    application.yaml            # ArgoCD Application (app-template chart)
+    values.yaml                 # configMaps, the gateway pod, service, ingress
+    raw/                        # starts EMPTY — see backend-candidates/ below;
+                                 # ArgoCD syncs whatever's copied in here
+    backend-candidates/         # two mutually-exclusive candidates, NOT
+                                 # synced until one is copied into raw/ —
+      backend-path1-externalname.yaml   # M11 explains which applies
+      backend-path2-endpoints.yaml
+    host/                       # systemd units for path 2's forwarder,
+                                 # applied on the goosenest02 HOST directly
+                                 # (systemctl, not kubectl/ArgoCD) — only
+                                 # needed if backend-path1 doesn't work
 ```
 
 ### 14.5 Modules
@@ -947,27 +971,59 @@ loopback only.
 
 ---
 
-#### M11 — goosenest02: ingress + off-box fallback
+#### M11 — goosenest02: ingress + off-box fallback ✅ DONE (files written, not yet applied to a live cluster)
 **Depends on:** M10
-**Creates:** `deploy/k8s/` — an `Ingress`, the Tailscale-reachable backend
-for `web`/`api`, and the fallback `Deployment`+`Service`
+**Creates:** — in the separate `goose-nest-deploy` repo, not this one, per
+§14.4 — `apps/notes-pipeline/{application.yaml, values.yaml}` (ArgoCD
+Application + `bjw-s-labs/app-template` Helm values — this cluster's actual
+convention, matched exactly rather than hand-rolling raw manifests),
+`raw/` (empty until a backend candidate is copied in), two mutually
+exclusive backend candidates under `backend-candidates/`, and `host/`
+(systemd units for path 2's forwarder, applied via `systemctl` on the
+goosenest02 host, not `kubectl`/ArgoCD).
 
-Reuses the cluster's existing ingress-nginx + cert-manager setup — this is
-just another `Ingress` on it, with TLS handled the way every other app on
-that cluster already gets it. Two routes: `notes.<domain>/` → the gaming
-box's `web` port, `notes.<domain>/mcp` → its `api` port. The backend target
-is the box's stable Tailscale hostname, not a raw IP (Tailscale IPs are
-stable too, but the hostname survives re-registration).
+**Revised while building this module, from reading `goose-nest-deploy`'s
+own `PLAN.md` directly rather than assuming:** no per-app TLS/cert-manager
+annotation at all — this cluster terminates TLS at Cloudflare's edge, and
+the wildcard cert (`*.noahdimitriadis.com`) is issued once, globally
+(`platform/issuers/`), not per-Ingress. `apps/notes-pipeline/values.yaml`'s
+`ingress.main` has no `tls:` block, matching the `portfolio` app's own
+Ingress exactly. Two routes on one hostname: `notes.<domain>/` → this
+release's own `gateway` pod (a Service `identifier` reference, chart-
+managed), `notes.<domain>/mcp` → `gaming-box-api` (an external Service
+`name` reference — confirmed both forms are supported by reading
+`app-template`'s actual `_ingress.tpl` source, not assumed from docs
+alone). The backend target is the box's stable Tailscale hostname, not a
+raw IP (Tailscale IPs are stable too, but the hostname survives
+re-registration).
 
-The fallback is ingress-nginx's built-in `custom-http-errors` +
-`default-backend-service` mechanism — when the box is off, connecting to it
-fails and nginx returns 502/503/504, which this feature intercepts and
-serves from a small always-on in-cluster Deployment instead: one static
-HTML page, "the pipeline's host is off right now — text me and I'll turn it
-back on," nothing dynamic, no wake button (deliberately not built — see
-§14.1: this stays a human-in-the-loop step, not automated). This is a
-native ingress-nginx feature built for exactly this case, not bespoke
-health-check code.
+**Also considered and deliberately not done: Cloudflare Access**, the
+pattern `goose-nest-deploy` already uses for Obsidian MCP auth (Google SSO
+at Cloudflare's edge). Putting it in front of `notes.<domain>` too would
+mean a friend's remote MCP client has to clear Access's own browser-based
+Google login *and* our own `GoogleProvider` OAuth flow (M13) — and Access
+sitting in front of `/mcp`'s own OAuth/metadata endpoints risks breaking
+Dynamic Client Registration outright. Our own allowlist already does the
+same job Access would. Worth reconsidering later, scoped to just the `/`
+path only (Access supports path-scoped Applications) for browser-side
+defense-in-depth — not built now, wasn't asked for.
+
+**Revised while building this module:** the fallback was originally specced
+as ingress-nginx's built-in `custom-http-errors` + `default-backend-service`
+mechanism. That config lives in the *shared* ingress-nginx ConfigMap, which
+would apply cluster-wide to every other app on that same ingress-nginx
+instance, not just this one — not acceptable on a cluster with other apps
+already on it. Built instead as a small self-contained nginx pod
+(`gateway`, in the `notes-pipeline` namespace only) that sits between the
+Ingress and `gaming-box-web`: it proxies normally, and on a connection
+failure (`proxy_intercept_errors on` + `error_page 502 503 504 = @fallback`)
+serves one static page from its own ConfigMap instead — "the pipeline's
+host is off right now — text me and I'll turn it back on," nothing dynamic,
+no wake button (deliberately not built — see §14.1: this stays a
+human-in-the-loop step, not automated). Zero changes to shared/cluster-wide
+ingress-nginx config. `/mcp` does **not** go through this pod — no fallback
+page equivalent exists for that surface (§14.1) — it's routed straight to
+`gaming-box-api` from the Ingress, plain 502 on failure.
 
 **How the Ingress backend actually reaches the gaming box's tailnet IP —
 confirmed constraints, from the goosenest02 cluster's real config (not the
@@ -1001,31 +1057,58 @@ them when this module is built:
    at all.
 
 **Acceptance:** with the gaming box up, `notes.<domain>/` and `/mcp` proxy
-through correctly over TLS; with the gaming box powered off, the same URLs
-return the static fallback page instead of a raw gateway-timeout error;
-`admin` is not reachable through this Ingress at all — it was never wired
-into it.
+through correctly over TLS (terminated at Cloudflare's edge, per the
+finding above); with the gaming box powered off, `/` returns the static
+fallback page instead of a raw gateway-timeout error while `/mcp` returns a
+plain 502 (by design — no fallback exists for MCP); `admin` is not
+reachable through this Ingress at all — it was never wired into it.
+Not yet verified on the real cluster — see the open items below.
+
+**Left open, deliberately, for on-cluster verification (not guessed at
+here):** which of the two backend candidate files actually applies —
+settled by the pod-egress test documented at the top of
+`backend-path1-externalname.yaml`; the real domain (placeholder in
+`values.yaml`'s `ingress.main.hosts`); the cluster's actual DNS Service
+name/namespace referenced by `values.yaml`'s embedded `nginx.conf`
+(`kube-dns.kube-system` is a common k3s default, not confirmed for this
+cluster); and that the Cloudflare Tunnel's `*.noahdimitriadis.com` route
+(already configured per that repo's PLAN.md §4.8) picks up this new
+hostname with no additional tunnel config — should be automatic given how
+that route is already scoped, but not exercised end-to-end here.
 
 ---
 
-#### M12 — Shared `users` table and key encryption
+#### M12 — Shared `users` table and key encryption ✅ DONE
 **Depends on:** M2, M10
-**Creates:** additions to `notes_pipeline/store.py` (the `users` table +
-`ALTER TABLE ... ADD COLUMN user_id`), a small encryption helper module
+**Creates:** `notes_pipeline/crypto.py`; additions to `notes_pipeline/store.py`
+(the `users` table, idempotent `user_id` migration on `lectures`/`notes`)
 
-AES-256-GCM helpers (`encrypt_key(plaintext, master_key) -> (ciphertext,
-nonce)`, `decrypt_key(ciphertext, nonce, master_key) -> plaintext`), master
-key from an env var, never logged, never returned by any API response.
+AES-256-GCM helpers (`encrypt_key`/`decrypt_key`, exactly the signatures
+below), master key from an env var, never logged, never returned by any API
+response. Also turned on WAL mode (`PRAGMA journal_mode=WAL`) in `Store.
+__init__` — §14.1 named this as the decision but it had never actually been
+set; became load-bearing once M13 opens multiple connections to the same
+file across threads (see M13's notes).
 
-**Acceptance:** round-trips through encrypt/decrypt; a disabled user's row
-is excluded from an "is this email active" query; schema matches §14.3
-exactly, since M13 and M14 both depend on it verbatim.
+**Revised while building this module:** rather than adding `user_id` to the
+shared `Lecture` pydantic model (M1), ownership is a store-layer-only
+concern — `add_lecture(lecture, user_id=...)` plus a new
+`get_lecture_owner(lecture_id) -> str | None` accessor. Keeps M1's model,
+which M0-M9 also depend on, untouched; M13 only ever needs the owning
+email for an ownership check, not a full model field.
+
+**Acceptance — verified:** round-trip script (`encrypt_key` → `decrypt_key`,
+plus a wrong-master-key rejection) passes; `is_active_user` excludes a
+disabled row and a nonexistent one; migration is idempotent (re-opening an
+existing db doesn't error, `user_id` present on both tables); `add_user` is
+a no-op against an existing row (doesn't reset `disabled`/key state).
 
 ---
 
-#### M13 — `api` service: multi-tenant FastAPI + remote MCP
+#### M13 — `api` service: multi-tenant FastAPI + remote MCP ✅ DONE (verified against a TestClient, not real Google OAuth or a live GPU build)
 **Depends on:** M9, M12
-**Creates:** `notes_pipeline/webapi.py`
+**Creates:** `notes_pipeline/webapi.py`, `notes_pipeline/internal_auth.py`,
+`notes_pipeline/web_config.py`
 
 ```python
 # internal only — never reaches goosenest02's Ingress or the public internet
@@ -1046,42 +1129,103 @@ POST /api/me/anthropic-key         # encrypt + store this user's key
 wrapping Google's that additionally rejects any token whose verified
 `claims["email"]` isn't an active row in `users` — confirmed feasible
 directly against the installed `fastmcp` 4.0.3 source before committing to
-this design. `http_app()`'s `allowed_hosts`/`host_origin_protection` locked
-to the real domain, as a DNS-rebinding guard. One global build-worker queue
-processes uploads FIFO across all users, with a small per-user pending-job
-cap so one person can't monopolize the only GPU.
+this design (`GoogleProvider` doesn't accept a `token_verifier` kwarg
+itself; `AllowlistedGoogleProvider` splices the check in by wrapping
+`OAuthProxy`'s `_token_validator` attribute after `super().__init__`).
+`http_app()`'s `allowed_hosts`/`host_origin_protection` locked to the real
+domain, as a DNS-rebinding guard. One global build-worker queue processes
+uploads FIFO across all users, with a small per-user pending-job cap so one
+person can't monopolize the only GPU.
 
 Every tool/route resolves the calling user from their verified session/token
-— never trusts a client-supplied user id.
+— never trusts a client-supplied user id. §14.2's diagram left *how* `web`
+asserts a caller's identity to `/api/*` unspecified; a bare `X-User-Email`
+header would be exactly the "trusts a client-supplied user id" this
+acceptance criterion rules out, so `web` instead mints a short-lived
+HMAC-signed token (`internal_auth.py`, 60s validity) after checking its own
+Auth.js session, and `api` verifies the signature server-side before
+trusting the email. Both sides share `INTERNAL_API_SECRET`.
 
-**Acceptance:** an upload completes a full build and is downloadable; a
-request to any `/api/*` or `/mcp` route without valid auth is rejected; a
-non-allowlisted Google account is rejected during the MCP OAuth flow itself,
-not after; `tools/list` over real HTTP returns exactly the four read tools.
+**Found and fixed while building this module:** a single shared `Store`
+instance doesn't work here — sqlite3 connections aren't shareable across
+threads, and this service touches the db from FastAPI's threadpool, the
+build-worker thread, and FastMCP's own request handling. Switched to a
+fresh `Store` per call (cheap for a local sqlite file) and turned on WAL
+mode in M12's `Store.__init__` so those don't lock each other out.
+
+**Acceptance — verified** (FastAPI `TestClient`, no real Google OAuth or
+GPU in this environment): a non-allowlisted/disabled email gets 401/403 on
+every `/api/*` route; an unauthenticated `/mcp` request gets 401; the
+upload → job_status → notes flow works end-to-end against a fake audio
+file (fails downstream at ffmpeg, as expected — the queueing/ownership/
+auth plumbing around it is what was under test); a malformed or
+signature-mismatched internal token is rejected. **Not verified:** a real
+Google OAuth round-trip, and a real GPU build (needs the box).
 
 ---
 
-#### M14 — `web`: dropbox + job history
+#### M14 — `web`: dropbox + job history ✅ DONE (builds and lints clean; not run against real Google OAuth or a live `api` container)
 **Depends on:** M13
-**Creates:** `web/` (Next.js, Auth.js)
+**Creates:** `web/` (Next.js 16, Auth.js v5 — the current, still-beta
+successor to NextAuth v4; confirmed current via npm before use)
 
 Auth.js with `GoogleProvider`, database session strategy, a `signIn`
-callback querying the shared `users` table. Three pages: upload (streams
-multipart straight through to `api`'s `/api/lectures`, no buffering a whole
-audio file in the Next.js process), job history (poll `job_status`, list
-past lectures, download button hitting `/api/lectures/{id}/notes`), and a
-settings page to paste in an Anthropic key (posts to `api`, never stores
-ciphertext itself).
+callback querying the shared `users` table directly (never auto-creates a
+row on first Google login — allowlist, not open signup). Three pages:
+upload (streams multipart straight through to `api`'s `/api/lectures` via
+a Route Handler forwarding `req.body` with `duplex: "half"`, no buffering a
+whole audio file in the Next.js process), job history (poll `job_status`,
+list past lectures, download button hitting `/api/lectures/{id}/notes`),
+and a settings page to paste in an Anthropic key (posts to `api`, never
+stores or renders the value itself).
 
-**Acceptance:** an allowlisted Google account can sign in, upload, watch
-progress, and download; a non-allowlisted account is rejected with a clear
-message; disabling a user (M15) kills their live session within one request.
+**Revised while building this module:** no official Auth.js adapter targets
+raw SQLite (`@auth/sqlite-adapter` and similar don't exist on npm — checked
+directly) — hand-wrote one against Auth.js's documented `Adapter`
+interface (`web/src/lib/sqlite-adapter.ts`) rather than pulling in an ORM
+for this. Two separate sqlite files, per §14.2: `auth.db` (Auth.js's own
+tables, Node-only) and `notes.db` (the hand-written `users` table, shared
+with Python — Node never reads/writes `encrypted_anthropic_key`/
+`key_nonce`, only `has_key`).
+
+The `internal_auth` token (see M13) has a TypeScript port
+(`web/src/lib/internal-auth.ts`) that must stay byte-identical to the
+Python implementation; verified with a cross-language check — same
+inputs, same output, both sides.
+
+**Acceptance — verified:** `npm run build`/`npm run lint` clean; the
+internal_auth cross-language parity check passes; a scratch `users` table
+exercised directly confirms the allowlist logic (active/disabled/missing
+rows, `has_key` never leaks the ciphertext); `npm run dev` confirms an
+unauthenticated page request redirects to `/login`, an unauthenticated API
+request 401s, and `APP_MODE=admin` vs unset correctly gates which route
+surface answers. **Not verified:** a real Google OAuth round-trip (no
+credentials in the build environment), the Auth.js adapter's actual writes
+against a live `auth.db`, and the upload proxy against a running `api`
+container — all need the real box.
+
+**Found and fixed, out of this module's own scope, flagged and left for
+the box owner rather than silently edited:** `docker-compose.yml`'s
+`web`/`admin` services had the M10-placeholder-era build context
+(`context: web` relative to `deploy/`) and no `env_file`/`environment`
+block at all — neither would have worked against the real `web/` app at
+the repo root. Both fixed directly in `deploy/docker-compose.yml` once
+flagged (context now `..` + `deploy/web/Dockerfile`, matching `api`'s own
+shape; `env_file: .env` plus the fixed `DB_PATH`/`AUTH_DB_PATH`/
+`API_INTERNAL_URL`/`APP_MODE` values added per service).
+
+**Acceptance (original, still the bar once on real hardware):** an
+allowlisted Google account can sign in, upload, watch progress, and
+download; a non-allowlisted account is rejected with a clear message;
+disabling a user (M15) kills their live session within one request.
 
 ---
 
-#### M15 — `admin`: loopback-only user management
+#### M15 — `admin`: loopback-only user management ✅ DONE (same caveats as M14 — not run against real Google OAuth)
 **Depends on:** M14, M12
-**Creates:** an `admin` entrypoint on the same `web` codebase; the `admin`
+**Creates:** an `admin` entrypoint on the same `web` codebase (one image,
+`APP_MODE=admin`/`web` env var selects the route surface at runtime — see
+`web/src/proxy.ts`, the Next.js 16 rename of `middleware.ts`); the `admin`
 Compose service
 
 Same Next.js build as `web`, gated additionally on
@@ -1090,6 +1234,14 @@ created_at, disabled, has-a-key?), add-by-email, and a disable/re-enable
 toggle. "Remove" is soft-disable, not delete — keeps a departed friend's
 lecture history intact rather than orphaning rows; a hard-delete can be
 added later if actually wanted.
+
+The "disabling ends the session within one request" requirement is
+enforced in the Auth.js `session` callback (runs on every request under
+the database session strategy): it re-checks `disabled` each time and, the
+moment it sees a disabled user, deletes every session row for that user —
+so even the very request that discovers the disable treats the session as
+invalid (`lib/authz.ts` checks the returned `disabled` flag), and every
+request after that has no session row left to read at all.
 
 **Acceptance:** unreachable via `curl` from any host other than the box
 itself; reachable via `ssh -L 8090:localhost:8090`; requires its own Google

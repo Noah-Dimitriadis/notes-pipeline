@@ -1,10 +1,9 @@
 # M10 — api service image.
 #
 # Build context is the repo root (see deploy/docker-compose.yml), so this
-# can `pip install` notes_pipeline directly. The FastAPI + FastMCP app
-# (notes_pipeline/webapi.py) is M13's job and doesn't exist yet — CMD runs
-# deploy/api/placeholder.py until then; nothing else here should need to
-# change when M13 lands, only the CMD.
+# can `pip install` notes_pipeline directly. CMD runs the real FastAPI +
+# FastMCP app (notes_pipeline/webapi.py, M13) via uvicorn.
+# deploy/api/placeholder.py is now unused, kept only as the pre-M13 record.
 #
 # GPU passthrough is AMD Vulkan (RADV), not ROCm/HIP — whisper.cpp is built
 # with -DGGML_VULKAN=1. /dev/kfd is still passed through by docker-compose.yml
@@ -61,8 +60,6 @@ COPY pyproject.toml ./
 COPY notes_pipeline/ ./notes_pipeline/
 RUN pip install --no-cache-dir .
 
-COPY deploy/api/placeholder.py /app/placeholder.py
-
 USER notes
 EXPOSE 8000
-CMD ["python", "/app/placeholder.py"]
+CMD ["uvicorn", "notes_pipeline.webapi:app", "--host", "0.0.0.0", "--port", "8000"]

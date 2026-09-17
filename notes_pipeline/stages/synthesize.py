@@ -29,9 +29,14 @@ def synthesize(
     course: str,
     cfg: Config,
     on_progress: ProgressCallback | None = None,
+    api_key: str | None = None,
 ) -> str:
     """Call Claude to turn deck + transcript + notes into the markdown body
-    of a lecture note file (no YAML frontmatter — that's emit's job)."""
+    of a lecture note file (no YAML frontmatter — that's emit's job).
+
+    `api_key`, if given, is used instead of `cfg.anthropic_api_key` — the
+    hosted service (M13) passes each user's own key here rather than a
+    global one baked into `cfg`."""
     system_prompt = _BASE_PROMPT_PATH.read_text()
     course_override = _load_course_override(course)
     if course_override:
@@ -42,7 +47,7 @@ def synthesize(
     my_notes_block = my_notes or "(The student did not provide notes for this lecture.)"
     instruction_block = _render_instruction_block(extras)
 
-    client = anthropic.Anthropic(api_key=cfg.anthropic_api_key.get_secret_value())
+    client = anthropic.Anthropic(api_key=api_key or cfg.anthropic_api_key.get_secret_value())
     content_blocks = [
         {"type": "text", "text": deck_block, "cache_control": {"type": "ephemeral", "ttl": "1h"}},
         {"type": "text", "text": transcript_block, "cache_control": {"type": "ephemeral", "ttl": "1h"}},
@@ -62,6 +67,7 @@ def synthesize_append(
     course: str,
     cfg: Config,
     on_progress: ProgressCallback | None = None,
+    api_key: str | None = None,
 ) -> str:
     """Merge a continuation recording (a lecture split across multiple audio
     files) into an already-generated set of notes. Returns the complete,
@@ -80,7 +86,7 @@ def synthesize_append(
     my_notes_block = my_notes or "(The student did not provide additional notes for this part.)"
     instruction_block = _render_append_instruction_block(extras)
 
-    client = anthropic.Anthropic(api_key=cfg.anthropic_api_key.get_secret_value())
+    client = anthropic.Anthropic(api_key=api_key or cfg.anthropic_api_key.get_secret_value())
     content_blocks = [
         {"type": "text", "text": deck_block, "cache_control": {"type": "ephemeral", "ttl": "1h"}},
         {"type": "text", "text": existing_notes_block, "cache_control": {"type": "ephemeral", "ttl": "1h"}},
