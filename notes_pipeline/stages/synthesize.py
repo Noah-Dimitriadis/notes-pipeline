@@ -152,7 +152,7 @@ def _render_deck(deck: Deck | None) -> str:
     if deck is None:
         return "(No slide deck was provided for this lecture.)"
 
-    parts = [f"Slide deck source: {deck.source.name}"]
+    parts = [f"Slide deck source: {', '.join(p.name for p in deck.source)}"]
     for slide in deck.slides:
         header = f"### Slide {slide.index}"
         if slide.title:

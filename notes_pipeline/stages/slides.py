@@ -20,6 +20,16 @@ def extract(path: Path) -> Deck:
     raise ValueError(f"Unsupported deck format: {suffix!r} (expected .pptx or .pdf)")
 
 
+def extract_many(paths: list[Path]) -> Deck:
+    """Extract multiple decks and concatenate them in the given order,
+    renumbering slide indices to stay continuous across deck boundaries."""
+    slides: list[Slide] = []
+    for path in paths:
+        for slide in extract(path).slides:
+            slides.append(slide.model_copy(update={"index": len(slides) + 1}))
+    return Deck(slides=slides, source=list(paths))
+
+
 # -- .pptx ------------------------------------------------------------------
 
 
@@ -70,7 +80,7 @@ def _extract_pptx(path: Path) -> Deck:
 
         slides.append(Slide(index=i, title=title, body=body, notes=notes))
 
-    return Deck(slides=slides, source=path)
+    return Deck(slides=slides, source=[path])
 
 
 # -- .pdf ---------------------------------------------------------------------
@@ -104,7 +114,7 @@ def _extract_pdf(path: Path) -> Deck:
         title, body = _parse_pdf_page(page, header)
         slides.append(Slide(index=i, title=title, body=body, notes=None))
 
-    return Deck(slides=slides, source=path)
+    return Deck(slides=slides, source=[path])
 
 
 def _pdftotext_layout(path: Path) -> str:

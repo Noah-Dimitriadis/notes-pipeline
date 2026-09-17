@@ -100,7 +100,7 @@ def _run_job(job: Job, *, audio: Path, deck: Optional[Path], notes: Optional[Pat
              instructor: Optional[str], force: bool) -> None:
     try:
         result = pipeline.run_build(
-            audio=audio, deck=deck, notes=notes, assets=[], out=out,
+            audio=audio, deck=[deck] if deck else [], notes=notes, assets=[], out=out,
             course_code=course_code, number=number,
             course_name=course_name, instructor=instructor,
             force=force, no_cache=False, cfg=_cfg,

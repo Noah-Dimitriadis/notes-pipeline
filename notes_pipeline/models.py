@@ -65,7 +65,7 @@ def _slide_text_lines(slide: Slide) -> Iterator[str]:
 
 class Deck(BaseModel):
     slides: list[Slide]
-    source: Path
+    source: list[Path]
 
     def vocabulary(self, limit: int = 120) -> list[str]:
         counts: Counter[str] = Counter()

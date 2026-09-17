@@ -11,7 +11,7 @@ from .models import Deck, Lecture, Transcript
 from .stages.audio import prepare as audio_prepare
 from .stages.audio import wav_duration
 from .stages.emit import emit as emit_notes
-from .stages.slides import extract as extract_slides
+from .stages.slides import extract_many as extract_slides
 from .stages.slides import pdf_to_text
 from .stages.synthesize import synthesize
 from .stages.transcribe import get_transcriber
@@ -66,7 +66,7 @@ def read_assets(paths: list[Path]) -> list[str]:
 def run_build(
     *,
     audio: Path,
-    deck: Optional[Path],
+    deck: list[Path],
     notes: Optional[Path],
     assets: list[Path],
     out: Path,
@@ -107,8 +107,8 @@ def run_build(
 
     # -- slides --
     deck_obj: Optional[Deck] = None
-    if deck is not None:
-        key = cache_key("slides", STAGE_VERSION, [deck], {})
+    if deck:
+        key = cache_key("slides", STAGE_VERSION, deck, {})
         cached_path = cache.get(key) if use_cache else None
         if cached_path is not None:
             deck_obj = Deck.model_validate_json(cached_path.read_text())
@@ -163,7 +163,7 @@ def run_build(
         reporter.stage_done("transcribe", f"{len(transcript.segments)} segments ({cfg.transcriber})", elapsed)
 
     # -- synthesize --
-    synth_inputs = [p for p in [deck, cached_transcript, notes, *assets] if p is not None]
+    synth_inputs = [p for p in [*deck, cached_transcript, notes, *assets] if p is not None]
     synth_key = cache_key("synthesize", STAGE_VERSION, synth_inputs, {"model": cfg.model})
     cached_markdown = cache.get(synth_key) if use_cache else None
     if cached_markdown is not None:
@@ -193,7 +193,7 @@ def run_build(
         "course": course_name or course_code,
         "instructor": instructor,
         "source_audio": audio.name,
-        "source_deck": deck.name if deck else None,
+        "source_deck": ", ".join(d.name for d in deck) if deck else None,
         "duration": f"{int(duration) // 60}:{int(duration) % 60:02d}",
         "transcript_engine": transcript.engine,
         "generated": time.strftime("%Y-%m-%dT%H:%M:%S"),

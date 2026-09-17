@@ -273,7 +273,7 @@ def _worker_loop() -> None:
         try:
             result = pipeline.run_build(
                 audio=task.audio,
-                deck=task.deck,
+                deck=[task.deck] if task.deck else [],
                 notes=task.notes,
                 assets=[],
                 out=task.out,

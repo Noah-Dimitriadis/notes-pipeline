@@ -18,7 +18,7 @@ from .pipeline import run_build as _pipeline_run_build
 from .stages.audio import prepare as audio_prepare
 from .stages.audio import wav_duration
 from .stages.emit import emit as emit_notes
-from .stages.slides import extract as extract_slides
+from .stages.slides import extract_many as extract_slides
 from .stages.synthesize import synthesize_append
 from .stages.transcribe import get_transcriber
 from .store import Store
@@ -175,7 +175,7 @@ class TerminalReporter:
 def _run_build(
     *,
     audio: Path,
-    deck: Optional[Path],
+    deck: list[Path],
     notes: Optional[Path],
     assets: list[Path],
     out: Path,
@@ -204,14 +204,19 @@ def build(
     course: Optional[str] = typer.Argument(None, help="Course code, e.g. COSC-4V88 (with a number, resolves via course.toml)."),
     number: Optional[int] = typer.Argument(None, help="Lecture number within the course."),
     audio: Optional[Path] = typer.Option(None, "--audio", help="Explicit path to the source audio file."),
-    deck: Optional[Path] = typer.Option(None, "--deck", help="Explicit path to the slide deck."),
+    deck: list[Path] = typer.Option([], "--deck", help="Explicit path to a slide deck. Repeatable, in chronological order, if the lecture used more than one deck."),
     notes: Optional[Path] = typer.Option(None, "--notes", help="Explicit path to your own notes (.md or .pdf)."),
     assets: list[Path] = typer.Option([], "--assets", help="Additional supplementary files (.md, .pdf, .txt, ...) as extra context. Repeatable."),
     out: Optional[Path] = typer.Option(None, "--out", help="Explicit path to write the generated notes to."),
     force: bool = typer.Option(False, "--force", help="Re-run every stage, ignoring the cache."),
     no_cache: bool = typer.Option(False, "--no-cache", help="Don't read or write the cache for this run."),
 ) -> None:
-    """Build lecture notes, either from explicit paths or a course + lecture number."""
+    """Build lecture notes, either from explicit paths or a course + lecture number.
+
+    Pass --deck multiple times if the lecture used more than one slide deck
+    (e.g. the professor switched decks partway through) — list them in
+    chronological order, since slide numbers are renumbered continuously
+    across decks in the order given."""
     cfg = load_config()
 
     if course is not None and number is not None:
@@ -227,7 +232,7 @@ def build(
             typer.echo(str(exc), err=True)
             raise typer.Exit(1) from None
         _run_build(
-            audio=resolved_audio, deck=resolved_deck, notes=resolved_notes, assets=assets, out=resolved_out,
+            audio=resolved_audio, deck=[resolved_deck] if resolved_deck else [], notes=resolved_notes, assets=assets, out=resolved_out,
             course_code=info.get("code", course), number=number,
             course_name=info.get("name"), instructor=info.get("instructor"),
             force=force, no_cache=no_cache, cfg=cfg,
@@ -256,7 +261,7 @@ def build(
 def append(
     audio: Path = typer.Option(..., "--audio", help="The new (continuation) audio segment."),
     note: Path = typer.Option(..., "--note", help="The existing lecture notes file to extend."),
-    deck: Optional[Path] = typer.Option(None, "--deck", help="Slide deck (recommended, in case the continuation covers new slides)."),
+    deck: list[Path] = typer.Option([], "--deck", help="Slide deck(s) (recommended, in case the continuation covers new slides). Repeatable, in chronological order."),
     notes: Optional[Path] = typer.Option(None, "--notes", help="Your own notes for this continuation, if any (.md or .pdf)."),
     assets: list[Path] = typer.Option([], "--assets", help="Additional supplementary files (.md, .pdf, .txt, ...) as extra context. Repeatable."),
     out: Optional[Path] = typer.Option(None, "--out", help="Defaults to overwriting --note in place."),
@@ -264,7 +269,10 @@ def append(
     no_cache: bool = typer.Option(False, "--no-cache", help="Don't read or write the cache for this run."),
 ) -> None:
     """Merge a continuation recording into an already-generated lecture note
-    (for lectures recorded in multiple parts)."""
+    (for lectures recorded in multiple parts).
+
+    Pass --deck multiple times if the continuation covers more than one
+    slide deck — list them in chronological order."""
     cfg = load_config()
     out = out or note
 
@@ -282,8 +290,8 @@ def append(
 
     # -- slides --
     deck_obj: Optional[Deck] = None
-    if deck is not None:
-        key = cache_key("slides", _STAGE_VERSION, [deck], {})
+    if deck:
+        key = cache_key("slides", _STAGE_VERSION, deck, {})
         cached_path = cache.get(key) if use_cache else None
         if cached_path is not None:
             deck_obj = Deck.model_validate_json(cached_path.read_text())
@@ -331,7 +339,7 @@ def append(
         _print_stage("transcribe", f"{len(new_transcript.segments)} segments ({cfg.transcriber})", elapsed, cached=False)
 
     # -- synthesize (merge) --
-    synth_inputs = [p for p in [note, deck, cached_transcript, notes, *assets] if p is not None]
+    synth_inputs = [p for p in [note, *deck, cached_transcript, notes, *assets] if p is not None]
     synth_key = cache_key("synthesize_append", _STAGE_VERSION, synth_inputs, {"model": cfg.model})
     cached_markdown = cache.get(synth_key) if use_cache else None
     if cached_markdown is not None:
@@ -360,8 +368,8 @@ def append(
     combined_duration = _parse_duration(str(old_meta["duration"])) + new_duration if "duration" in old_meta else new_duration
     meta = dict(old_meta)
     meta["source_audio"] = f"{old_meta.get('source_audio', '?')} + {audio.name}"
-    if deck is not None:
-        meta["source_deck"] = deck.name
+    if deck:
+        meta["source_deck"] = ", ".join(d.name for d in deck)
     meta["duration"] = _format_duration(combined_duration)
     meta["transcript_engine"] = new_transcript.engine
     meta["generated"] = time.strftime("%Y-%m-%dT%H:%M:%S")
