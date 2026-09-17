@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import sys
 import tempfile
 import warnings
 from pathlib import Path
@@ -34,6 +35,24 @@ class Transcriber(Protocol):
     ) -> Transcript: ...
 
 
+def _gpu_available() -> bool:
+    """Best-effort probe for whether whisper-cli has a GPU backend to reach
+    for. On macOS this is always True: whisper-cli's Metal backend is
+    self-initializing (it doesn't need a device file), and every Mac this
+    project runs on already gets working GPU-accelerated transcription
+    today (PLAN.md §2's Benchmark A/B) — nothing to detect. On Linux
+    (treehouse's real deployment, and this same image run locally in
+    Docker Desktop's Linux VM), whisper.cpp's Vulkan backend needs an
+    actual `/dev/dri` render node; treehouse mounts one in, a plain
+    `docker compose up` on a Mac with no such device does not — so the
+    presence of a render node is what actually distinguishes "has a GPU to
+    use" from "doesn't" on that platform."""
+    if sys.platform == "darwin":
+        return True
+    dri = Path("/dev/dri")
+    return dri.is_dir() and any(dri.glob("render*"))
+
+
 def get_transcriber(cfg: Config) -> Transcriber:
     if cfg.transcriber == "whisper":
         return WhisperTranscriber(cfg)
@@ -63,6 +82,10 @@ class WhisperTranscriber:
         del vocabulary
         total_duration = wav_duration(wav)
 
+        use_cpu = self.cfg.whisper_device == "cpu" or (
+            self.cfg.whisper_device == "auto" and not _gpu_available()
+        )
+
         with tempfile.TemporaryDirectory() as tmpdir:
             outbase = Path(tmpdir) / "out"
             args = [
@@ -75,6 +98,8 @@ class WhisperTranscriber:
                 "-oj",
                 "-of", str(outbase),
             ]
+            if use_cpu:
+                args.append("-ng")
             # No -np here: whisper-cli's stdout then carries one clean
             # "[HH:MM:SS.mmm --> HH:MM:SS.mmm]  text" line per segment as it
             # works (backend/timing noise goes to stderr), which is what lets

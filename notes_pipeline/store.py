@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -20,6 +21,28 @@ CREATE TABLE IF NOT EXISTS notes(
     lecture_id TEXT, path TEXT, generated_at TEXT,
     model TEXT, prompt_version TEXT
 );
+"""
+
+# M13's build-job history (persistent — a process restart must not erase
+# what happened to a friend's upload). `started_at`/`finished_at` are unix
+# epoch floats, not ISO strings, so they line up directly with
+# `webapi.Job`'s own `time.time()`-based fields and need no reformatting
+# on the way in or out.
+JOBS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS jobs(
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    lecture_id TEXT,
+    status TEXT NOT NULL,
+    stage TEXT,
+    message TEXT,
+    progress REAL,
+    result_path TEXT,
+    error TEXT,
+    started_at REAL NOT NULL,
+    finished_at REAL
+);
+CREATE INDEX IF NOT EXISTS jobs_user_started_idx ON jobs(user_id, started_at DESC);
 """
 
 # M12 (§14.3) — the hosted multi-tenant service's one addition to this
@@ -75,6 +98,7 @@ class Store:
         self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.executescript(SCHEMA)
         self._conn.executescript(USERS_SCHEMA)
+        self._conn.executescript(JOBS_SCHEMA)
         self._migrate()
         self._conn.commit()
 
@@ -233,5 +257,50 @@ class Store:
                 payload_path=excluded.payload_path, meta=excluded.meta
             """,
             (key, stage, lecture_id, str(payload_path), json.dumps(meta), _now()),
+        )
+        self._conn.commit()
+
+    # -- build jobs (M13, persistent history) --------------------------------
+
+    def upsert_job(self, job: dict) -> None:
+        """Write a `webapi.Job`'s current snapshot through to disk. Called on
+        every stage/progress update, not just at the end, so a job killed by
+        a crash or redeploy still shows its last-known state in history
+        rather than vanishing or hanging at 'running' forever — see
+        `mark_stale_running_jobs_as_error` for the latter."""
+        self._conn.execute(
+            """
+            INSERT INTO jobs(id, user_id, lecture_id, status, stage, message, progress, result_path, error, started_at, finished_at)
+            VALUES (:id, :user_id, :lecture_id, :status, :stage, :message, :progress, :result_path, :error, :started_at, :finished_at)
+            ON CONFLICT(id) DO UPDATE SET
+                status=excluded.status, stage=excluded.stage, message=excluded.message,
+                progress=excluded.progress, result_path=excluded.result_path,
+                error=excluded.error, finished_at=excluded.finished_at
+            """,
+            job,
+        )
+        self._conn.commit()
+
+    def get_job(self, job_id: str) -> dict | None:
+        row = self._conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,)).fetchone()
+        return dict(row) if row else None
+
+    def list_jobs(self, user_id: str, *, limit: int = 50) -> list[dict]:
+        rows = self._conn.execute(
+            "SELECT * FROM jobs WHERE user_id = ? ORDER BY started_at DESC LIMIT ?",
+            (user_id, limit),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def mark_stale_running_jobs_as_error(self) -> None:
+        """Run once at `api` startup. A job still `queued`/`running` in the
+        table at process start didn't finish normally — the process that
+        owned it is gone (crash, redeploy, `docker compose down` mid-build)
+        — so it would otherwise sit there forever looking like it's still
+        in progress."""
+        self._conn.execute(
+            "UPDATE jobs SET status = 'error', error = ?, finished_at = ? "
+            "WHERE status IN ('queued', 'running')",
+            ("Interrupted by a server restart.", time.time()),
         )
         self._conn.commit()

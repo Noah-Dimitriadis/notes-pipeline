@@ -198,8 +198,46 @@ class Job:
             "progress": self.progress,
             "result_path": self.result_path,
             "error": self.error,
+            "started_at": self.started_at,
             "elapsed_seconds": round((self.finished_at or time.time()) - self.started_at, 1),
         }
+
+    def row(self) -> dict:
+        """Shape `Store.upsert_job` expects — distinct from `snapshot()`
+        (the API/MCP response shape) because the two audiences need
+        different keys (`id` for a SQL upsert vs. `job_id` for JSON)."""
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "lecture_id": self.lecture_id,
+            "status": self.status,
+            "stage": self.stage,
+            "message": self.message,
+            "progress": self.progress,
+            "result_path": self.result_path,
+            "error": self.error,
+            "started_at": self.started_at,
+            "finished_at": self.finished_at,
+        }
+
+
+def _row_snapshot(row: dict) -> dict:
+    """`Job.snapshot()`'s shape, built from a persisted `jobs` row instead
+    of a live `Job` — what `/api/jobs*` returns once a job is no longer (or
+    never was, after a restart) in the in-memory `_jobs` dict."""
+    started, finished = row["started_at"], row["finished_at"]
+    return {
+        "job_id": row["id"],
+        "lecture_id": row["lecture_id"],
+        "status": row["status"],
+        "stage": row["stage"],
+        "message": row["message"],
+        "progress": row["progress"],
+        "result_path": row["result_path"],
+        "error": row["error"],
+        "started_at": started,
+        "elapsed_seconds": round((finished or time.time()) - started, 1),
+    }
 
 
 @dataclass
@@ -218,16 +256,22 @@ class JobReporter:
     """pipeline.Reporter that updates a Job's state. Deliberately not
     shared with mcp_server.JobReporter — same shape, but that class closes
     over mcp_server's own module-level lock and job dict, which have
-    nothing to do with this service's."""
+    nothing to do with this service's.
 
-    def __init__(self, job: Job, lock: threading.Lock):
+    Also writes each update through to `store` (persistent job history,
+    §"job history persistent" ask) — `store` is the worker thread's own
+    long-lived Store (see `_worker_loop`), never shared across threads."""
+
+    def __init__(self, job: Job, lock: threading.Lock, store: Store):
         self._job = job
         self._lock = lock
+        self._store = store
 
     def _update(self, **kwargs: object) -> None:
         with self._lock:
             for key, value in kwargs.items():
                 setattr(self._job, key, value)
+            self._store.upsert_job(self._job.row())
 
     def stage_starting(self, name: str, message: str) -> None:
         self._update(stage=name, message=message, progress=None)
@@ -262,6 +306,12 @@ def _pending_count(user_id: str) -> int:
 
 
 def _worker_loop() -> None:
+    # One Store for the whole life of this thread — sqlite3 connections
+    # aren't shareable *across* threads, but reusing one *within* this
+    # single dedicated thread (rather than opening a fresh one per job, or
+    # per JobReporter update) is fine and avoids needless file opens on
+    # every progress tick.
+    store = Store(_web_cfg.db_path)
     while True:
         task = _build_queue.get()
         if task is None:  # shutdown signal
@@ -270,9 +320,10 @@ def _worker_loop() -> None:
         job = task.job
         with _jobs_lock:
             job.status = "running"
+            store.upsert_job(job.row())
         try:
             result = pipeline.run_build(
-                audio=task.audio,
+                audio=[task.audio],
                 deck=[task.deck] if task.deck else [],
                 notes=task.notes,
                 assets=[],
@@ -284,7 +335,7 @@ def _worker_loop() -> None:
                 force=False,
                 no_cache=False,
                 cfg=_cfg,
-                reporter=JobReporter(job, _jobs_lock),
+                reporter=JobReporter(job, _jobs_lock, store),
                 api_key=task.api_key,
                 user_id=job.user_id,
             )
@@ -292,11 +343,13 @@ def _worker_loop() -> None:
                 job.status = "done"
                 job.result_path = str(result)
                 job.finished_at = time.time()
+                store.upsert_job(job.row())
         except Exception as exc:  # noqa: BLE001 - reported through job_status
             with _jobs_lock:
                 job.status = "error"
                 job.error = f"{exc}\n{traceback.format_exc()}"
                 job.finished_at = time.time()
+                store.upsert_job(job.row())
         finally:
             with _jobs_lock:
                 _pending_counts[job.user_id] = max(0, _pending_counts.get(job.user_id, 1) - 1)
@@ -306,6 +359,10 @@ def _worker_loop() -> None:
 @asynccontextmanager
 async def _api_lifespan(_app: FastAPI):
     global _worker_thread
+    # A job still `queued`/`running` in the table at startup belonged to a
+    # process that's gone now (crash, redeploy) — close it out as an error
+    # rather than let it sit there forever looking like it's still going.
+    _db().mark_stale_running_jobs_as_error()
     _worker_thread = threading.Thread(target=_worker_loop, daemon=True)
     _worker_thread.start()
     try:
@@ -500,6 +557,10 @@ async def create_lecture(
         Lecture(id=lecture_row_id, course="web", number=number, title=title, date=None, dir=lecture_dir),
         user_id=email,
     )
+    # Persist the job's `queued` row immediately, not just once the worker
+    # picks it up — a job sitting in `_build_queue` behind others is real
+    # history too, and this is what makes GET /api/jobs show it right away.
+    _db().upsert_job(job.row())
     _build_queue.put(BuildTask(
         job=job, audio=audio_path, deck=deck_path, notes=notes_path, out=out_path,
         course_code="web", number=number, api_key=api_key,
@@ -525,13 +586,28 @@ def get_lecture_notes_route(lecture_id: str, email: str = Depends(require_intern
     return PlainTextResponse(path.read_text(encoding="utf-8"))
 
 
+@app.get("/api/jobs")
+def list_my_jobs_route(email: str = Depends(require_internal_user)) -> list[dict]:
+    """Persistent job history for the calling user, newest first — survives
+    an `api` restart, unlike the in-memory `_jobs` dict."""
+    return [_row_snapshot(row) for row in _db().list_jobs(user_id=email, limit=50)]
+
+
 @app.get("/api/jobs/{job_id}")
 def get_job_route(job_id: str, email: str = Depends(require_internal_user)) -> dict:
     with _jobs_lock:
         job = _jobs.get(job_id)
-    if job is None or job.user_id != email:
+    if job is not None:
+        if job.user_id != email:
+            raise HTTPException(status_code=404, detail="No such job.")
+        return job.snapshot()
+    # Not in this process's memory — either it finished before a restart,
+    # or it belongs to a request replaying an old job_id. Either way, the
+    # persisted row (if any, and if it's actually this user's) still answers.
+    row = _db().get_job(job_id)
+    if row is None or row["user_id"] != email:
         raise HTTPException(status_code=404, detail="No such job.")
-    return job.snapshot()
+    return _row_snapshot(row)
 
 
 @app.post("/api/me/anthropic-key")

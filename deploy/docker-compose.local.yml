@@ -1,0 +1,92 @@
+# Local dev — run the same api/web images `deploy/docker-compose.yml` runs
+# on treehouse, but on a workstation with no AMD/Vulkan GPU and no
+# Tailscale (e.g. this repo's own Mac). Differs from the treehouse compose
+# file only in what a machine without that hardware/network can't provide:
+#
+#   - No `/dev/dri`/`/dev/kfd` passthrough. whisper.cpp still runs — see
+#     WHISPER_DEVICE below — it just transcribes on CPU instead of GPU.
+#   - Ports bound to 127.0.0.1, not a Tailscale IP (none needed locally).
+#   - AUTH_ENABLED=false (set in .env.local) so there's no need for real
+#     Google OAuth credentials to sign in — every request runs as
+#     dev-local@notes-pipeline.local.
+#
+# Usage:
+#   cp deploy/.env.local.example deploy/.env.local
+#   # fill in KEY_MASTER_KEY/INTERNAL_API_SECRET (see .env.local.example)
+#   docker compose -f deploy/docker-compose.local.yml up --build
+#   open http://localhost:3000
+#
+# Add a real Anthropic API key via Settings once signed in — synthesis
+# still calls the real Claude API even in local/no-GPU mode, only
+# transcription's device selection changes.
+
+name: notes-pipeline-local
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  notes-db:
+  auth-db:
+  uploads:
+  whisper-model:
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/api/Dockerfile
+    image: notes-pipeline-api:local
+    networks: [internal]
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file: .env.local
+    environment:
+      WHISPER_BIN: /usr/local/bin/whisper-cli
+      WHISPER_MODEL: /models/ggml-large-v3-turbo.bin
+      # "auto" (the default — set explicitly here just to document it):
+      # this box has no /dev/dri, so stages/transcribe.py's GPU probe finds
+      # nothing and falls back to `-ng` (CPU) automatically. No manual flip
+      # needed switching between this file and the treehouse one.
+      WHISPER_DEVICE: auto
+      DB_PATH: /data/notes-db/notes.db
+      UPLOADS_ROOT: /data/uploads
+      LIBRARY_ROOT: /data/uploads
+      # Unused by hosted builds (every build overrides it per-call with the
+      # uploading user's own key), but Config.anthropic_api_key has no
+      # default, so a placeholder is needed regardless.
+      ANTHROPIC_API_KEY: unused-hosted-mode
+    # Deliberately no `devices:` block — this box has no AMD GPU to pass
+    # through. See WHISPER_DEVICE above for what that means at runtime.
+    volumes:
+      - notes-db:/data/notes-db
+      - uploads:/data/uploads
+      - whisper-model:/models:ro
+    mem_limit: 8g
+    cpus: 4.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/web/Dockerfile
+    image: notes-pipeline-web:local
+    networks: [internal]
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file: .env.local
+    environment:
+      DB_PATH: /data/notes-db/notes.db
+      AUTH_DB_PATH: /data/auth-db/auth.db
+      API_INTERNAL_URL: http://api:8000
+      APP_MODE: web
+    volumes:
+      - auth-db:/data/auth-db
+      - notes-db:/data/notes-db
+    mem_limit: 1g
+    cpus: 1.0
