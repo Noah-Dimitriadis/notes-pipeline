@@ -66,7 +66,7 @@ Covers 94.7% of the audio. **This is the reference corpus** — it lives in
    rejection note below for how badly A can mislead.
 3. **Transcription costs ~6 minutes per lecture** on the Mac and is the slowest
    stage by far. This is what makes the stage cache in M2 load-bearing, and what
-   the 9060 XT box would improve (§10).
+   treehouse would improve (§10).
 
 ### Rejected: Apple `SpeechAnalyzer` (macOS 26)
 
@@ -685,12 +685,12 @@ Transcription is free.
 
 - **FastAPI + Next.js frontend.** Superseded by a full design — see §14. Not
   yet built.
-- **Remote transcription** against the 9060 XT box for the *personal Mac
+- **Remote transcription** against treehouse for the *personal Mac
   pipeline* (M0–M9), independent of the hosted multi-user service in §14 —
-  `notes build` on the Mac calling out to the box's whisper instead of running
+  `notes build` on the Mac calling out to treehouse's whisper instead of running
   it locally. `RemoteTranscriber` is the seam (M5). Worth revisiting once §14's
   `api` service exists, since it will already have whisper behind an HTTP
-  endpoint on that box for the hosted pipeline — a minimal transcribe-only
+  endpoint on treehouse for the hosted pipeline — a minimal transcribe-only
   route for personal use may be nearly free to add on top. Vulkan
   `-DGGML_VULKAN=1` on gfx1200 should cut the ~6 min Mac transcription time to
   roughly 2 min. **If built, it must return timestamped segments as JSON —
@@ -711,7 +711,7 @@ Transcription is free.
 | A bad transcript silently produces a confident, wrong note file | Quality guard in M5; Rule B timestamps and the Rule D confidence footer make claims checkable |
 | **Recording started after the lecture began** | Observed on Week 1 — the audio opens mid-sentence and the first minutes are simply gone. No software fix. `notes build` should warn when the first segment begins at 00:00 with no leading silence, since that is the signature of a late start |
 | Deck and audio drift apart (prof skips or reorders slides) | Don't hard-align. Give Claude both in one call and let it attribute — this is what the 1M context is for |
-| 6 min of transcription per lecture on the Mac | Acceptable in the background; the 9060 XT box would cut it to ~2 min |
+| 6 min of transcription per lecture on the Mac | Acceptable in the background; treehouse would cut it to ~2 min |
 
 ---
 
@@ -764,7 +764,7 @@ Already in the repo and working:
 Everything in §§1–13 is the personal, single-user, Mac-local pipeline and is
 **done and unaffected by this section.** This is a second, separate surface:
 a handful of named friends, each with their own Anthropic key, using a web
-dropbox and/or a remote MCP connector, hosted on the 9060 XT box (Ubuntu +
+dropbox and/or a remote MCP connector, hosted on treehouse (Ubuntu +
 Tailscale) — which is also a gaming PC, so it's off sometimes. Public TLS,
 DNS, and routing live one layer out, on the always-on **goosenest02** k3s
 cluster, which already has cert-manager and DNS management set up — see
@@ -777,25 +777,25 @@ working code.
 
 | Decision | Choice | Why |
 |---|---|---|
-| Where the pipeline runs | The 9060 XT box, in Docker Compose | Frees the pipeline from the Mac; one shared GPU for whisper across all hosted users |
-| Where the public edge runs | goosenest02's k3s cluster (ingress-nginx + cert-manager, already set up), **not** the gaming box | The gaming box is a gaming PC first — it's off sometimes. goosenest02 is always on, and already owns cert/DNS management, so reuse it rather than duplicating TLS setup on a second machine |
-| How the edge reaches the pipeline | Over Tailscale only — the gaming box publishes **zero public ports**, not even conditionally | Strictly better than the original single-box design: the box most worth protecting now has no public listener at all, on top of the fallback UX benefit |
-| When the box is off | ingress-nginx's built-in custom-error-backend serves a static "the pipeline's host is off — text me" page on 502/503/504 | Native ingress-nginx feature for exactly this; no bespoke proxy/health-check code, no wake button (explicitly not wanted — human-in-the-loop by design) |
+| Where the pipeline runs | treehouse, in Docker Compose | Frees the pipeline from the Mac; one shared GPU for whisper across all hosted users |
+| Where the public edge runs | goosenest02's k3s cluster (ingress-nginx + cert-manager, already set up), **not** treehouse | treehouse is a gaming PC first — it's off sometimes. goosenest02 is always on, and already owns cert/DNS management, so reuse it rather than duplicating TLS setup on a second machine |
+| How the edge reaches the pipeline | Over Tailscale only — treehouse publishes **zero public ports**, not even conditionally | Strictly better than the original single-treehouse design: treehouse, the machine most worth protecting, now has no public listener at all, on top of the fallback UX benefit |
+| When treehouse is off | ingress-nginx's built-in custom-error-backend serves a static "the pipeline's host is off — text me" page on 502/503/504 | Native ingress-nginx feature for exactly this; no bespoke proxy/health-check code, no wake button (explicitly not wanted — human-in-the-loop by design) |
 | Exposure | Public internet, not tailnet-only | Friends shouldn't need to install Tailscale to use a website |
 | Auth | Google OAuth via Auth.js (web) and FastMCP's `GoogleProvider` (MCP) | Zero identity infra to run; friends already have Google accounts; "OSS" is the auth library, not the IdP |
 | Access control | Explicit per-email allowlist, not open signup | A handful of named friends, not the general public |
 | Sessions | Database-backed, not JWT | Must be able to instantly revoke a friend's access by disabling their row |
-| API keys | Each user supplies their own Anthropic key; encrypted at rest, never round-tripped to the browser after saving | Their usage, their bill; the box never becomes a shared-cost liability |
+| API keys | Each user supplies their own Anthropic key; encrypted at rest, never round-tripped to the browser after saving | Their usage, their bill; treehouse never becomes a shared-cost liability |
 | Ingestion | Web dropbox upload only — **not** an MCP tool | A browser-only friend has no server-side file path to point a tool at, and MCP tool calls aren't shaped for large binary uploads |
-| Remote MCP tool surface | Read/search/quiz only: `list_my_lectures`, `get_notes`, `search_notes`, `job_status` | Matches what's actually possible remotely; building happens on the website. No fallback page equivalent exists for this surface — when the box is off, a tool call just fails with a connection error, and that's fine |
-| Admin | A second instance of the same web app, bound to the gaming box's loopback interface only | SSO-gated *and* network-unreachable except via SSH tunnel — two independent layers, not one. Untouched by the goosenest02/k3s refactor — never routed through it |
+| Remote MCP tool surface | Read/search/quiz only: `list_my_lectures`, `get_notes`, `search_notes`, `job_status` | Matches what's actually possible remotely; building happens on the website. No fallback page equivalent exists for this surface — when treehouse is off, a tool call just fails with a connection error, and that's fine |
+| Admin | A second instance of the same web app, bound to treehouse's loopback interface only | SSO-gated *and* network-unreachable except via SSH tunnel — two independent layers, not one. Untouched by the goosenest02/k3s refactor — never routed through it |
 | DB | SQLite, shared Docker volume, WAL mode | Matches the existing single-user pipeline's storage decision (§1); still bought nothing to switch to Postgres at this scale |
 | Concurrency | One global build worker across all users | One GPU — concurrent whisper runs would just contend with each other, not go faster |
 
 ### 14.2 Architecture
 
 Two machines now. **goosenest02** (always-on, k3s) is the only thing with a
-public IP in this picture; the gaming box is reachable from it only over
+public IP in this picture; treehouse is reachable from it only over
 Tailscale, and has no public listener at all — not even conditionally on
 being "up."
 
@@ -807,30 +807,30 @@ being "up."
                               this project is just another Ingress on it)
         │
         ├─ Ingress: notes.<domain>  →  ExternalName/Tailscale-reachable
-        │            /               →  backend pointing at the gaming
-        │            /mcp            →  box's stable Tailscale hostname
-        │                              (e.g. gamingbox.tailXXXX.ts.net)
+        │            /               →  backend pointing at
+        │            /mcp            →  treehouse's stable Tailscale hostname
+        │                              (e.g. treehouse.tailXXXX.ts.net)
         │
         └─ ingress-nginx custom-http-errors (502/503/504) → a tiny always-on
            in-cluster Deployment+Service serving one static page: "the
            pipeline's host is off right now — text me and I'll turn it
            back on." No wake button, no health-check-triggered automation
            — deliberately just a message, so it's still you who decides
-           when the box comes back on.
+           when treehouse comes back on.
 
            No Tailscale operator or subnet router is installed on this
            cluster — Tailscale runs on the goosenest02 host only, which is
            itself a tailnet member. Whether the ingress-nginx pod can reach
-           the gaming box's tailnet IP directly (plain pod egress through
+           treehouse's tailnet IP directly (plain pod egress through
            the node) or needs a host-level forwarder instead (mirroring how
-           Postgres/`tailscale serve` already works on this box) is settled
+           Postgres/`tailscale serve` already works on treehouse) is settled
            in M11 §14.5, not guessed at here.
 
   ══════════════════════════ Tailscale (private, WireGuard) ═════════════════
 
-  9060 XT box — Docker Compose, ZERO published public ports
+  treehouse — Docker Compose, ZERO published public ports
         │
-        ├─ web (Next.js) ──────────┐  bound to the box's Tailscale
+        ├─ web (Next.js) ──────────┐  bound to treehouse's Tailscale
         ├─ api (FastAPI+FastMCP)   │  interface only — reachable from
         │    mounted at /mcp       │  goosenest02 over the tailnet,
         │    GoogleProvider +      │  from nowhere else
@@ -839,7 +839,7 @@ being "up."
         │    single build-worker   │
         │    queue; whisper-cli    │  web → api's /api/* stays exactly
         │    (GPU passthrough)     │  as before: Docker-internal network
-        │                          │  on the gaming box, never touches
+        │                          │  on treehouse, never touches
         │                          │  goosenest02 or the public internet
         ▼                          ▼
   auth.db (Node-only:        notes.db (shared): lectures, stage_cache,
@@ -849,15 +849,15 @@ being "up."
                              encrypted_anthropic_key, is_admin)
 
   admin — same image as `web`, different entrypoint/env. Compose publishes
-  it as 127.0.0.1:8090:3000 — bound to the gaming box's own loopback
+  it as 127.0.0.1:8090:3000 — bound to treehouse's own loopback
   interface only, never on its Tailscale interface, never routed through
-  goosenest02. Reached only via `ssh -L 8090:localhost:8090 you@box`, then
+  goosenest02. Reached only via `ssh -L 8090:localhost:8090 you@treehouse`, then
   a fresh Google sign-in (separate origin ⇒ separate session cookie)
   checked against ADMIN_EMAIL.
 ```
 
 Both Docker volumes (`auth.db`'s and `notes.db`'s) plus uploaded audio and
-the whisper model live in named Compose volumes on the gaming box, so a
+the whisper model live in named Compose volumes on treehouse, so a
 container crash or `docker compose down` doesn't lose data.
 
 ### 14.3 Data model delta
@@ -915,17 +915,17 @@ goosenest02 lives in one place" mattered more than keeping M10/M11 in the
 same repo.
 
 ```
-notes-pipeline/                (this repo — M0-M10, the pipeline + gaming box)
+notes-pipeline/                (this repo — M0-M10, the pipeline + treehouse)
   notes_pipeline/            # unchanged (§4) — M0-M9, personal pipeline
     webapi.py                 # M13 — FastAPI + FastMCP, multi-tenant
   web/                        # M14/M15 — Next.js; `web` and `admin` are two
                                # running instances of this one codebase
   docs/
-    box-setup.md               # gaming-box setup runbook (M10)
+    treehouse-setup.md               # treehouse setup runbook (M10)
   deploy/
     api/Dockerfile              # M10 — whisper.cpp+Vulkan, real
     web/Dockerfile               # M10 — placeholder for web/admin, until M14/M15
-    docker-compose.yml         # M10 — gaming box: web, admin, api
+    docker-compose.yml         # M10 — treehouse: web, admin, api
     .env.example                # M10 — TAILSCALE_IP, RENDER_GID, VIDEO_GID
 
 goose-nest-deploy/              (separate repo — M11)
@@ -948,7 +948,7 @@ goose-nest-deploy/              (separate repo — M11)
 
 ---
 
-#### M10 — Gaming-box Docker Compose skeleton
+#### M10 — treehouse Docker Compose skeleton
 **Depends on:** M9
 **Creates:** `deploy/docker-compose.yml`
 
@@ -958,20 +958,20 @@ uploaded audio, and the whisper model. GPU device passthrough to `api`
 (`/dev/dri`, `/dev/kfd`, `render` group membership) for the Vulkan
 whisper.cpp build. Every container runs as a non-root user with
 capabilities dropped and resource limits set. `web` and `api` bind to the
-box's **Tailscale interface only** — reachable from goosenest02 over the
+treehouse's **Tailscale interface only** — reachable from goosenest02 over the
 tailnet, from nowhere else, and never published to `0.0.0.0`. `admin`
 publishes to `127.0.0.1` only. The host forwards **no public ports at all**;
 SSH stays Tailscale-only.
 
 **Acceptance:** `docker compose up` brings up all three services; `api` can
 invoke `whisper-cli` with working GPU access; from any machine off the
-tailnet, nothing on the box is reachable, full stop; from goosenest02, `web`
+tailnet, nothing on treehouse is reachable, full stop; from goosenest02, `web`
 and `api` are reachable over Tailscale; `admin` is reachable from neither —
 loopback only.
 
 ---
 
-#### M11 — goosenest02: ingress + off-box fallback ✅ DONE (files written, not yet applied to a live cluster)
+#### M11 — goosenest02: ingress + fallback for when treehouse is off ✅ DONE (files written, not yet applied to a live cluster)
 **Depends on:** M10
 **Creates:** — in the separate `goose-nest-deploy` repo, not this one, per
 §14.4 — `apps/notes-pipeline/{application.yaml, values.yaml}` (ArgoCD
@@ -990,10 +990,10 @@ the wildcard cert (`*.noahdimitriadis.com`) is issued once, globally
 `ingress.main` has no `tls:` block, matching the `portfolio` app's own
 Ingress exactly. Two routes on one hostname: `notes.<domain>/` → this
 release's own `gateway` pod (a Service `identifier` reference, chart-
-managed), `notes.<domain>/mcp` → `gaming-box-api` (an external Service
+managed), `notes.<domain>/mcp` → `treehouse-api` (an external Service
 `name` reference — confirmed both forms are supported by reading
 `app-template`'s actual `_ingress.tpl` source, not assumed from docs
-alone). The backend target is the box's stable Tailscale hostname, not a
+alone). The backend target is treehouse's stable Tailscale hostname, not a
 raw IP (Tailscale IPs are stable too, but the hostname survives
 re-registration).
 
@@ -1015,7 +1015,7 @@ would apply cluster-wide to every other app on that same ingress-nginx
 instance, not just this one — not acceptable on a cluster with other apps
 already on it. Built instead as a small self-contained nginx pod
 (`gateway`, in the `notes-pipeline` namespace only) that sits between the
-Ingress and `gaming-box-web`: it proxies normally, and on a connection
+Ingress and `treehouse-web`: it proxies normally, and on a connection
 failure (`proxy_intercept_errors on` + `error_page 502 503 504 = @fallback`)
 serves one static page from its own ConfigMap instead — "the pipeline's
 host is off right now — text me and I'll turn it back on," nothing dynamic,
@@ -1023,9 +1023,9 @@ no wake button (deliberately not built — see §14.1: this stays a
 human-in-the-loop step, not automated). Zero changes to shared/cluster-wide
 ingress-nginx config. `/mcp` does **not** go through this pod — no fallback
 page equivalent exists for that surface (§14.1) — it's routed straight to
-`gaming-box-api` from the Ingress, plain 502 on failure.
+`treehouse-api` from the Ingress, plain 502 on failure.
 
-**How the Ingress backend actually reaches the gaming box's tailnet IP —
+**How the Ingress backend actually reaches treehouse's tailnet IP —
 confirmed constraints, from the goosenest02 cluster's real config (not the
 Tailscale Kubernetes operator, not a subnet router; neither is installed):**
 Tailscale runs on the goosenest02 **host**, not in-cluster — the node itself
@@ -1034,8 +1034,8 @@ today is inbound: klipper/NodePort exposing a pod's port on the node's IPs
 (including its tailnet IP), the same pattern the Postgres/`tailscale serve`
 setup uses for a host-bound process. Neither of those is quite what this
 module needs — they make something reachable *from* the tailnet; this needs
-an ingress-nginx *pod* to reach *out* to a different tailnet peer (the
-gaming box) as a proxy backend. That's a different direction your existing
+an ingress-nginx *pod* to reach *out* to a different tailnet peer
+(treehouse) as a proxy backend. That's a different direction your existing
 setup doesn't directly answer. Two candidates, in the order to actually try
 them when this module is built:
 
@@ -1044,9 +1044,9 @@ them when this module is built:
    through the node — which would let it ride the node's already-existing
    route to `100.64.0.0/10` via `tailscale0` for free, no operator, no
    NodePort, no `--advertise-routes`. Verify with one command before relying
-   on it: `kubectl exec` into any pod and curl the gaming box's tailnet IP.
+   on it: `kubectl exec` into any pod and curl treehouse's tailnet IP.
    If it connects, the Ingress backend is just an `ExternalName` Service
-   pointing at the gaming box's Tailscale hostname — nothing else to build.
+   pointing at treehouse's Tailscale hostname — nothing else to build.
 2. **Fallback, mirroring the existing Postgres pattern** if (1) doesn't
    work: a small forwarder run directly on the goosenest02 **host** (not a
    pod) — the host already has full tailnet peer connectivity, same as it
@@ -1056,9 +1056,9 @@ them when this module is built:
    network on the same host without needing any pod-to-tailnet reachability
    at all.
 
-**Acceptance:** with the gaming box up, `notes.<domain>/` and `/mcp` proxy
+**Acceptance:** with treehouse up, `notes.<domain>/` and `/mcp` proxy
 through correctly over TLS (terminated at Cloudflare's edge, per the
-finding above); with the gaming box powered off, `/` returns the static
+finding above); with treehouse powered off, `/` returns the static
 fallback page instead of a raw gateway-timeout error while `/mcp` returns a
 plain 502 (by design — no fallback exists for MCP); `admin` is not
 reachable through this Ingress at all — it was never wired into it.
@@ -1160,7 +1160,7 @@ upload → job_status → notes flow works end-to-end against a fake audio
 file (fails downstream at ffmpeg, as expected — the queueing/ownership/
 auth plumbing around it is what was under test); a malformed or
 signature-mismatched internal token is rejected. **Not verified:** a real
-Google OAuth round-trip, and a real GPU build (needs the box).
+Google OAuth round-trip, and a real GPU build (needs treehouse).
 
 ---
 
@@ -1202,10 +1202,10 @@ request 401s, and `APP_MODE=admin` vs unset correctly gates which route
 surface answers. **Not verified:** a real Google OAuth round-trip (no
 credentials in the build environment), the Auth.js adapter's actual writes
 against a live `auth.db`, and the upload proxy against a running `api`
-container — all need the real box.
+container — all need treehouse.
 
 **Found and fixed, out of this module's own scope, flagged and left for
-the box owner rather than silently edited:** `docker-compose.yml`'s
+treehouse's owner rather than silently edited:** `docker-compose.yml`'s
 `web`/`admin` services had the M10-placeholder-era build context
 (`context: web` relative to `deploy/`) and no `env_file`/`environment`
 block at all — neither would have worked against the real `web/` app at
@@ -1243,7 +1243,7 @@ so even the very request that discovers the disable treats the session as
 invalid (`lib/authz.ts` checks the returned `disabled` flag), and every
 request after that has no session row left to read at all.
 
-**Acceptance:** unreachable via `curl` from any host other than the box
+**Acceptance:** unreachable via `curl` from any host other than treehouse
 itself; reachable via `ssh -L 8090:localhost:8090`; requires its own Google
 sign-in matching `ADMIN_EMAIL`; adding a user lets them sign in on `web`
 moments later; disabling one ends their session immediately.
@@ -1254,14 +1254,14 @@ moments later; disabling one ends their session immediately.
 **Depends on:** M10–M15
 **Creates:** nothing new — a verification pass against the checklist below
 
-- The gaming box forwards **no public ports, period** — not 80/443, not
+- treehouse forwards **no public ports, period** — not 80/443, not
   anything. Confirmed by scanning it from off the tailnet. SSH reachable
   only over Tailscale.
-- Tailscale ACLs restrict which tailnet nodes can reach the gaming box's
+- Tailscale ACLs restrict which tailnet nodes can reach treehouse's
   `web`/`api` ports to goosenest02 specifically, not every device on the
   tailnet.
-- `unattended-upgrades` (or equivalent) enabled on the gaming box's host OS.
-- Every gaming-box container: non-root user, dropped capabilities,
+- `unattended-upgrades` (or equivalent) enabled on treehouse's host OS.
+- Every treehouse container: non-root user, dropped capabilities,
   memory/CPU limits.
 - Secrets (Google client secret, the AES master key, `ADMIN_EMAIL`) live in
   an `.env` the Compose stack reads, `chmod 600`, never committed —
