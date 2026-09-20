@@ -64,6 +64,11 @@ COPY pyproject.toml ./
 COPY notes_pipeline/ ./notes_pipeline/
 RUN pip install --no-cache-dir .
 
+# Named volumes only inherit ownership from the image when the mount path
+# exists here and is empty at first creation; otherwise Docker makes it
+# root-owned and the non-root `notes` user gets PermissionError on mkdir.
+RUN mkdir -p /data/uploads /data/notes-db && chown -R notes:users /data
+
 USER notes
 EXPOSE 8000
 CMD ["uvicorn", "notes_pipeline.webapi:app", "--host", "0.0.0.0", "--port", "8000"]
