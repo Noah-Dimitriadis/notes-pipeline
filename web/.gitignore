@@ -14,7 +14,11 @@
 /coverage
 
 # next.js
-/.next/
+# No leading slash on .next/ (unlike most patterns here) — a Turbopack dev
+# quirk has been observed writing a stray nested web/web/.next/ once
+# (accidentally committed in af2b9ff), and the anchored /.next/ form only
+# ever matched web/.next itself, not that. Catch it at any depth instead.
+.next/
 /out/
 
 # production
