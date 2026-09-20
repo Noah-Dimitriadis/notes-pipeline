@@ -49,7 +49,10 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-RUN useradd --create-home --uid 1000 notes
+# node:22's base image already ships a `node` user/group at uid/gid 1000
+# (matching the api image's --uid 1000) — rename it rather than colliding
+# with a fresh `useradd`.
+RUN usermod -l notes -d /home/notes -m node && groupmod -n notes node
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
