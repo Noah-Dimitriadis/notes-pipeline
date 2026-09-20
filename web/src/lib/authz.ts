@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { DEV_BYPASS_EMAIL, isAuthEnabled } from "./env";
 
-type ActiveSession = { user: { id: string; email: string; disabled: boolean } };
+export type ActiveSession = { user: { id: string; email: string; disabled: boolean } };
 
 // Local-testing escape hatch, mirroring notes_pipeline/web_config.py's
 // AUTH_ENABLED exactly (same default-true, same DEV_BYPASS_EMAIL) — every
@@ -14,6 +14,20 @@ type ActiveSession = { user: { id: string; email: string; disabled: boolean } };
 const BYPASS_SESSION: ActiveSession = {
   user: { id: DEV_BYPASS_EMAIL, email: DEV_BYPASS_EMAIL, disabled: false },
 };
+
+/** For chrome that renders differently when signed in vs not (the root
+ * layout's header) without forcing a redirect — unlike requireSession,
+ * returning null is a valid, expected outcome here. Must honor the same
+ * AUTH_ENABLED bypass every other check does: layout.tsx previously called
+ * Auth.js's `auth()` directly, so with AUTH_ENABLED=false (no real Google
+ * session ever created) the header silently never rendered at all, even
+ * though every page under it was otherwise fully usable in bypass mode. */
+export async function currentSession(): Promise<ActiveSession | null> {
+  if (!isAuthEnabled()) return BYPASS_SESSION;
+  const session = await auth();
+  if (!session?.user?.email) return null;
+  return session as ActiveSession;
+}
 
 /** For server components/pages: redirects to /login rather than rendering
  * anything for a missing or disabled session. */

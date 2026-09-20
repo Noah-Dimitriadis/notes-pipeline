@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { JobProgress, type JobSnapshot } from "@/components/job-progress";
 
 interface Lecture {
   lecture_id: string;
@@ -11,19 +12,11 @@ interface Lecture {
   notes_generated_at: string | null;
 }
 
-interface JobSnapshot {
-  job_id: string;
-  status: "queued" | "running" | "done" | "error";
-  stage: string | null;
-  message: string;
-  progress: number | null;
-  error: string | null;
-}
-
 export function LecturesView() {
   const jobId = useSearchParams().get("job");
   const [lectures, setLectures] = useState<Lecture[] | null>(null);
   const [job, setJob] = useState<JobSnapshot | null>(null);
+  const [jobHistory, setJobHistory] = useState<JobSnapshot[] | null>(null);
   const pollHandle = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function refreshLectures() {
@@ -31,9 +24,18 @@ export function LecturesView() {
     if (res.ok) setLectures(await res.json());
   }
 
+  // Persistent job history — every upload this account has ever started,
+  // not just the one tracked via ?job= in this tab. Survives a page
+  // refresh and an `api` restart, since it's read from the `jobs` table.
+  async function refreshJobHistory() {
+    const res = await fetch("/api/jobs", { cache: "no-store" });
+    if (res.ok) setJobHistory(await res.json());
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch resolves asynchronously, no synchronous cascading render
     refreshLectures();
+    refreshJobHistory();
   }, []);
 
   // Track the just-uploaded job (passed via ?job=) client-side and poll it
@@ -46,6 +48,7 @@ export function LecturesView() {
       if (!res.ok) return;
       const snapshot: JobSnapshot = await res.json();
       setJob(snapshot);
+      refreshJobHistory();
       if (snapshot.status === "done" || snapshot.status === "error") {
         if (pollHandle.current) clearInterval(pollHandle.current);
         refreshLectures();
@@ -60,15 +63,7 @@ export function LecturesView() {
 
   return (
     <div>
-      {job && job.status !== "done" && (
-        <p>
-          Job {job.job_id.slice(0, 8)}: {job.status}
-          {job.stage ? ` — ${job.stage}` : ""}
-          {job.message ? ` (${job.message})` : ""}
-          {job.progress != null ? ` — ${Math.round(job.progress * 100)}%` : ""}
-        </p>
-      )}
-      {job && job.status === "error" && <p className="error-message">{job.error}</p>}
+      {job && job.status !== "done" && <JobProgress job={job} />}
 
       {lectures === null ? (
         <p>Loading…</p>
@@ -97,6 +92,40 @@ export function LecturesView() {
                     "building…"
                   )}
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <h2>Job history</h2>
+      {jobHistory === null ? (
+        <p>Loading…</p>
+      ) : jobHistory.length === 0 ? (
+        <p>No uploads yet.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Started</th>
+              <th>Status</th>
+              <th>Stage</th>
+              <th>Message</th>
+              <th>Elapsed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {jobHistory.map((j) => (
+              <tr key={j.job_id}>
+                <td>{new Date(j.started_at * 1000).toLocaleString()}</td>
+                <td>
+                  <span className="badge">{j.status}</span>
+                </td>
+                <td>{j.stage ?? "—"}</td>
+                <td className={j.status === "error" ? "error-message" : undefined}>
+                  {j.status === "error" ? j.error : j.message || "—"}
+                </td>
+                <td>{Math.round(j.elapsed_seconds)}s</td>
               </tr>
             ))}
           </tbody>

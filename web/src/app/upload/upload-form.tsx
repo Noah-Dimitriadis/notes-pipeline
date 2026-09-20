@@ -2,33 +2,54 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Dropzone } from "@/components/dropzone";
 
 export function UploadForm() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadPct, setUploadPct] = useState<number | null>(null);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
-    try {
-      // Passing the <form>'s FormData straight to fetch lets the browser
-      // stream the audio file from disk rather than reading it into a JS
-      // string/buffer first — the same no-buffering constraint the server
-      // side's route handler honors by forwarding req.body untouched.
-      const formData = new FormData(event.currentTarget);
-      const res = await fetch("/api/lectures", { method: "POST", body: formData });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.detail || body.error || `Upload failed (${res.status})`);
+    setUploadPct(0);
+
+    // XMLHttpRequest, not fetch — fetch has no cross-browser way to report
+    // upload progress; xhr.upload.onprogress is what actually drives the
+    // bytes-sent bar below for a large audio file.
+    const formData = new FormData(event.currentTarget);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/lectures");
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) setUploadPct(Math.round((e.loaded / e.total) * 100));
+    };
+
+    xhr.onload = () => {
+      let body: { job_id?: string; detail?: string; error?: string } = {};
+      try {
+        body = JSON.parse(xhr.responseText);
+      } catch {
+        // non-JSON error body, fall through to the generic message below
       }
-      const { job_id } = await res.json();
-      router.push(`/lectures?job=${encodeURIComponent(job_id)}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed.");
+      if (xhr.status < 200 || xhr.status >= 300) {
+        setError(body.detail || body.error || `Upload failed (${xhr.status})`);
+        setSubmitting(false);
+        setUploadPct(null);
+        return;
+      }
+      router.push(`/lectures?job=${encodeURIComponent(body.job_id!)}`);
+    };
+
+    xhr.onerror = () => {
+      setError("Upload failed — check your connection and try again.");
       setSubmitting(false);
-    }
+      setUploadPct(null);
+    };
+
+    xhr.send(formData);
   }
 
   return (
@@ -38,20 +59,21 @@ export function UploadForm() {
         <label htmlFor="title">Title</label>
         <input type="text" id="title" name="title" required disabled={submitting} />
       </div>
-      <div className="field">
-        <label htmlFor="audio">Audio (required)</label>
-        <input type="file" id="audio" name="audio" accept="audio/*" required disabled={submitting} />
-      </div>
-      <div className="field">
-        <label htmlFor="deck">Slide deck (optional, .pptx/.pdf)</label>
-        <input type="file" id="deck" name="deck" accept=".pptx,.pdf" disabled={submitting} />
-      </div>
-      <div className="field">
-        <label htmlFor="notes">Your notes (optional, .md/.pdf/.txt)</label>
-        <input type="file" id="notes" name="notes" accept=".md,.pdf,.txt" disabled={submitting} />
-      </div>
+      <Dropzone id="audio" name="audio" label="Audio (required)" accept="audio/*" required disabled={submitting} />
+      <Dropzone id="deck" name="deck" label="Slide deck (optional)" accept=".pptx,.pdf" disabled={submitting} hint="Drop a .pptx or .pdf, or click to browse" />
+      <Dropzone id="notes" name="notes" label="Your notes (optional)" accept=".md,.pdf,.txt" disabled={submitting} hint="Drop a .md, .pdf, or .txt, or click to browse" />
+
+      {uploadPct != null && (
+        <div className="progress-row">
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${uploadPct}%` }} />
+          </div>
+          <span className="progress-pct">{uploadPct}%</span>
+        </div>
+      )}
+
       <button type="submit" disabled={submitting}>
-        {submitting ? "Uploading…" : "Upload"}
+        {submitting ? (uploadPct === 100 ? "Processing…" : "Uploading…") : "Upload"}
       </button>
     </form>
   );

@@ -50,7 +50,7 @@ RUN ldconfig
 
 # Must numerically match the host's `render`/`video` GIDs for /dev/dri
 # passthrough to actually grant access — placeholders here, override with
-# --build-arg from deploy/.env (see .env.example). Verify on-box with
+# --build-arg from deploy/.env (see .env.example). Verify on treehouse with
 # `getent group render video`.
 ARG RENDER_GID=104
 ARG VIDEO_GID=44

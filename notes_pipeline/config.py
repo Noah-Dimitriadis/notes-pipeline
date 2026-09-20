@@ -27,6 +27,12 @@ class Config(BaseSettings):
     whisper_bin: Path = Path("whisper-cli")
     whisper_model: Path
     whisper_threads: int = 8
+    # "auto" (default) probes for a usable GPU render node at transcribe
+    # time and only forces `-ng`/CPU when it finds none — see
+    # stages/transcribe.py's `_gpu_available`. "gpu"/"cpu" force the choice
+    # outright, e.g. to make treehouse fail loudly if its Vulkan setup ever
+    # breaks, rather than silently degrading to a slow CPU run.
+    whisper_device: Literal["auto", "gpu", "cpu"] = "auto"
     remote_url: str | None = None
 
     @classmethod

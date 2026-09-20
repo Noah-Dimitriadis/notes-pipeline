@@ -8,7 +8,7 @@ from typing import Optional, Protocol
 from .cache import Cache, cache_key
 from .config import Config
 from .models import Deck, Lecture, Transcript
-from .stages.audio import prepare as audio_prepare
+from .stages.audio import prepare_many as audio_prepare_many
 from .stages.audio import wav_duration
 from .stages.emit import emit as emit_notes
 from .stages.slides import extract_many as extract_slides
@@ -65,7 +65,7 @@ def read_assets(paths: list[Path]) -> list[str]:
 
 def run_build(
     *,
-    audio: Path,
+    audio: list[Path],
     deck: list[Path],
     notes: Optional[Path],
     assets: list[Path],
@@ -125,7 +125,7 @@ def run_build(
         reporter.stage_skipped("slides", "(no deck provided)")
 
     # -- audio --
-    audio_key = cache_key("audio", STAGE_VERSION, [audio], {})
+    audio_key = cache_key("audio", STAGE_VERSION, audio, {})
     wav_path = cache.cache_root / f"{audio_key}.wav"
     cached_wav = cache.get(audio_key) if use_cache else None
     if cached_wav is not None:
@@ -135,7 +135,7 @@ def run_build(
     else:
         reporter.stage_starting("audio", "normalizing + resampling (usually under a minute)...")
         start = time.time()
-        duration = audio_prepare(audio, wav_path)
+        duration = audio_prepare_many(audio, wav_path)
         elapsed = time.time() - start
         if not no_cache:
             cache.store.put_cache_entry(audio_key, stage="audio", lecture_id=lecture_id, payload_path=wav_path, meta={})
@@ -192,7 +192,7 @@ def run_build(
     meta = {
         "course": course_name or course_code,
         "instructor": instructor,
-        "source_audio": audio.name,
+        "source_audio": ", ".join(a.name for a in audio),
         "source_deck": ", ".join(d.name for d in deck) if deck else None,
         "duration": f"{int(duration) // 60}:{int(duration) % 60:02d}",
         "transcript_engine": transcript.engine,

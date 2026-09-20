@@ -1,12 +1,12 @@
-# 9060 XT box setup
+# treehouse setup
 
-Operational runbook for the gaming box that hosts the M10–M16 stack
-(§14 of `PLAN.md`). `PLAN.md` is the architecture/spec; this is the
+Operational runbook for treehouse, the gaming box that hosts the M10–M16
+stack (§14 of `PLAN.md`). `PLAN.md` is the architecture/spec; this is the
 step-by-step "what to actually do on the machine" checklist, kept separate
 so the two don't get tangled.
 
 Nothing in `deploy/` has been run on real hardware yet — this is the plan
-for doing that, written before the box was ready.
+for doing that, written before treehouse was ready.
 
 ---
 
@@ -14,15 +14,15 @@ for doing that, written before the box was ready.
 
 - [ ] Ubuntu installed and fully updated (`apt update && apt full-upgrade`).
 - [x] `unattended-upgrades` enabled — it's on this checklist now, not
-      deferred to M16, since the box has no public port today but will
+      deferred to M16, since treehouse has no public port today but will
       still be reachable from goosenest02 and the tailnet.
 - [x] Tailscale installed and joined to the tailnet:
       `curl -fsSL https://tailscale.com/install.sh | sh` then
       `tailscale up`.
-  - [x] Record the box's Tailscale IPv4 (`tailscale ip -4`) — goes in
+  - [x] Record treehouse's Tailscale IPv4 (`tailscale ip -4`) — goes in
         `deploy/.env` as `TAILSCALE_IP`, and is also what goosenest02's
         Ingress needs to target (M11). Recorded: `100.119.131.69`.
-  - [ ] Record the box's Tailscale MagicDNS hostname too
+  - [ ] Record treehouse's Tailscale MagicDNS hostname too
         (`tailscale status` — looks like `<name>.<tailnet>.ts.net`).
         `PLAN.md` prefers the hostname over the raw IP for M11's Ingress
         backend, since it survives re-registration.
@@ -44,7 +44,7 @@ for doing that, written before the box was ready.
       catch-all deny is reached). SSH from a tailnet-connected Mac
       confirmed working post-change. Firewall approach was used over
       `sshd_config`'s `ListenAddress` specifically so this doesn't break
-      if the box's Tailscale IP (`100.119.131.69`) ever changes.
+      if treehouse's Tailscale IP (`100.119.131.69`) ever changes.
       **Still pending:** confirming SSH is actually refused from a
       LAN/WAN-only client (Tailscale off) — do this next and update this
       note once done.
@@ -66,7 +66,7 @@ for doing that, written before the box was ready.
   - [x] `getent group render` and `getent group video` — write these GIDs
         down, they go in `deploy/.env` as `RENDER_GID`/`VIDEO_GID`. The
         Dockerfile's build-arg defaults (104, 44) are common Debian/Ubuntu
-        values but **not guaranteed to match this box** — don't skip this.
+        values but **not guaranteed to match treehouse** — don't skip this.
         Recorded: `RENDER_GID=991`, `VIDEO_GID=44` (matches `getent`).
   - [ ] Optional host-side sanity check before touching Docker at all:
         `sudo apt install vulkan-tools && vulkaninfo --summary` — confirms
@@ -76,20 +76,20 @@ for doing that, written before the box was ready.
 
 ---
 
-## 2. Repo + secrets on the box
+## 2. Repo + secrets on treehouse
 
-- [x] Clone/pull this repo onto the box. On `main` @ `bb09629`.
+- [x] Clone/pull this repo onto treehouse. On `main` @ `bb09629`.
 - [x] `cp deploy/.env.example deploy/.env` and fill in the three values
       recorded in §1 (`TAILSCALE_IP`, `RENDER_GID`, `VIDEO_GID`).
-      `deploy/.env` is gitignored — it never leaves this machine, and if
-      the box is ever reimaged this file is gone and needs regenerating
+      `deploy/.env` is gitignored — it never leaves treehouse, and if
+      treehouse is ever reimaged this file is gone and needs regenerating
       from scratch, not restored from git. Also has the M13 vars filled
       in, with `AUTH_ENABLED=false` set deliberately for the first smoke
       test (Google OAuth secrets not filled in yet — intentional).
 - [x] The whisper model file needs to land in the `whisper-model` named
       volume before `api` will actually work (it's mounted read-only from
-      that volume, not baked into the image). Get the model file onto the
-      box first (scp/rsync from the Mac, or download fresh — same
+      that volume, not baked into the image). Get the model file onto treehouse
+      first (scp/rsync from the Mac, or download fresh — same
       `ggml-large-v3-turbo.bin` referenced in the main `PLAN.md`
       prerequisites §12), then copy it into the volume with a throwaway
       container:
@@ -104,9 +104,9 @@ for doing that, written before the box was ready.
       project name ever changes — don't assume the prefix.
       Confirmed present: `ggml-large-v3-turbo.bin`, 1.6GB, in
       `notes-pipeline_whisper-model`.
-  - [ ] Keep a copy of the model file somewhere off this box too — it's
+  - [ ] Keep a copy of the model file somewhere off treehouse too — it's
         1.6 GB and isn't (and shouldn't be) committed to git, so this
-        volume is presently the only copy on this machine.
+        volume is presently the only copy on treehouse.
 
 ---
 
@@ -142,7 +142,7 @@ for doing that, written before the box was ready.
 
 ## 4. Verify against M10's actual acceptance criteria
 
-From the box itself:
+From treehouse itself:
 - [x] `curl http://$(tailscale ip -4):8000/healthz` → `ok`. Re-verified
       2026-09-17 against the real `api` image (see §3 note — the first
       pass had been against a stale placeholder image without realizing).
@@ -156,7 +156,7 @@ From the box itself:
 
 From another machine on the tailnet (e.g. your Mac, or goosenest02 once
 it's set up):
-- [x] The same `:8000/healthz` and `:3000` URLs, against the box's
+- [x] The same `:8000/healthz` and `:3000` URLs, against treehouse's
       Tailscale IP, succeed (checked from Mac).
   - **Re-verify recommended:** this was checked before the §3 stale-image
     fix landed — worth a quick re-check now that the real `api` is
@@ -165,12 +165,12 @@ it's set up):
       that matters most.
 
 From a machine that is *not* on the tailnet (phone on cellular, etc.):
-- [ ] Nothing on this box is reachable at all. This is really a check
+- [ ] Nothing on treehouse is reachable at all. This is really a check
       that the router/firewall has no port-forwarding rule pointed at
-      this box — worth confirming directly on the router's admin page,
+      treehouse — worth confirming directly on the router's admin page,
       not just inferring it from the compose file.
 
-Real GPU transcription test (do this once a scratch wav is on the box —
+Real GPU transcription test (do this once a scratch wav is on treehouse —
 e.g. copy `testlecture/lecture.wav` over):
 - [x] `docker compose exec api whisper-cli -m /models/ggml-large-v3-turbo.bin -f /path/to/test.wav -l en -t 4 -mc 0` and confirm it actually runs on the GPU, not falling back to CPU (check timing against the Benchmark B numbers in `PLAN.md` §2 — GPU should be well under the ~6 min CPU time on the Mac).
       Confirmed 2026-09-17: `ggml_vulkan: Found 1 Vulkan devices` at
@@ -192,7 +192,7 @@ e.g. copy `testlecture/lecture.wav` over):
   isn't running Docker, the service is down — that's expected, it's
   exactly what M11's fallback page on goosenest02 is for. No action
   needed, just don't be surprised by it.
-- TLS and DNS are goosenest02's job (M11), not this box's — this box
+- TLS and DNS are goosenest02's job (M11), not treehouse's — treehouse
   never needs a certificate of its own.
 - M13 is done — `deploy/api/Dockerfile`'s `CMD` now runs the real
   `notes_pipeline.webapi:app` via uvicorn. `deploy/.env` needs the new
@@ -201,10 +201,10 @@ e.g. copy `testlecture/lecture.wav` over):
   (see `.env.example`) before `docker compose up` will serve real traffic.
 - Once M14/M15 (the real Next.js app) exist, `deploy/web/Dockerfile`
   should be replaced outright, not built on top of.
-- If the box is ever reimaged or Docker is reinstalled: `RENDER_GID` /
+- If treehouse is ever reimaged or Docker is reinstalled: `RENDER_GID` /
   `VIDEO_GID` may change (they're assigned by the OS, not fixed) —
   recheck `getent group render video` and update `deploy/.env` before
   assuming GPU passthrough still works.
 - Periodically re-check that nothing new is listening on a public
   interface (`ss -tlnp` per §1) — easy to lose track of as more gets
-  installed on this machine over time for gaming/other uses.
+  installed on treehouse over time for gaming/other uses.
