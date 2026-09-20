@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { JobProgress, type JobSnapshot } from "@/components/job-progress";
 
 interface Lecture {
   lecture_id: string;
@@ -9,17 +10,6 @@ interface Lecture {
   date: string | null;
   has_notes: boolean;
   notes_generated_at: string | null;
-}
-
-interface JobSnapshot {
-  job_id: string;
-  status: "queued" | "running" | "done" | "error";
-  stage: string | null;
-  message: string;
-  progress: number | null;
-  error: string | null;
-  started_at: number;
-  elapsed_seconds: number;
 }
 
 export function LecturesView() {
@@ -73,15 +63,7 @@ export function LecturesView() {
 
   return (
     <div>
-      {job && job.status !== "done" && (
-        <p>
-          Job {job.job_id.slice(0, 8)}: {job.status}
-          {job.stage ? ` — ${job.stage}` : ""}
-          {job.message ? ` (${job.message})` : ""}
-          {job.progress != null ? ` — ${Math.round(job.progress * 100)}%` : ""}
-        </p>
-      )}
-      {job && job.status === "error" && <p className="error-message">{job.error}</p>}
+      {job && job.status !== "done" && <JobProgress job={job} />}
 
       {lectures === null ? (
         <p>Loading…</p>

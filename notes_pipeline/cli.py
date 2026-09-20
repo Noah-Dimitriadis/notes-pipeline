@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sys
 import time
+import warnings
+from contextlib import contextmanager
 from datetime import date
 from pathlib import Path
 from typing import Optional
@@ -139,6 +141,28 @@ def _make_synthesize_progress():
     return on_progress
 
 
+@contextmanager
+def _captured_warnings():
+    """Python's default warning handler prints straight to stderr the
+    moment a warning fires (e.g. transcribe.py's TranscriptQualityWarning,
+    raised right as a stage finishes) — right into the middle of a live
+    `\\r`-updating progress line above it, which makes a perfectly fine run
+    look like it crashed mid-stage. Collect them here instead and print
+    them together, after the terminal is no longer mid-line."""
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        yield captured
+
+
+def _print_captured_warnings(captured: list) -> None:
+    if not captured:
+        return
+    typer.echo("")
+    typer.echo("Warnings:")
+    for w in captured:
+        typer.echo(f"  - {w.message}")
+
+
 class TerminalReporter:
     """Reporter that renders the same live stage-by-stage terminal output
     `_run_build` used to produce directly, now driven by pipeline.run_build."""
@@ -188,16 +212,19 @@ def _run_build(
     no_cache: bool,
     cfg: Config,
 ) -> Path:
-    try:
-        return _pipeline_run_build(
-            audio=audio, deck=deck, notes=notes, assets=assets, out=out,
-            course_code=course_code, number=number,
-            course_name=course_name, instructor=instructor,
-            force=force, no_cache=no_cache, cfg=cfg,
-            reporter=TerminalReporter(),
-        )
-    except ValueError as exc:
-        raise typer.BadParameter(str(exc)) from exc
+    with _captured_warnings() as captured:
+        try:
+            result = _pipeline_run_build(
+                audio=audio, deck=deck, notes=notes, assets=assets, out=out,
+                course_code=course_code, number=number,
+                course_name=course_name, instructor=instructor,
+                force=force, no_cache=no_cache, cfg=cfg,
+                reporter=TerminalReporter(),
+            )
+        except ValueError as exc:
+            raise typer.BadParameter(str(exc)) from exc
+    _print_captured_warnings(captured)
+    return result
 
 
 @app.command()
@@ -297,6 +324,7 @@ def append(
     cache = Cache(store, cache_root)
     lecture_id = f"{out.parent.name}-{_guess_number(out.stem)}"
     use_cache = not no_cache and not force
+    captured_warnings: list = []
 
     # -- slides --
     deck_obj: Optional[Deck] = None
@@ -341,7 +369,9 @@ def append(
     else:
         _announce_stage("transcribe", f"running {cfg.transcriber} on {_format_duration(new_duration)} of audio...")
         start = time.time()
-        new_transcript = get_transcriber(cfg).transcribe(wav_path, on_progress=_make_transcribe_progress(new_duration))
+        with _captured_warnings() as captured:
+            new_transcript = get_transcriber(cfg).transcribe(wav_path, on_progress=_make_transcribe_progress(new_duration))
+        captured_warnings.extend(captured)
         elapsed = time.time() - start
         if not no_cache:
             cache.put(transcribe_key, new_transcript.model_dump_json(), stage="transcribe", lecture_id=lecture_id)
@@ -389,6 +419,7 @@ def append(
     store.add_lecture(lecture)
     store.add_note(lecture_id, result, model=cfg.model, prompt_version=_STAGE_VERSION)
     typer.echo(f"{'emit':<12}{str(result)}")
+    _print_captured_warnings(captured_warnings)
 
 
 @app.command()

@@ -123,13 +123,20 @@ class Store:
     # -- lectures ---------------------------------------------------------
 
     def add_lecture(self, lecture: Lecture, *, user_id: str | None = None) -> None:
+        # COALESCE on title: pipeline.run_build's own final upsert (M3-M7)
+        # never knows a title — that only ever comes from the hosted
+        # service's placeholder row, written *before* the build starts (see
+        # webapi.py's create_lecture), so the pipeline's later title=None
+        # write must not blank it back out. A real incoming title (from a
+        # future rename feature, say) still overwrites normally — this only
+        # protects an existing title from being wiped by an absent one.
         self._conn.execute(
             """
             INSERT INTO lectures(id, course, number, title, date, dir, created_at, user_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 course=excluded.course, number=excluded.number,
-                title=excluded.title, date=excluded.date, dir=excluded.dir,
+                title=COALESCE(excluded.title, lectures.title), date=excluded.date, dir=excluded.dir,
                 user_id=excluded.user_id
             """,
             (
