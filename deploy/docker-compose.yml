@@ -117,6 +117,10 @@ services:
       AUTH_DB_PATH: /data/auth-db/auth.db
       API_INTERNAL_URL: http://api:8000
       APP_MODE: admin
+      # Overrides the public AUTH_URL from .env: the admin is only reached via
+      # the ssh -L tunnel, so Auth.js's OAuth redirect must land on it, not on
+      # the public web host (cookies wouldn't match → "Configuration" error).
+      AUTH_URL: http://localhost:8090
     volumes:
       - auth-db:/data/auth-db
       - notes-db:/data/notes-db # the shared `users` table — §14.3
