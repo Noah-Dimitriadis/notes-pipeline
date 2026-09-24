@@ -205,6 +205,23 @@ td {
   opacity: 0.7;
 }
 
+.dropzone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.dropzone-index {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.dropzone-clear:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
 .dropzone-chip {
   display: flex;
   align-items: center;

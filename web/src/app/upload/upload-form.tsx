@@ -59,9 +59,10 @@ export function UploadForm() {
         <label htmlFor="title">Title</label>
         <input type="text" id="title" name="title" required disabled={submitting} />
       </div>
-      <Dropzone id="audio" name="audio" label="Audio (required)" accept="audio/*" required disabled={submitting} />
-      <Dropzone id="deck" name="deck" label="Slide deck (optional)" accept=".pptx,.pdf" disabled={submitting} hint="Drop a .pptx or .pdf, or click to browse" />
+      <Dropzone id="audio" name="audio" label="Audio (required)" accept="audio/*" required multiple disabled={submitting} hint="Drop one or more recordings, or click to browse — they're joined in the order listed" />
+      <Dropzone id="deck" name="deck" label="Slide decks (optional)" accept=".pptx,.pdf" multiple disabled={submitting} hint="Drop one or more .pptx / .pdf decks, or click to browse — leave empty if there are no slides" />
       <Dropzone id="notes" name="notes" label="Your notes (optional)" accept=".md,.pdf,.txt" disabled={submitting} hint="Drop a .md, .pdf, or .txt, or click to browse" />
+      <Dropzone id="assets" name="assets" label="Other assets (optional)" accept=".md,.pdf,.txt" multiple disabled={submitting} hint="Readings, handouts, or other reference material (.md, .pdf, .txt)" />
 
       {uploadPct != null && (
         <div className="progress-row">

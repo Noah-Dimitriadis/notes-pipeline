@@ -22,6 +22,9 @@ interface DropzoneProps {
   required?: boolean;
   disabled?: boolean;
   hint?: string;
+  /** Accept several files, kept as an ordered list (order = order sent to
+   * the API, which matters for audio/decks — they're concatenated in it). */
+  multiple?: boolean;
 }
 
 /** A styled drag-and-drop wrapper around a real `<input type="file">` — the
@@ -29,40 +32,57 @@ interface DropzoneProps {
  * `FormData(form)` actually reads on submit), this just makes it easier to
  * use: click-to-browse, drag-and-drop (including a file dragged in from
  * another tab, e.g. Chrome's downloads shelf), and a compact "chosen file"
- * chip with a clear button instead of the raw native file input UI. */
-export function Dropzone({ id, name, label, accept, required, disabled, hint }: DropzoneProps) {
+ * list with remove (and, in `multiple` mode, reorder) buttons instead of the
+ * raw native file input UI. React state is the source of truth for the file
+ * list; it's mirrored back into `input.files` on every change so FormData
+ * sees the same files, in the same order. */
+export function Dropzone({ id, name, label, accept, required, disabled, hint, multiple }: DropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
 
-  function applyFile(next: File | null) {
-    setFile(next);
-    if (inputRef.current && next) {
+  function update(next: File[]) {
+    setFiles(next);
+    if (inputRef.current) {
       const dt = new DataTransfer();
-      dt.items.add(next);
+      next.forEach((f) => dt.items.add(f));
       inputRef.current.files = dt.files;
     }
+  }
+
+  function add(incoming: File[]) {
+    if (incoming.length === 0) return;
+    update(multiple ? [...files, ...incoming] : incoming.slice(0, 1));
   }
 
   function handleDrop(event: React.DragEvent<HTMLDivElement>) {
     event.preventDefault();
     setDragging(false);
     if (disabled) return;
-    const dropped = event.dataTransfer.files?.[0];
-    if (dropped) applyFile(dropped);
+    add(Array.from(event.dataTransfer.files ?? []));
   }
 
-  function handleClear(event: React.MouseEvent) {
+  function remove(index: number, event: React.MouseEvent) {
     event.stopPropagation();
-    if (inputRef.current) inputRef.current.value = "";
-    setFile(null);
+    update(files.filter((_, i) => i !== index));
   }
+
+  function move(index: number, delta: number, event: React.MouseEvent) {
+    event.stopPropagation();
+    const target = index + delta;
+    if (target < 0 || target >= files.length) return;
+    const next = [...files];
+    [next[index], next[target]] = [next[target], next[index]];
+    update(next);
+  }
+
+  const emptyHint = hint ?? (multiple ? "Drop files here, or click to browse" : "Drop a file here, or click to browse");
 
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
       <div
-        className={`dropzone${dragging ? " dragging" : ""}${disabled ? " disabled" : ""}`}
+        className={`dropzone${dragging ? " dragging" : ""}${disabled ? " disabled" : ""}${files.length ? " has-files" : ""}`}
         onClick={() => !disabled && inputRef.current?.click()}
         onDragOver={(e) => {
           e.preventDefault();
@@ -73,21 +93,51 @@ export function Dropzone({ id, name, label, accept, required, disabled, hint }: 
         role="button"
         tabIndex={disabled ? -1 : 0}
         onKeyDown={(e) => {
-          if (!disabled && (e.key === "Enter" || e.key === " ")) inputRef.current?.click();
+          if (e.target === e.currentTarget && !disabled && (e.key === "Enter" || e.key === " ")) {
+            inputRef.current?.click();
+          }
         }}
       >
-        {file ? (
-          <div className="dropzone-chip">
-            <span className="filename">{file.name}</span>
-            <span className="filesize">{formatBytes(file.size)}</span>
-            {!disabled && (
-              <button type="button" className="dropzone-clear" onClick={handleClear} aria-label={`Clear ${label}`}>
-                ✕
-              </button>
-            )}
+        {files.length > 0 ? (
+          <div className="dropzone-list">
+            {files.map((file, i) => (
+              <div className="dropzone-chip" key={`${file.name}-${file.size}-${i}`}>
+                {multiple && files.length > 1 && <span className="dropzone-index">{i + 1}.</span>}
+                <span className="filename">{file.name}</span>
+                <span className="filesize">{formatBytes(file.size)}</span>
+                {!disabled && multiple && files.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="dropzone-clear"
+                      onClick={(e) => move(i, -1, e)}
+                      disabled={i === 0}
+                      aria-label={`Move ${file.name} up`}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="dropzone-clear"
+                      onClick={(e) => move(i, 1, e)}
+                      disabled={i === files.length - 1}
+                      aria-label={`Move ${file.name} down`}
+                    >
+                      ↓
+                    </button>
+                  </>
+                )}
+                {!disabled && (
+                  <button type="button" className="dropzone-clear" onClick={(e) => remove(i, e)} aria-label={`Remove ${file.name}`}>
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+            {multiple && !disabled && <span className="dropzone-hint">Drop or click to add more</span>}
           </div>
         ) : (
-          <span className="dropzone-hint">{hint ?? "Drop a file here, or click to browse"}</span>
+          <span className="dropzone-hint">{emptyHint}</span>
         )}
         <input
           ref={inputRef}
@@ -95,9 +145,15 @@ export function Dropzone({ id, name, label, accept, required, disabled, hint }: 
           id={id}
           name={name}
           accept={accept}
+          multiple={multiple}
           required={required}
           disabled={disabled}
-          onChange={(e) => setFile(e.currentTarget.files?.[0] ?? null)}
+          onChange={(e) => {
+            const picked = Array.from(e.currentTarget.files ?? []);
+            // Picker replaces input.files with just this pick; `add`
+            // re-merges with what's already listed and writes it back.
+            add(picked);
+          }}
           // Visually hidden but still focusable/operable directly (tab to
           // it, use the OS file picker's native keyboard flow) — the
           // dropzone div above is a convenience layer, not a replacement.
