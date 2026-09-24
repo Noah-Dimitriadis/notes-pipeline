@@ -243,9 +243,10 @@ def _row_snapshot(row: dict) -> dict:
 @dataclass
 class BuildTask:
     job: Job
-    audio: Path
-    deck: Optional[Path]
+    audio: list[Path]
+    deck: list[Path]
     notes: Optional[Path]
+    assets: list[Path]
     out: Path
     course_code: str
     number: int
@@ -323,10 +324,10 @@ def _worker_loop() -> None:
             store.upsert_job(job.row())
         try:
             result = pipeline.run_build(
-                audio=[task.audio],
-                deck=[task.deck] if task.deck else [],
+                audio=task.audio,
+                deck=task.deck,
                 notes=task.notes,
-                assets=[],
+                assets=task.assets,
                 out=task.out,
                 course_code=task.course_code,
                 number=task.number,
@@ -515,9 +516,10 @@ def healthz_gpu() -> PlainTextResponse:
 @app.post("/api/lectures")
 async def create_lecture(
     title: str = Form(...),
-    audio: UploadFile = File(...),
-    deck: UploadFile | None = File(default=None),
+    audio: list[UploadFile] = File(...),
+    deck: list[UploadFile] = File(default=[]),
     notes: UploadFile | None = File(default=None),
+    assets: list[UploadFile] = File(default=[]),
     email: str = Depends(require_internal_user),
 ) -> dict:
     if _pending_count(email) >= _web_cfg.max_pending_jobs_per_user:
@@ -526,17 +528,29 @@ async def create_lecture(
             detail=f"You already have {_web_cfg.max_pending_jobs_per_user} lecture(s) queued or building.",
         )
 
+    if not any(f.filename for f in audio):
+        raise HTTPException(status_code=422, detail="At least one audio file is required.")
+
     api_key = _decrypted_key_for(email)  # fail fast, before writing anything to disk
 
     lecture_id = uuid.uuid4().hex
     number = _lecture_number(lecture_id)
     lecture_dir = _user_dir(email) / lecture_id
-    audio_path = await _save_upload(audio, lecture_dir / f"audio{Path(audio.filename or '').suffix or '.m4a'}")
-    deck_path = (
-        await _save_upload(deck, lecture_dir / f"deck{Path(deck.filename or '').suffix}")
-        if deck is not None and deck.filename
-        else None
-    )
+    # Order matters for audio and decks (concatenated chronologically), so
+    # files are numbered in the order the multipart parts arrived. An empty
+    # file input submits a part with no filename — skip those.
+    audio_paths = [
+        await _save_upload(f, lecture_dir / f"audio-{i}{Path(f.filename or '').suffix or '.m4a'}")
+        for i, f in enumerate(f for f in audio if f.filename)
+    ]
+    deck_paths = [
+        await _save_upload(f, lecture_dir / f"deck-{i}{Path(f.filename or '').suffix}")
+        for i, f in enumerate(f for f in deck if f.filename)
+    ]
+    asset_paths = [
+        await _save_upload(f, lecture_dir / "assets" / f"{i}-{Path(f.filename or '').name}")
+        for i, f in enumerate(f for f in assets if f.filename)
+    ]
     notes_path = (
         await _save_upload(notes, lecture_dir / f"notes{Path(notes.filename or '').suffix}")
         if notes is not None and notes.filename
@@ -562,7 +576,7 @@ async def create_lecture(
     # history too, and this is what makes GET /api/jobs show it right away.
     _db().upsert_job(job.row())
     _build_queue.put(BuildTask(
-        job=job, audio=audio_path, deck=deck_path, notes=notes_path, out=out_path,
+        job=job, audio=audio_paths, deck=deck_paths, notes=notes_path, assets=asset_paths, out=out_path,
         course_code="web", number=number, api_key=api_key,
     ))
     return {"lecture_id": lecture_row_id, "job_id": job.id}
