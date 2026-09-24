@@ -20,7 +20,7 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore", env_file=DEFAULT_ENV_PATH)
 
     anthropic_api_key: SecretStr
-    model: str = "claude-opus-5"
+    model: str = "claude-opus-5-5"
     library_root: Path
     db_path: Path
     transcriber: Literal["whisper", "remote"] = "whisper"
