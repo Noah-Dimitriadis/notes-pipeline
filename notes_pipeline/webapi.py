@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import hashlib
 import queue
+import re
 import subprocess
 import threading
 import time
@@ -38,6 +39,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.responses import PlainTextResponse
@@ -250,6 +252,7 @@ class BuildTask:
     course_code: str
     number: int
     api_key: str
+    title: str
 
 
 class JobReporter:
@@ -290,7 +293,9 @@ class JobReporter:
         self._update(message=f"{phase} ({chars:,} chars)")
 
     def emit_done(self, path: Path) -> None:
-        self._update(stage="emit", message=str(path), progress=1.0)
+        # Not `str(path)` — that's a location inside the api container's
+        # volume, meaningless (and layout-breaking) to a browser user.
+        self._update(stage="emit", message="Notes ready", progress=1.0)
 
 
 _jobs: dict[str, Job] = {}
@@ -332,6 +337,7 @@ def _worker_loop() -> None:
                 number=task.number,
                 course_name=None,
                 instructor=None,
+                title=task.title,
                 force=False,
                 no_cache=False,
                 cfg=_cfg,
@@ -408,6 +414,18 @@ async def _save_upload(upload: UploadFile, dst: Path) -> Path:
         while chunk := await upload.read(1 << 20):
             f.write(chunk)
     return dst
+
+
+def _download_filename(title: str | None) -> str:
+    """`<title>.md`, with anything a filesystem or a Content-Disposition
+    header would choke on stripped out."""
+    cleaned = re.sub(r'[\\/:*?"<>|\x00-\x1f]', "", title or "").strip(" .")
+    return f"{cleaned or 'notes'}.md"
+
+
+def _content_disposition(filename: str) -> str:
+    ascii_name = filename.encode("ascii", "replace").decode().replace("?", "_")
+    return f"attachment; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(filename)}"
 
 
 def _lecture_response(lecture: Lecture) -> dict:
@@ -531,14 +549,19 @@ async def create_lecture(
     lecture_id = uuid.uuid4().hex
     number = _lecture_number(lecture_id)
     lecture_dir = _user_dir(email) / lecture_id
-    audio_path = await _save_upload(audio, lecture_dir / f"audio{Path(audio.filename or '').suffix or '.m4a'}")
+    # Uploads live in their own subfolder so no user-supplied file can ever
+    # share a path with the generated `notes.md` (pipeline.run_build refuses
+    # an output path equal to the input notes path — an uploaded `.md` used
+    # to trip that).
+    inputs_dir = lecture_dir / "inputs"
+    audio_path = await _save_upload(audio, inputs_dir / f"audio{Path(audio.filename or '').suffix or '.m4a'}")
     deck_path = (
-        await _save_upload(deck, lecture_dir / f"deck{Path(deck.filename or '').suffix}")
+        await _save_upload(deck, inputs_dir / f"deck{Path(deck.filename or '').suffix}")
         if deck is not None and deck.filename
         else None
     )
     notes_path = (
-        await _save_upload(notes, lecture_dir / f"notes{Path(notes.filename or '').suffix}")
+        await _save_upload(notes, inputs_dir / f"notes{Path(notes.filename or '').suffix}")
         if notes is not None and notes.filename
         else None
     )
@@ -563,7 +586,7 @@ async def create_lecture(
     _db().upsert_job(job.row())
     _build_queue.put(BuildTask(
         job=job, audio=audio_path, deck=deck_path, notes=notes_path, out=out_path,
-        course_code="web", number=number, api_key=api_key,
+        course_code="web", number=number, api_key=api_key, title=title,
     ))
     return {"lecture_id": lecture_row_id, "job_id": job.id}
 
@@ -583,7 +606,12 @@ def get_lecture_notes_route(lecture_id: str, email: str = Depends(require_intern
     path = Path(notes[-1]["path"])
     if not path.exists():
         raise HTTPException(status_code=404, detail="Notes record exists but the file is missing.")
-    return PlainTextResponse(path.read_text(encoding="utf-8"))
+    lecture = _db().get_lecture(lecture_id)
+    filename = _download_filename(lecture.title if lecture else None)
+    return PlainTextResponse(
+        path.read_text(encoding="utf-8"),
+        headers={"Content-Disposition": _content_disposition(filename)},
+    )
 
 
 @app.get("/api/jobs")
