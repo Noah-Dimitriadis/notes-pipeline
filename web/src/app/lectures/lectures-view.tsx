@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { JobProgress, type JobSnapshot } from "@/components/job-progress";
 
 interface Lecture {
@@ -12,9 +12,17 @@ interface Lecture {
   notes_generated_at: string | null;
 }
 
+type SortKey = "title" | "date";
+
+interface Sort {
+  key: SortKey;
+  dir: "asc" | "desc";
+}
+
 export function LecturesView() {
   const jobId = useSearchParams().get("job");
   const [lectures, setLectures] = useState<Lecture[] | null>(null);
+  const [sort, setSort] = useState<Sort>({ key: "date", dir: "desc" });
   const [job, setJob] = useState<JobSnapshot | null>(null);
   const [jobHistory, setJobHistory] = useState<JobSnapshot[] | null>(null);
   const pollHandle = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -61,25 +69,66 @@ export function LecturesView() {
     };
   }, [jobId]);
 
+  const sortedLectures = useMemo(() => {
+    if (!lectures) return lectures;
+    const sign = sort.dir === "asc" ? 1 : -1;
+    return [...lectures].sort((a, b) => {
+      if (sort.key === "title") {
+        return sign * a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" });
+      }
+      // A lecture has no date until its build finishes, so an undated one
+      // is the newest thing in the list. `date` is day-granular, so same-day
+      // lectures fall back to when their notes were generated.
+      if (a.date === null || b.date === null) {
+        return a.date === b.date ? 0 : a.date === null ? sign : -sign;
+      }
+      return (
+        sign *
+        (a.date.localeCompare(b.date) ||
+          (a.notes_generated_at ?? "").localeCompare(b.notes_generated_at ?? ""))
+      );
+    });
+  }, [lectures, sort]);
+
+  function toggleSort(key: SortKey) {
+    setSort((prev) =>
+      prev.key === key
+        ? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: key === "date" ? "desc" : "asc" },
+    );
+  }
+
+  function sortHeader(key: SortKey, label: string) {
+    const active = sort.key === key;
+    return (
+      <th aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}>
+        <button type="button" className="sort-header" onClick={() => toggleSort(key)}>
+          {label}
+          <span aria-hidden="true">{active ? (sort.dir === "asc" ? " ▲" : " ▼") : ""}</span>
+        </button>
+      </th>
+    );
+  }
+
   return (
     <div>
       {job && job.status !== "done" && <JobProgress job={job} />}
 
-      {lectures === null ? (
+      {!sortedLectures ? (
         <p>Loading…</p>
-      ) : lectures.length === 0 ? (
+      ) : sortedLectures.length === 0 ? (
         <p>No lectures yet.</p>
       ) : (
         <table>
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Date</th>
+              {sortHeader("title", "Title")}
+              {sortHeader("date", "Date")}
               <th>Notes</th>
             </tr>
           </thead>
           <tbody>
-            {lectures.map((lec) => (
+            {sortedLectures.map((lec) => (
               <tr key={lec.lecture_id}>
                 <td>{lec.title}</td>
                 <td>{lec.date ?? "—"}</td>
