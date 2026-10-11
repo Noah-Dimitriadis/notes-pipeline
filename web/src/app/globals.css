@@ -159,6 +159,15 @@ td {
   border-bottom: 1px solid var(--border);
 }
 
+.sort-header {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
 .badge {
   display: inline-block;
   padding: 0.1rem 0.5rem;
