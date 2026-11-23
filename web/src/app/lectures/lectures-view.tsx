@@ -171,8 +171,12 @@ export function LecturesView() {
                   <span className="badge">{j.status}</span>
                 </td>
                 <td>{j.stage ?? "—"}</td>
-                <td className={j.status === "error" ? "error-message" : undefined}>
-                  {j.status === "error" ? j.error : j.message || "—"}
+                <td className={j.status === "error" ? "error-message" : undefined} title={j.error ?? undefined}>
+                  {j.status === "error"
+                    ? (j.error ?? "").split("\n")[0]
+                    : j.status === "done"
+                      ? "Notes ready"
+                      : j.message || "—"}
                 </td>
                 <td>{Math.round(j.elapsed_seconds)}s</td>
               </tr>

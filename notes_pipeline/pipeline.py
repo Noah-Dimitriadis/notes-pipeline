@@ -80,6 +80,7 @@ def run_build(
     reporter: Optional[Reporter] = None,
     api_key: Optional[str] = None,
     user_id: Optional[str] = None,
+    title: Optional[str] = None,
 ) -> Path:
     """Run the full slides -> audio -> transcribe -> synthesize -> emit
     pipeline for one lecture, reporting stage-by-stage progress through
@@ -187,7 +188,7 @@ def run_build(
     # -- emit --
     lecture = Lecture(
         id=lecture_id, course=course_code, number=number,
-        title=None, date=date.today(), dir=out.parent,
+        title=title, date=date.today(), dir=out.parent,
     )
     meta = {
         "course": course_name or course_code,

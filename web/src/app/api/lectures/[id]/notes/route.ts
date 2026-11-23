@@ -21,7 +21,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     status: 200,
     headers: {
       "content-type": "text/markdown; charset=utf-8",
-      "content-disposition": `attachment; filename="${id}.md"`,
+      // The api service names the file after the lecture's title.
+      "content-disposition": upstream.headers.get("content-disposition") ?? `attachment; filename="${id}.md"`,
     },
   });
 }
