@@ -1162,6 +1162,44 @@ auth plumbing around it is what was under test); a malformed or
 signature-mismatched internal token is rejected. **Not verified:** a real
 Google OAuth round-trip, and a real GPU build (needs treehouse).
 
+**Found and fixed post-deploy (2026-11-22) — remote MCP OAuth discovery.**
+The first connection from a real client (Claude Code, `claude mcp add
+--transport http … /mcp/`) failed with `Dynamic Client Registration
+rejected (HTTP 404)` (from Next.js). Cause: FastMCP mounted under `/mcp`
+only serves its OAuth metadata at `/mcp/.well-known/...`, but the 401's
+`resource_metadata` and RFC 8414 path-aware discovery point at the **host
+root** — `/.well-known/oauth-protected-resource/mcp/` and
+`/.well-known/oauth-authorization-server/mcp`. M11's Ingress sends
+everything outside `/mcp` to `web`, so discovery 404'd and the client fell
+back to the spec default `/register` at the root (also `web`, also 404).
+The TestClient acceptance above couldn't catch this — it bypasses the
+Ingress.
+
+Fix, two halves:
+- `webapi.py` also registers `mcp.auth.get_well_known_routes(mcp_path="/")`
+  on the parent FastAPI app. `mcp_path="/"`, not `"/mcp"`, because
+  `mcp_app` is `http_app(path="/")` and the `/mcp` prefix already lives in
+  `base_url` — `"/mcp"` would produce `.../mcp/mcp`. (notes-pipeline
+  `70d1b84`)
+- goose-nest-deploy `apps/notes-pipeline/values.yaml` adds Prefix paths
+  `/.well-known/oauth-protected-resource`,
+  `/.well-known/oauth-authorization-server` and
+  `/.well-known/openid-configuration` → `gaming-box-api`. (goose-nest-deploy
+  `ecf765c`)
+
+**Verified live:** both root discovery URLs return 200 JSON through the
+real Ingress, the advertised `registration_endpoint` is `/mcp/register`, and
+the same Claude Code client now reaches `! Needs authentication` (discovery
++ DCR succeed). **Still not verified:** completing the Google sign-in and a
+tool call over the remote connector — connect with `claude mcp add -s user
+--transport http notes-remote https://notes.noahdimitriadis.com/mcp/`, then
+`/mcp` to sign in.
+
+Deploy side effect worth knowing: the Ingress change's config reload
+OOMKilled goosenest02's shared ingress-nginx controller (256Mi limit) for
+~20s — every hostname on the cluster 502'd, not just this one. See
+goose-nest-deploy, not this repo.
+
 ---
 
 #### M14 — `web`: dropbox + job history ✅ DONE (builds and lints clean; not run against real Google OAuth or a live `api` container)
@@ -1273,6 +1311,17 @@ moments later; disabling one ends their session immediately.
   different users — second one waits, doesn't contend for the GPU.
 - Per-user pending-job cap verified — a burst of uploads from one account
   gets throttled, not queued unbounded.
+- *(added 2026-11-22, found during the M13 discovery fix)* `/mcp` (no
+  trailing slash) 307-redirects to **`http://`**`…/mcp/` — uvicorn isn't
+  honoring the proxy's forwarded scheme. Redirects must stay on `https`.
+- *(added 2026-11-22)* Plain `http://notes.noahdimitriadis.com/mcp/` is
+  answered (401) instead of upgraded — Cloudflare isn't forcing HTTPS for
+  this hostname, so a bearer token could be sent in cleartext. Enforce
+  Always Use HTTPS / HSTS for the hostname.
+- *(added 2026-11-22)* Treehouse deploys go through `bin/notes_deploy.sh mac`
+  (one-shot `ssh treehouse`, `git pull --ff-only`, compose build/up). The
+  treehouse checkout once carried an unpushed commit for two months —
+  confirm `git rev-list origin/main..HEAD` is empty there before deploying.
 
 **Acceptance:** every item above independently verified, not just present
 in config.
