@@ -634,4 +634,15 @@ def set_anthropic_key_route(payload: dict, email: str = Depends(require_internal
     return {"ok": True}
 
 
+# RFC 8414 / RFC 9728 discovery lives at the *host root* with the resource
+# path appended (`/.well-known/oauth-protected-resource/mcp/`,
+# `/.well-known/oauth-authorization-server/mcp`) — that's what the 401's
+# `resource_metadata` points clients at. Mounting FastMCP under `/mcp` only
+# serves them under `/mcp/.well-known/...`, so a real client (Claude Code)
+# 404'd on discovery and fell back to a root `/register`. `mcp_path="/"`
+# because `mcp_app` is `http_app(path="/")`; the `/mcp` prefix is already in
+# the provider's base_url. The Ingress routes these prefixes here too.
+if mcp.auth is not None:
+    app.router.routes.extend(mcp.auth.get_well_known_routes(mcp_path="/"))
+
 app.mount("/mcp", mcp_app)
