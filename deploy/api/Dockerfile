@@ -67,7 +67,7 @@ RUN pip install --no-cache-dir .
 # Named volumes only inherit ownership from the image when the mount path
 # exists here and is empty at first creation; otherwise Docker makes it
 # root-owned and the non-root `notes` user gets PermissionError on mkdir.
-RUN mkdir -p /data/uploads /data/notes-db && chown -R notes:users /data
+RUN mkdir -p /data/uploads /data/notes-db /data/fastmcp && chown -R notes:users /data
 
 USER notes
 EXPOSE 8000

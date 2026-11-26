@@ -25,6 +25,10 @@ volumes:
   auth-db:
   uploads:
   whisper-model:
+  # FastMCP's OAuth proxy state (DCR client registrations + issued tokens).
+  # Without a volume it lives in the container's home dir, and every
+  # recreate signs out every remote MCP client.
+  fastmcp-state:
 
 services:
   api:
@@ -57,6 +61,7 @@ services:
       # Config.anthropic_api_key has no default, so a placeholder is needed.
       ANTHROPIC_API_KEY: unused-hosted-mode
       LIBRARY_ROOT: /data/uploads
+      FASTMCP_HOME: /data/fastmcp
     devices:
       - /dev/dri:/dev/dri
       - /dev/kfd:/dev/kfd
@@ -64,6 +69,7 @@ services:
       - notes-db:/data/notes-db
       - uploads:/data/uploads
       - whisper-model:/models:ro
+      - fastmcp-state:/data/fastmcp
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 8g
