@@ -8,6 +8,16 @@ Written to be built one module at a time. Each module below is scoped to a
 single Sonnet session: it names what to create, the exact interface, and the
 acceptance criteria that define done.
 
+> **Status (2026-11-26).** M0–M15 are built. The hosted service (§14) is
+> **live** at `notes.noahdimitriadis.com` and in daily use: `web`/`api`/
+> `admin` run under Docker Compose on treehouse, the edge is the
+> `notes-pipeline` release in `goose-nest-deploy` (helmfile, not ArgoCD —
+> retired 2026-09-14). M16 (hardening) is in progress — see its checklist
+> for what's verified. Deploys: treehouse via `bin/notes_deploy.sh mac`;
+> the edge via `helmfile -l name=notes-pipeline sync` from the Mac
+> (goose-nest-deploy's CI deploy has been broken since 2026-11-09 — see
+> that repo's PLAN.md).
+
 ---
 
 ## 1. Decisions (locked)
@@ -20,7 +30,7 @@ acceptance criteria that define done.
 | Storage | SQLite + files on disk | Single-user, single-machine; the server's Postgres bought nothing |
 | Interface | MCP over stdio, via FastMCP | Point Claude Code at a folder and say "synthesise this, then quiz me" |
 | Notes destination | Local files, not the Obsidian vault | Vault refactor pending |
-| Frontend | Deferred — spec'd in §10, not built | |
+| Frontend | Built as the hosted service's `web` app — §14 | |
 | Python | 3.13, venv + `pip` | Wheel availability |
 
 **The core idea:** the deck is the skeleton, and the audio's unique value is
@@ -683,8 +693,7 @@ Transcription is free.
 
 ## 10. Deferred
 
-- **FastAPI + Next.js frontend.** Superseded by a full design — see §14. Not
-  yet built.
+- ~~**FastAPI + Next.js frontend.**~~ Built and live as §14.
 - **Remote transcription** against treehouse for the *personal Mac
   pipeline* (M0–M9), independent of the hosted multi-user service in §14 —
   `notes build` on the Mac calling out to treehouse's whisper instead of running
@@ -759,19 +768,27 @@ Already in the repo and working:
 
 ---
 
-## 14. Hosted multi-user service (planned)
+## 14. Hosted multi-user service (live)
 
 Everything in §§1–13 is the personal, single-user, Mac-local pipeline and is
 **done and unaffected by this section.** This is a second, separate surface:
 a handful of named friends, each with their own Anthropic key, using a web
-dropbox and/or a remote MCP connector, hosted on treehouse (Ubuntu +
+dropbox and/or a remote MCP connector, hosted on treehouse (Ubuntu 26.04 +
 Tailscale) — which is also a gaming PC, so it's off sometimes. Public TLS,
 DNS, and routing live one layer out, on the always-on **goosenest02** k3s
-cluster, which already has cert-manager and DNS management set up — see
-14.1/14.2. Designed in conversation before any of it was built — not yet
-implemented. Treat this section the way §§0–9 were treated before they were
-built: a spec to implement one module at a time, not a description of
-working code.
+cluster — see 14.1/14.2. Originally written as a spec before any of it was
+built; M10–M15 are now built and live (each module's header says what was
+verified where), M16 is in progress.
+
+**Real request path, as built:** client → Cloudflare edge (TLS terminates
+here) → Cloudflare Tunnel → `cloudflared` on the goosenest02 host →
+ingress-nginx (NodePort, plain HTTP on-host) → either the `gateway` pod
+(`/`, proxies to `web`, serves the "host is off" page on failure) or
+straight to `api` (`/mcp`, `/.well-known/oauth-*`) → raw `Endpoints` at
+treehouse's tailnet IP `100.119.131.69` → Docker port binding on that IP.
+Two consequences: ingress-nginx always sees `http`, so it never emits HSTS
+and overwrites `X-Forwarded-Proto` with `http`; and nothing on treehouse is
+publicly reachable at all (verified — M16).
 
 ### 14.1 Decisions (locked)
 
@@ -902,13 +919,14 @@ from a course.toml.
 currently a single value loaded once at process start (fine for one
 person's CLI). `run_build` needs an optional per-call key override so each
 hosted build uses *that user's* key, not a global one baked into `Config`.
-Small, mechanical — not yet done.
+Done — `run_build(..., api_key=, user_id=, title=)`.
 
 ### 14.4 Repo layout delta
 
 **M11's artifacts don't live in this repo.** Moved into the existing
-`goose-nest-deploy` repo (goosenest02's own GitOps repo — ArgoCD +
-`bjw-s-labs/app-template` Helm chart, cert-manager, Cloudflare Tunnel; see
+`goose-nest-deploy` repo (goosenest02's own deploy repo — one root
+`helmfile.yaml` applied by `scripts/deploy.sh`, `bjw-s-labs/app-template`
+Helm chart, cert-manager, Cloudflare Tunnel; ArgoCD retired 2026-09-14; see
 that repo's own `PLAN.md` for the full cluster design) instead of
 duplicating a second deploy-config repo. "All deployment config for
 goosenest02 lives in one place" mattered more than keeping M10/M11 in the
@@ -920,35 +938,35 @@ notes-pipeline/                (this repo — M0-M10, the pipeline + treehouse)
     webapi.py                 # M13 — FastAPI + FastMCP, multi-tenant
   web/                        # M14/M15 — Next.js; `web` and `admin` are two
                                # running instances of this one codebase
+  bin/
+    notes_deploy.sh             # treehouse deploy: `mac` = ssh + pull + compose up
   docs/
-    treehouse-setup.md               # treehouse setup runbook (M10)
+    treehouse-setup.md          # treehouse setup runbook (M10)
+    local-dev.md
+    frontend-audit.md
   deploy/
-    api/Dockerfile              # M10 — whisper.cpp+Vulkan, real
-    web/Dockerfile               # M10 — placeholder for web/admin, until M14/M15
-    docker-compose.yml         # M10 — treehouse: web, admin, api
-    .env.example                # M10 — TAILSCALE_IP, RENDER_GID, VIDEO_GID
+    api/Dockerfile              # M10 — whisper.cpp+Vulkan
+    web/Dockerfile              # web + admin (one image, APP_MODE selects)
+    docker-compose.yml          # treehouse: web, admin, api
+    docker-compose.local.yml    # local dev
+    .env.example                # every key deploy/.env needs (chmod 600 on treehouse)
 
 goose-nest-deploy/              (separate repo — M11)
+  helmfile.yaml                 # lists the `notes-pipeline` release
   apps/notes-pipeline/
-    application.yaml            # ArgoCD Application (app-template chart)
-    values.yaml                 # configMaps, the gateway pod, service, ingress
-    raw/                        # starts EMPTY — see backend-candidates/ below;
-                                 # ArgoCD syncs whatever's copied in here
-    backend-candidates/         # two mutually-exclusive candidates, NOT
-                                 # synced until one is copied into raw/ —
-      backend-path1-externalname.yaml   # M11 explains which applies
-      backend-path2-endpoints.yaml
-    host/                       # systemd units for path 2's forwarder,
-                                 # applied on the goosenest02 HOST directly
-                                 # (systemctl, not kubectl/ArgoCD) — only
-                                 # needed if backend-path1 doesn't work
+    values.yaml                 # gateway pod + its nginx.conf, service, ingress
+    raw/gaming-box-backend.yaml # Services + raw Endpoints at treehouse's
+                                 # tailnet IP; kubectl-applied by deploy.sh
+    backend-candidates/         # the two original candidates, kept for
+                                 # history — neither used as-is (see M11)
+    host/                       # path 2's forwarder units — unused
 ```
 
 ### 14.5 Modules
 
 ---
 
-#### M10 — treehouse Docker Compose skeleton
+#### M10 — treehouse Docker Compose skeleton ✅ DONE (running on treehouse)
 **Depends on:** M9
 **Creates:** `deploy/docker-compose.yml`
 
@@ -971,7 +989,17 @@ loopback only.
 
 ---
 
-#### M11 — goosenest02: ingress + fallback for when treehouse is off ✅ DONE (files written, not yet applied to a live cluster)
+#### M11 — goosenest02: ingress + fallback for when treehouse is off ✅ DONE (live)
+
+> **As deployed (2026-11-26):** the original text below describes an
+> ArgoCD `application.yaml`; ArgoCD was retired 2026-09-14 and the release
+> is now an entry in goose-nest-deploy's root `helmfile.yaml`. The backend
+> is neither candidate as written — raw `Endpoints` straight at treehouse's
+> tailnet IP (reasoning in `raw/gaming-box-backend.yaml`'s header). The
+> "left open" items at the end of this module are all settled: real domain
+> set, `kube-dns.kube-system` resolves for the gateway, and the tunnel's
+> wildcard route picked the hostname up with no extra config. Not
+> re-exercised in the 2026-11-26 pass: the fallback page with treehouse off.
 **Depends on:** M10
 **Creates:** — in the separate `goose-nest-deploy` repo, not this one, per
 §14.4 — `apps/notes-pipeline/{application.yaml, values.yaml}` (ArgoCD
@@ -1190,10 +1218,20 @@ Fix, two halves:
 **Verified live:** both root discovery URLs return 200 JSON through the
 real Ingress, the advertised `registration_endpoint` is `/mcp/register`, and
 the same Claude Code client now reaches `! Needs authentication` (discovery
-+ DCR succeed). **Still not verified:** completing the Google sign-in and a
-tool call over the remote connector — connect with `claude mcp add -s user
---transport http notes-remote https://notes.noahdimitriadis.com/mcp/`, then
-`/mcp` to sign in.
++ DCR succeed). **Verified 2026-11-26:** Google sign-in completed and a real tool call
+(`list_my_lectures`) over the `notes-remote` connector (`claude mcp add -s
+user --transport http notes-remote https://notes.noahdimitriadis.com/mcp/`)
+returned the account's lectures.
+
+**Found and fixed 2026-11-26:**
+- `/mcp` (no slash) 307'd to `http://…/mcp/`. Not fixable via
+  `--proxy-headers`: ingress-nginx sees plain HTTP from `cloudflared` and
+  overwrites `X-Forwarded-Proto` with `http`. `McpSlashMiddleware` serves
+  `/mcp` as `/mcp/` in place, so there's no redirect at all.
+- Every treehouse deploy signed out every remote MCP client: FastMCP 4's
+  `OAuthProxy` stores DCR registrations and tokens under `FASTMCP_HOME`,
+  which defaulted to the container's home dir. Now `FASTMCP_HOME=/data/fastmcp`
+  on a `fastmcp-state` volume.
 
 Deploy side effect worth knowing: the Ingress change's config reload
 OOMKilled goosenest02's shared ingress-nginx controller (256Mi limit) for
@@ -1202,7 +1240,7 @@ goose-nest-deploy, not this repo.
 
 ---
 
-#### M14 — `web`: dropbox + job history ✅ DONE (builds and lints clean; not run against real Google OAuth or a live `api` container)
+#### M14 — `web`: dropbox + job history ✅ DONE (live — real Google sign-in, upload, and download in daily use; the "Not verified" notes below predate deployment)
 **Depends on:** M13
 **Creates:** `web/` (Next.js 16, Auth.js v5 — the current, still-beta
 successor to NextAuth v4; confirmed current via npm before use)
@@ -1259,7 +1297,7 @@ disabling a user (M15) kills their live session within one request.
 
 ---
 
-#### M15 — `admin`: loopback-only user management ✅ DONE (same caveats as M14 — not run against real Google OAuth)
+#### M15 — `admin`: loopback-only user management ✅ DONE (running; bound to `127.0.0.1:8090` only, confirmed with `ss` 2026-11-26 — the add/disable flows weren't re-exercised in that pass)
 **Depends on:** M14, M12
 **Creates:** an `admin` entrypoint on the same `web` codebase (one image,
 `APP_MODE=admin`/`web` env var selects the route surface at runtime — see
@@ -1288,40 +1326,61 @@ moments later; disabling one ends their session immediately.
 
 ---
 
-#### M16 — Hardening pass
+#### M16 — Hardening pass ◐ IN PROGRESS (pass 1: 2026-11-26)
 **Depends on:** M10–M15
 **Creates:** nothing new — a verification pass against the checklist below
 
-- treehouse forwards **no public ports, period** — not 80/443, not
-  anything. Confirmed by scanning it from off the tailnet. SSH reachable
-  only over Tailscale.
-- Tailscale ACLs restrict which tailnet nodes can reach treehouse's
+☑ = verified live · ◐ = partly done · ☐ = open
+
+- ☑ **No public ports on treehouse.** Full 1–65535 TCP sweep of its public
+  IP from goosenest02 (a different network), with a positive control to
+  prove the scanner detects open ports: nothing open. No global IPv6
+  address on the host (only Tailscale's ULA), so no v6 exposure either.
+  `ss -tln`: `web`/`api` bound to `100.119.131.69` only, `admin` to
+  `127.0.0.1:8090` only.
+- ◐ **SSH reachable only over Tailscale.** Not from the internet (sweep
+  above), key-only (`PasswordAuthentication no`) — but `sshd` still listens
+  on `0.0.0.0:22`, so it's reachable from the home LAN. Closing that needs
+  sudo on treehouse (ufw: allow 22 on `tailscale0`, deny 22 elsewhere).
+- ☐ Tailscale ACLs restrict which tailnet nodes can reach treehouse's
   `web`/`api` ports to goosenest02 specifically, not every device on the
   tailnet.
-- `unattended-upgrades` (or equivalent) enabled on treehouse's host OS.
-- Every treehouse container: non-root user, dropped capabilities,
-  memory/CPU limits.
-- Secrets (Google client secret, the AES master key, `ADMIN_EMAIL`) live in
-  an `.env` the Compose stack reads, `chmod 600`, never committed —
-  `.gitignore` updated before this module is considered done.
-- goosenest02's Ingress sends standard security headers (HSTS, etc.) — same
-  bar as every other app already on that cluster.
-- MCP `allowed_hosts` genuinely locked to the production domain, not `*`.
-- Single build-worker queue verified under two simultaneous uploads from
+- ☑ `unattended-upgrades` installed and enabled on treehouse (Ubuntu
+  26.04.1); `20auto-upgrades` has both periodic settings on.
+- ☑ **Every treehouse container: non-root, dropped caps, limits.** `id` in
+  each: `api`/`web`/`admin` all `uid=1000(notes)`; `cap_drop: [ALL]`,
+  `no-new-privileges`, `mem_limit`/`cpus` on all three (confirmed via
+  `docker inspect`, not just compose). Not set, optional: `pids_limit`,
+  read-only rootfs, healthchecks on `web`/`admin`. `api` also gets
+  `/dev/kfd`, which only ROCm needs (Vulkan uses `/dev/dri`) — drop it
+  once a GPU build is re-tested without it.
+- ☑ **Secrets file.** `deploy/.env` on treehouse was `664` — now `600`.
+  `.env`, `deploy/.env`, `deploy/.env.local` are gitignored.
+- ☑ **Security headers.** ingress-nginx can't emit HSTS here (see §14's
+  request path), so they're set at the two origins: the gateway pod's
+  nginx.conf for `web` (goose-nest-deploy `d0fb6c5`) and
+  `SecurityHeadersMiddleware` in `webapi.py` for `/mcp` + discovery.
+  `Strict-Transport-Security: max-age=31536000` (no `includeSubDomains` —
+  host-only), `nosniff`, `X-Frame-Options: DENY`, a referrer policy;
+  `X-Powered-By` stripped. Verified with curl through the real edge.
+- ☑ MCP `allowed_hosts` locked: `ALLOWED_HOST=notes.noahdimitriadis.com`
+  in treehouse's `deploy/.env`.
+- ☐ Single build-worker queue verified under two simultaneous uploads from
   different users — second one waits, doesn't contend for the GPU.
-- Per-user pending-job cap verified — a burst of uploads from one account
+- ☐ Per-user pending-job cap verified — a burst of uploads from one account
   gets throttled, not queued unbounded.
-- *(added 2026-11-22, found during the M13 discovery fix)* `/mcp` (no
-  trailing slash) 307-redirects to **`http://`**`…/mcp/` — uvicorn isn't
-  honoring the proxy's forwarded scheme. Redirects must stay on `https`.
-- *(added 2026-11-22)* Plain `http://notes.noahdimitriadis.com/mcp/` is
-  answered (401) instead of upgraded — Cloudflare isn't forcing HTTPS for
-  this hostname, so a bearer token could be sent in cleartext. Enforce
-  Always Use HTTPS / HSTS for the hostname.
-- *(added 2026-11-22)* Treehouse deploys go through `bin/notes_deploy.sh mac`
-  (one-shot `ssh treehouse`, `git pull --ff-only`, compose build/up). The
-  treehouse checkout once carried an unpushed commit for two months —
-  confirm `git rev-list origin/main..HEAD` is empty there before deploying.
+- ☑ *(added 2026-11-22)* `/mcp` 307'd to `http://`. Fixed by serving `/mcp`
+  in place (M13's "found and fixed 2026-11-26"); live `https://…/mcp` now
+  answers 401 directly, `resource_metadata` on `https`.
+- ◐ *(added 2026-11-22)* **Plain `http://` is served, not upgraded.** HSTS
+  (above) covers browsers after their first visit, but MCP clients and
+  curl don't honor HSTS — this needs **Always Use HTTPS** at Cloudflare
+  (SSL/TLS → Edge Certificates, zone-wide), or a Redirect Rule scoped to
+  `notes.noahdimitriadis.com`. The cluster's Cloudflare token is DNS-only
+  (cert-manager), so this is a dashboard change. Also not fixable in-cluster
+  without trusting `CF-Visitor`, since the tunnel hop is plain HTTP.
+- ☑ *(added 2026-11-22)* Treehouse checkout clean: `git rev-list
+  origin/main..HEAD` = 0 on 2026-11-26.
 
 **Acceptance:** every item above independently verified, not just present
 in config.
