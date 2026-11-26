@@ -545,7 +545,25 @@ class SecurityHeadersMiddleware:
         await self.app(scope, receive, send_with_headers)
 
 
+class McpSlashMiddleware:
+    """Serve `/mcp` as `/mcp/` in place rather than letting Starlette's
+    `redirect_slashes` 307 it. That redirect's absolute URL uses the
+    request's own scheme, which is `http` here — Cloudflare Tunnel ->
+    cloudflared -> ingress-nginx is plain HTTP on goosenest02, and
+    ingress-nginx overwrites X-Forwarded-Proto with that — so clients got
+    bounced to `http://` (M16)."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and scope["path"] == "/mcp":
+            scope = {**scope, "path": "/mcp/", "raw_path": b"/mcp/"}
+        await self.app(scope, receive, send)
+
+
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(McpSlashMiddleware)
 
 
 @app.get("/healthz")
