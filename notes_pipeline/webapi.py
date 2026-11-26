@@ -30,6 +30,7 @@ from __future__ import annotations
 import hashlib
 import queue
 import re
+import shutil
 import subprocess
 import threading
 import time
@@ -41,12 +42,12 @@ from pathlib import Path
 from typing import Optional
 from urllib.parse import quote
 
-from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.responses import PlainTextResponse
 from fastmcp import FastMCP
 from fastmcp.server.auth.auth import AccessToken, TokenVerifier
 from fastmcp.server.auth.providers.google import GoogleProvider
-from fastmcp.server.dependencies import get_access_token
+from fastmcp.server.dependencies import get_access_token, get_http_request
 from fastmcp.utilities.lifespan import combine_lifespans
 
 from . import pipeline
@@ -55,6 +56,7 @@ from .crypto import KeyEncryptionError, decrypt_key, encrypt_key
 from .internal_auth import InternalAuthError, verify_internal_token
 from .models import Lecture
 from .store import Store
+from .upload_tokens import UploadTokenError, sign_upload_token, verify_upload_token
 from .web_config import DEV_BYPASS_EMAIL, WebConfig, load_web_config
 
 _cfg: Config = load_config()
@@ -181,7 +183,7 @@ class Job:
     id: str
     user_id: str  # email
     lecture_id: str
-    status: str = "queued"  # queued | running | done | error
+    status: str = "queued"  # awaiting_upload (M17) | queued | running | done | error
     stage: Optional[str] = None
     message: str = ""
     progress: Optional[float] = None
@@ -244,6 +246,11 @@ def _row_snapshot(row: dict) -> dict:
 
 @dataclass
 class BuildTask:
+    """One queued build. Holds no API key — the worker decrypts the
+    owner's key when the task starts, so a task can be persisted
+    (`to_spec`) and re-queued after a restart without ever writing a
+    plaintext key anywhere."""
+
     job: Job
     audio: list[Path]
     deck: list[Path]
@@ -252,8 +259,39 @@ class BuildTask:
     out: Path
     course_code: str
     number: int
-    api_key: str
     title: str
+    lecture_id: str
+    attempts: int = 0
+
+    def to_spec(self) -> dict:
+        return {
+            "audio": [str(p) for p in self.audio],
+            "deck": [str(p) for p in self.deck],
+            "notes": str(self.notes) if self.notes else None,
+            "assets": [str(p) for p in self.assets],
+            "out": str(self.out),
+            "course_code": self.course_code,
+            "number": self.number,
+            "title": self.title,
+            "lecture_id": self.lecture_id,
+            "attempts": self.attempts,
+        }
+
+    @classmethod
+    def from_spec(cls, job: Job, spec: dict) -> "BuildTask":
+        return cls(
+            job=job,
+            audio=[Path(p) for p in spec["audio"]],
+            deck=[Path(p) for p in spec["deck"]],
+            notes=Path(spec["notes"]) if spec["notes"] else None,
+            assets=[Path(p) for p in spec["assets"]],
+            out=Path(spec["out"]),
+            course_code=spec["course_code"],
+            number=spec["number"],
+            title=spec["title"],
+            lecture_id=spec["lecture_id"],
+            attempts=spec.get("attempts", 0),
+        )
 
 
 class JobReporter:
@@ -306,9 +344,45 @@ _build_queue: "queue.Queue[BuildTask | None]" = queue.Queue()
 _worker_thread: Optional[threading.Thread] = None
 
 
+@dataclass
+class UploadSlot:
+    """One file an agent still owes a `create_build` job (M17)."""
+
+    name: str  # as the caller named it — echoed back so it can match URLs to files
+    kind: str  # audio | deck | notes | asset
+    path: Path
+    state: str = "waiting"  # waiting | receiving | received
+
+
+@dataclass
+class PendingBuild:
+    task: BuildTask
+    slots: list[UploadSlot]
+    expires_at: float
+
+
+# Builds created by `create_build` whose files haven't all arrived yet, by
+# job id. In memory only: a restart closes these out as errors (see
+# `_recover_interrupted_jobs`) — the agent just calls `create_build` again.
+_pending_builds: dict[str, PendingBuild] = {}
+
+# A job interrupted by a restart is re-queued at most this many total
+# starts, so a build that itself takes the process down (OOM mid-whisper)
+# can't crash-loop the service.
+_MAX_ATTEMPTS = 2
+
+
 def _pending_count(user_id: str) -> int:
     with _jobs_lock:
         return _pending_counts.get(user_id, 0)
+
+
+def _enqueue(task: BuildTask) -> None:
+    """Persist the task's inputs (so a restart can re-queue it) and hand it
+    to the worker. The job row must already exist; the caller has already
+    counted the job against the user's pending cap."""
+    _db().set_job_spec(task.job.id, task.to_spec())
+    _build_queue.put(task)
 
 
 def _worker_loop() -> None:
@@ -324,6 +398,8 @@ def _worker_loop() -> None:
             _build_queue.task_done()
             break
         job = task.job
+        task.attempts += 1
+        store.set_job_spec(job.id, task.to_spec())
         with _jobs_lock:
             job.status = "running"
             store.upsert_job(job.row())
@@ -343,8 +419,9 @@ def _worker_loop() -> None:
                 no_cache=False,
                 cfg=_cfg,
                 reporter=JobReporter(job, _jobs_lock, store),
-                api_key=task.api_key,
+                api_key=_user_api_key(job.user_id),
                 user_id=job.user_id,
+                lecture_id=task.lecture_id,
             )
             with _jobs_lock:
                 job.status = "done"
@@ -363,13 +440,56 @@ def _worker_loop() -> None:
             _build_queue.task_done()
 
 
+def _recover_interrupted_jobs() -> None:
+    """A job still unfinished in the table at startup belonged to a process
+    that's gone now (crash, redeploy). Re-queue the ones that can be — their
+    inputs are still on disk and every finished stage is cached, so a rerun
+    resumes rather than starts over — and close the rest out as errors
+    rather than let them sit there looking like they're still going."""
+    store = _db()
+    for row in store.list_interrupted_jobs():
+        spec = row["spec"]
+        job = Job(
+            id=row["id"], user_id=row["user_id"], lecture_id=row["lecture_id"],
+            stage=row["stage"], message=row["message"] or "", started_at=row["started_at"],
+        )
+        if row["status"] != "awaiting_upload" and spec is not None and spec.get("attempts", 0) < _MAX_ATTEMPTS:
+            job.status, job.stage, job.message = "queued", None, "Re-queued after a server restart."
+            with _jobs_lock:
+                _jobs[job.id] = job
+                _pending_counts[job.user_id] = _pending_counts.get(job.user_id, 0) + 1
+            store.upsert_job(job.row())
+            _build_queue.put(BuildTask.from_spec(job, spec))
+            continue
+        if row["status"] == "awaiting_upload":
+            job.error = "Server restarted before every file was uploaded. Call create_build again."
+        elif spec is None:
+            job.error = "Interrupted by a server restart."
+        else:
+            job.error = f"Interrupted by a server restart {spec['attempts']} times; not retrying."
+        job.status, job.finished_at = "error", time.time()
+        store.upsert_job(job.row())
+
+
+def _expire_pending_builds() -> None:
+    now = time.time()
+    with _jobs_lock:
+        expired = [p for p in _pending_builds.values() if p.expires_at < now]
+        for pending in expired:
+            job = pending.task.job
+            del _pending_builds[job.id]
+            job.status = "error"
+            job.error = "Upload window expired before every file arrived. Call create_build again."
+            job.finished_at = now
+            _pending_counts[job.user_id] = max(0, _pending_counts.get(job.user_id, 1) - 1)
+    for pending in expired:
+        _db().upsert_job(pending.task.job.row())
+
+
 @asynccontextmanager
 async def _api_lifespan(_app: FastAPI):
     global _worker_thread
-    # A job still `queued`/`running` in the table at startup belonged to a
-    # process that's gone now (crash, redeploy) — close it out as an error
-    # rather than let it sit there forever looking like it's still going.
-    _db().mark_stale_running_jobs_as_error()
+    _recover_interrupted_jobs()
     _worker_thread = threading.Thread(target=_worker_loop, daemon=True)
     _worker_thread.start()
     try:
@@ -381,9 +501,12 @@ async def _api_lifespan(_app: FastAPI):
 # -- helpers ---------------------------------------------------------------
 
 
+def _user_slug(email: str) -> str:
+    return hashlib.sha256(email.encode("utf-8")).hexdigest()[:16]
+
+
 def _user_dir(email: str) -> Path:
-    slug = hashlib.sha256(email.encode("utf-8")).hexdigest()[:16]
-    path = _web_cfg.uploads_root / slug
+    path = _web_cfg.uploads_root / _user_slug(email)
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -392,21 +515,52 @@ def _lecture_number(lecture_id: str) -> int:
     # Stable, collision-safe-enough int derived from the lecture uuid, so
     # pipeline.run_build's `course_code-number` id scheme (unmodified, per
     # §14.3) can stand in for a real uuid without pipeline.py needing to
-    # know hosted lectures exist at all.
+    # know hosted lectures exist at all. Web-dropbox uploads only; M17's
+    # `create_build` uses real course/number ids (`_hosted_lecture_id`).
     return int(hashlib.sha256(lecture_id.encode("utf-8")).hexdigest()[:8], 16)
 
 
-def _decrypted_key_for(email: str) -> str:
+def _normalize_course(course: str) -> str:
+    """"ECON 2P42", "econ-2p42" and "ECON2P42" are the same course."""
+    code = re.sub(r"[^A-Za-z0-9]", "", course).upper()
+    if not code:
+        raise ValueError(f"Not a usable course code: {course!r}")
+    return code
+
+
+def _hosted_lecture_id(email: str, course_code: str, number: int) -> str:
+    """M17 ids: deterministic per (user, course, number), so building the
+    same lecture again replaces its notes instead of adding a duplicate.
+    Namespaced by user so two friends' `ECON2P42-10` never collide."""
+    return f"web-{_user_slug(email)[:12]}-{course_code}-{number}"
+
+
+def _user_api_key(email: str) -> str:
+    """The user's decrypted Anthropic key. Raises ValueError if none is on
+    file; lets KeyEncryptionError through for a key that won't decrypt."""
     user = _db().get_user(email)
     if user is None or not user.get("encrypted_anthropic_key"):
-        raise HTTPException(
-            status_code=400,
-            detail="No Anthropic API key on file. Add one in Settings first.",
-        )
+        raise ValueError("No Anthropic API key on file. Add one in Settings first.")
+    return decrypt_key(user["encrypted_anthropic_key"], user["key_nonce"], _web_cfg.key_master_key)
+
+
+def _decrypted_key_for(email: str) -> str:
     try:
-        return decrypt_key(user["encrypted_anthropic_key"], user["key_nonce"], _web_cfg.key_master_key)
+        return _user_api_key(email)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
     except KeyEncryptionError as exc:
         raise HTTPException(status_code=500, detail=f"Could not decrypt stored API key: {exc}") from None
+
+
+def _safe_suffix(name: str) -> str:
+    suffix = Path(name).suffix.lower()
+    return suffix if re.fullmatch(r"\.[a-z0-9]{1,8}", suffix) else ""
+
+
+def _safe_name(name: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", Path(name).name).lstrip(".")
+    return (cleaned or "file")[:100]
 
 
 async def _save_upload(upload: UploadFile, dst: Path) -> Path:
@@ -434,13 +588,21 @@ def _lecture_response(lecture: Lecture) -> dict:
     return {
         "lecture_id": lecture.id,
         "title": lecture.title,
+        # Real values only for M17 `create_build` lectures; web-dropbox
+        # uploads carry a synthetic "web" course and hashed number.
+        "course": None if lecture.course == "web" else lecture.course,
+        "number": None if lecture.course == "web" else lecture.number,
         "date": lecture.date.isoformat() if lecture.date else None,
         "has_notes": bool(notes),
         "notes_generated_at": notes[-1]["generated_at"] if notes else None,
     }
 
 
-# -- MCP tools (§14.1: "read/search/quiz only") -----------------------------
+# -- MCP tools ----------------------------------------------------------------
+#
+# §14.1 originally made this surface read-only because MCP tool calls can't
+# carry large binaries. M17 keeps the bytes out of the tool call instead:
+# `create_build` returns signed upload URLs and the caller PUTs each file.
 
 
 @mcp.tool()
@@ -497,15 +659,145 @@ def search_notes(query: str) -> list[dict]:
 
 @mcp.tool()
 def job_status(job_id: str) -> dict:
-    """Check on an upload's build job: current stage, progress, and the
-    result or error once it finishes. Only visible to the user who
-    started it."""
+    """Check on a build job: status (awaiting_upload, queued, running,
+    done, error), current stage, progress, and the error once it fails.
+    Only visible to the user who started it."""
     email = _require_email()
+    _expire_pending_builds()
     with _jobs_lock:
         job = _jobs.get(job_id)
-    if job is None or job.user_id != email:
+        snapshot = job.snapshot() if job is not None and job.user_id == email else None
+    if snapshot is not None:
+        return snapshot
+    # Not in this process's memory (finished before a restart) — the
+    # persisted row still answers, same as GET /api/jobs/{id}.
+    row = _db().get_job(job_id)
+    if row is None or row["user_id"] != email:
         raise ValueError(f"No such job: {job_id!r}")
-    return job.snapshot()
+    return _row_snapshot(row)
+
+
+def _upload_base_url() -> str:
+    if _web_cfg.mcp_base_url:
+        return _web_cfg.mcp_base_url.rstrip("/")
+    url = get_http_request().url  # local dev only — production always sets MCP_BASE_URL
+    return f"{url.scheme}://{url.netloc}/mcp"
+
+
+@mcp.tool()
+def create_build(
+    course: str,
+    number: int,
+    audio: list[str],
+    deck: list[str] | None = None,
+    notes: str | None = None,
+    assets: list[str] | None = None,
+    title: str | None = None,
+) -> dict:
+    """Start building notes for a lecture from files on your machine. The
+    files themselves are NOT sent through this call.
+
+    Pass each input's filename or local path: `audio` in playback order
+    (required; several parts are joined), `deck` slide files in order
+    (.pdf/.pptx), at most one `notes` file of your own, and any extra
+    `assets`. Returns `lecture_id`, `job_id`, and one upload URL per file.
+    PUT each file's raw bytes to its URL, e.g. `curl -fsS -T <path> <url>`.
+    The build queues itself once the last file lands; poll
+    `job_status(job_id)` until it's done (a lecture takes several minutes),
+    then fetch the markdown with `get_notes(lecture_id)`.
+
+    `course` + `number` identify the lecture (e.g. "ECON 2P42", 10).
+    Building the same pair again replaces that lecture's notes instead of
+    adding a duplicate. Upload URLs expire after an hour."""
+    email = _require_email()
+    deck, assets = deck or [], assets or []
+    if not audio:
+        raise ValueError("At least one audio file is required.")
+    if number < 0:
+        raise ValueError("number must be zero or positive.")
+    if any(not _safe_suffix(name) for name in [*deck, *([notes] if notes else [])]):
+        raise ValueError("Every deck and notes file needs a recognisable extension (e.g. .pdf, .pptx, .md).")
+    course_code = _normalize_course(course)
+    _user_api_key(email)  # fail fast, before anything is created
+    _expire_pending_builds()
+
+    lecture_id = _hosted_lecture_id(email, course_code, number)
+    owner = _db().get_lecture_owner(lecture_id)
+    if owner is not None and owner != email:
+        raise ValueError(f"Lecture id collision for {lecture_id}; refusing to overwrite another user's lecture.")
+    title = title or f"{course_code} Week {number}"
+    total = len(audio) + len(deck) + (1 if notes else 0) + len(assets)
+
+    with _jobs_lock:
+        if any(
+            j.lecture_id == lecture_id and j.status in ("awaiting_upload", "queued", "running")
+            for j in _jobs.values()
+        ):
+            raise ValueError(f"{lecture_id} is already uploading or building. Wait for its job to finish first.")
+        if _pending_counts.get(email, 0) >= _web_cfg.max_pending_jobs_per_user:
+            raise ValueError(
+                f"You already have {_web_cfg.max_pending_jobs_per_user} lecture(s) uploading, queued or building."
+            )
+        job = Job(
+            id=uuid.uuid4().hex, user_id=email, lecture_id=lecture_id,
+            status="awaiting_upload", message=f"Waiting for uploads (0 of {total})",
+        )
+        _jobs[job.id] = job
+        _pending_counts[email] = _pending_counts.get(email, 0) + 1
+
+    lecture_dir = _user_dir(email) / lecture_id
+    # Same layout as the web dropbox: inputs in their own folder, so no
+    # input can ever share a path with the generated notes.md. Wiped first,
+    # so a rebuild with fewer files can't pick up a stale one (safe: no
+    # other job for this lecture is active, checked above).
+    inputs_dir = lecture_dir / "inputs"
+    shutil.rmtree(inputs_dir, ignore_errors=True)
+    inputs_dir.mkdir(parents=True)
+    slots = [
+        *(UploadSlot(n, "audio", inputs_dir / f"audio-{i}{_safe_suffix(n) or '.m4a'}") for i, n in enumerate(audio)),
+        *(UploadSlot(n, "deck", inputs_dir / f"deck-{i}{_safe_suffix(n)}") for i, n in enumerate(deck)),
+        *([UploadSlot(notes, "notes", inputs_dir / f"notes{_safe_suffix(notes)}")] if notes else []),
+        *(UploadSlot(n, "asset", inputs_dir / "assets" / f"{i}-{_safe_name(n)}") for i, n in enumerate(assets)),
+    ]
+    task = BuildTask(
+        job=job,
+        audio=[s.path for s in slots if s.kind == "audio"],
+        deck=[s.path for s in slots if s.kind == "deck"],
+        notes=next((s.path for s in slots if s.kind == "notes"), None),
+        assets=[s.path for s in slots if s.kind == "asset"],
+        out=lecture_dir / "notes.md",
+        course_code=course_code, number=number, title=title, lecture_id=lecture_id,
+    )
+    expires_at = time.time() + _web_cfg.upload_window_seconds
+
+    # Placeholder row so list_my_lectures shows it before the build ends —
+    # only for a new lecture: upserting over an existing one would blank its
+    # date if this upload never completes.
+    if _db().get_lecture(lecture_id) is None:
+        _db().add_lecture(
+            Lecture(id=lecture_id, course=course_code, number=number, title=title, date=None, dir=lecture_dir),
+            user_id=email,
+        )
+    _db().upsert_job(job.row())
+    with _jobs_lock:
+        _pending_builds[job.id] = PendingBuild(task=task, slots=slots, expires_at=expires_at)
+
+    base = _upload_base_url()
+    secret = _web_cfg.internal_api_secret
+    return {
+        "lecture_id": lecture_id,
+        "job_id": job.id,
+        "course": course_code,
+        "number": number,
+        "title": title,
+        "expires_at": int(expires_at),
+        "uploads": [
+            {"file": s.name, "kind": s.kind, "url": f"{base}/uploads/{sign_upload_token(job.id, i, expires_at, secret)}"}
+            for i, s in enumerate(slots)
+        ],
+        "next": "PUT each file to its url (curl -fsS -T '<local path>' '<url>'). The build queues itself after "
+                "the last upload; poll job_status(job_id), then get_notes(lecture_id).",
+    }
 
 
 # -- FastAPI app + routes (§14.5 M13) ---------------------------------------
@@ -601,7 +893,7 @@ async def create_lecture(
     if not any(f.filename for f in audio):
         raise HTTPException(status_code=422, detail="At least one audio file is required.")
 
-    api_key = _decrypted_key_for(email)  # fail fast, before writing anything to disk
+    _decrypted_key_for(email)  # fail fast, before writing anything to disk
 
     lecture_id = uuid.uuid4().hex
     number = _lecture_number(lecture_id)
@@ -650,9 +942,9 @@ async def create_lecture(
     # picks it up — a job sitting in `_build_queue` behind others is real
     # history too, and this is what makes GET /api/jobs show it right away.
     _db().upsert_job(job.row())
-    _build_queue.put(BuildTask(
+    _enqueue(BuildTask(
         job=job, audio=audio_paths, deck=deck_paths, notes=notes_path, assets=asset_paths, out=out_path,
-        course_code="web", number=number, api_key=api_key, title=title,
+        course_code="web", number=number, title=title, lecture_id=lecture_row_id,
     ))
     return {"lecture_id": lecture_row_id, "job_id": job.id}
 
@@ -712,6 +1004,68 @@ def set_anthropic_key_route(payload: dict, email: str = Depends(require_internal
     ciphertext, nonce = encrypt_key(api_key, _web_cfg.key_master_key)
     _db().set_user_key(email, ciphertext=ciphertext, nonce=nonce)
     return {"ok": True}
+
+
+# M17 — the other half of `create_build`. Under `/mcp` only because that's
+# the prefix the Ingress already routes to this service (with the 2g body
+# size and 300s timeouts); it's a plain route, not part of the MCP app, and
+# must stay registered before the `/mcp` mount below so it matches first.
+# No session/OAuth auth: the signed token in the path is the credential.
+@app.put("/mcp/uploads/{token}")
+async def upload_build_input(token: str, request: Request) -> dict:
+    try:
+        job_id, index = verify_upload_token(token, _web_cfg.internal_api_secret)
+    except UploadTokenError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from None
+    _expire_pending_builds()
+    with _jobs_lock:
+        pending = _pending_builds.get(job_id)
+        if pending is None:
+            raise HTTPException(status_code=410, detail="This build is no longer waiting for uploads.")
+        if not 0 <= index < len(pending.slots):
+            raise HTTPException(status_code=403, detail="Upload token doesn't match this build.")
+        slot = pending.slots[index]
+        if slot.state != "waiting":
+            detail = "is already uploading" if slot.state == "receiving" else "was already uploaded"
+            raise HTTPException(status_code=409, detail=f"{slot.name} {detail}.")
+        slot.state = "receiving"
+
+    part = slot.path.with_name(slot.path.name + ".part")
+    size = 0
+    try:
+        part.parent.mkdir(parents=True, exist_ok=True)
+        with part.open("wb") as f:
+            async for chunk in request.stream():
+                size += len(chunk)
+                if size > _web_cfg.max_upload_bytes:
+                    raise HTTPException(status_code=413, detail=f"{slot.name} exceeds the upload size limit.")
+                f.write(chunk)
+        if size == 0:
+            raise HTTPException(status_code=400, detail=f"Empty upload for {slot.name}. Check the local path.")
+        part.replace(slot.path)
+    except BaseException:
+        part.unlink(missing_ok=True)
+        with _jobs_lock:
+            slot.state = "waiting"  # retryable with the same URL
+        raise
+
+    with _jobs_lock:
+        slot.state = "received"
+        if _pending_builds.get(job_id) is not pending:
+            raise HTTPException(status_code=410, detail="Upload window expired while this file was uploading.")
+        received = sum(s.state == "received" for s in pending.slots)
+        remaining = len(pending.slots) - received
+        job = pending.task.job
+        if remaining == 0:
+            del _pending_builds[job_id]
+            job.status, job.message = "queued", ""
+        else:
+            job.message = f"Waiting for uploads ({received} of {len(pending.slots)})"
+        row = job.row()
+    _db().upsert_job(row)
+    if remaining == 0:
+        _enqueue(pending.task)
+    return {"file": slot.name, "bytes": size, "remaining": remaining, "status": row["status"]}
 
 
 # RFC 8414 / RFC 9728 discovery lives at the *host root* with the resource

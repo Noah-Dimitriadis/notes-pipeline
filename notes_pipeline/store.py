@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import sqlite3
-import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -64,6 +63,9 @@ CREATE TABLE IF NOT EXISTS users(
 # SQLite has no `ADD COLUMN IF NOT EXISTS`, so these are applied by
 # inspecting `PRAGMA table_info` instead (see `_migrate`).
 _USER_ID_COLUMNS = {"lectures": "user_id", "notes": "user_id"}
+# M17: a job's build inputs as JSON (`webapi.BuildTask.to_spec`), so a job
+# interrupted by an `api` restart can be re-queued instead of lost.
+_LATER_COLUMNS = [("jobs", "spec")]
 
 
 def _now() -> str:
@@ -103,7 +105,7 @@ class Store:
         self._conn.commit()
 
     def _migrate(self) -> None:
-        for table, column in _USER_ID_COLUMNS.items():
+        for table, column in [*_USER_ID_COLUMNS.items(), *_LATER_COLUMNS]:
             existing = {
                 row["name"]
                 for row in self._conn.execute(f"PRAGMA table_info({table})").fetchall()
@@ -274,7 +276,7 @@ class Store:
         every stage/progress update, not just at the end, so a job killed by
         a crash or redeploy still shows its last-known state in history
         rather than vanishing or hanging at 'running' forever — see
-        `mark_stale_running_jobs_as_error` for the latter."""
+        `list_interrupted_jobs` for the latter."""
         self._conn.execute(
             """
             INSERT INTO jobs(id, user_id, lecture_id, status, stage, message, progress, result_path, error, started_at, finished_at)
@@ -299,15 +301,20 @@ class Store:
         ).fetchall()
         return [dict(row) for row in rows]
 
-    def mark_stale_running_jobs_as_error(self) -> None:
-        """Run once at `api` startup. A job still `queued`/`running` in the
-        table at process start didn't finish normally — the process that
-        owned it is gone (crash, redeploy, `docker compose down` mid-build)
-        — so it would otherwise sit there forever looking like it's still
-        in progress."""
-        self._conn.execute(
-            "UPDATE jobs SET status = 'error', error = ?, finished_at = ? "
-            "WHERE status IN ('queued', 'running')",
-            ("Interrupted by a server restart.", time.time()),
-        )
+    def set_job_spec(self, job_id: str, spec: dict) -> None:
+        self._conn.execute("UPDATE jobs SET spec = ? WHERE id = ?", (json.dumps(spec), job_id))
         self._conn.commit()
+
+    def list_interrupted_jobs(self) -> list[dict]:
+        """Run once at `api` startup: every job a previous process left
+        unfinished (crash, redeploy, `docker compose down` mid-build),
+        oldest first, with `spec` decoded (None for jobs that predate it).
+        The caller decides which to re-queue and which to close out."""
+        rows = self._conn.execute(
+            "SELECT * FROM jobs WHERE status IN ('awaiting_upload', 'queued', 'running') "
+            "ORDER BY started_at"
+        ).fetchall()
+        jobs = [dict(row) for row in rows]
+        for job in jobs:
+            job["spec"] = json.loads(job["spec"]) if job.get("spec") else None
+        return jobs

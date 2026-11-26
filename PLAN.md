@@ -8,7 +8,7 @@ Written to be built one module at a time. Each module below is scoped to a
 single Sonnet session: it names what to create, the exact interface, and the
 acceptance criteria that define done.
 
-> **Status (2026-11-26).** M0–M15 are built. The hosted service (§14) is
+> **Status (2026-11-26).** M0–M15 and M17 (agent uploads) are built. The hosted service (§14) is
 > **live** at `notes.noahdimitriadis.com` and in daily use: `web`/`api`/
 > `admin` run under Docker Compose on treehouse, the edge is the
 > `notes-pipeline` release in `goose-nest-deploy` (helmfile, not ArgoCD —
@@ -803,8 +803,8 @@ publicly reachable at all (verified — M16).
 | Access control | Explicit per-email allowlist, not open signup | A handful of named friends, not the general public |
 | Sessions | Database-backed, not JWT | Must be able to instantly revoke a friend's access by disabling their row |
 | API keys | Each user supplies their own Anthropic key; encrypted at rest, never round-tripped to the browser after saving | Their usage, their bill; treehouse never becomes a shared-cost liability |
-| Ingestion | Web dropbox upload only — **not** an MCP tool | A browser-only friend has no server-side file path to point a tool at, and MCP tool calls aren't shaped for large binary uploads |
-| Remote MCP tool surface | Read/search/quiz only: `list_my_lectures`, `get_notes`, `search_notes`, `job_status` | Matches what's actually possible remotely; building happens on the website. No fallback page equivalent exists for this surface — when treehouse is off, a tool call just fails with a connection error, and that's fine |
+| Ingestion | Web dropbox upload, **plus (M17, 2026-11-26)** agent uploads via `create_build` + signed PUT URLs | A browser-only friend has no server-side file path to point a tool at, and MCP tool calls aren't shaped for large binary uploads — M17 keeps the bytes out of the tool call entirely, so neither objection applies to an agent with local files |
+| Remote MCP tool surface | `list_my_lectures`, `get_notes`, `search_notes`, `job_status`, and (M17) `create_build` | Originally read-only — "building happens on the website" — superseded by M17. No fallback page equivalent exists for this surface — when treehouse is off, a tool call just fails with a connection error, and that's fine |
 | Admin | A second instance of the same web app, bound to treehouse's loopback interface only | SSO-gated *and* network-unreachable except via SSH tunnel — two independent layers, not one. Untouched by the goosenest02/k3s refactor — never routed through it |
 | DB | SQLite, shared Docker volume, WAL mode | Matches the existing single-user pipeline's storage decision (§1); still bought nothing to switch to Postgres at this scale |
 | Concurrency | One global build worker across all users | One GPU — concurrent whisper runs would just contend with each other, not go faster |
@@ -1384,3 +1384,69 @@ moments later; disabling one ends their session immediately.
 
 **Acceptance:** every item above independently verified, not just present
 in config.
+
+---
+
+#### M17 — Agent uploads over remote MCP ✅ DONE (verified against a local `api`; first production run pending)
+**Depends on:** M13
+**Changes:** `notes_pipeline/webapi.py`, `notes_pipeline/upload_tokens.py`
+(new), `store.py`, `pipeline.py`, `web_config.py`
+
+Lets any Claude Code session with the `notes-remote` connector build a
+lecture from files on its own machine — "build the last 3 lectures" once
+they're in the course folders — with the build running on treehouse, not
+in the client session:
+
+```
+create_build(course, number, audio[], deck[]?, notes?, assets[]?, title?)
+  -> {lecture_id, job_id, uploads: [{file, kind, url}], expires_at}
+PUT <url>  (curl -fsS -T <path> <url>; one per file)  -> {remaining, status}
+job_status(job_id)                                     # awaiting_upload -> queued -> running -> done
+get_notes(lecture_id)
+```
+
+- **Transport:** the bytes never go through the tool call. Each URL is
+  `{MCP_BASE_URL}/uploads/<token>`: an HMAC-signed token (key derived from
+  `INTERNAL_API_SECRET` with its own prefix) bound to one job and one file
+  slot, expiring with the upload window (`UPLOAD_WINDOW_SECONDS`, 1h). It
+  lives under `/mcp` only so the existing Ingress path carries it, with its
+  2g/300s settings — no infra change. It's a plain FastAPI route, not part
+  of the MCP app; the token is its only auth. Single use, size-capped
+  (`MAX_UPLOAD_BYTES`), streamed to a `.part` and renamed, an empty body
+  rejected (and the slot left retryable). Server-chosen filenames
+  (`audio-0.m4a`, `deck-0.pdf`, …); the caller's names are only used for
+  extensions. The last file to land queues the build on the existing global
+  worker — no separate start call.
+- **Lecture ids:** `web-<user slug>-<COURSE>-<n>`, the course normalized
+  (`"ECON 2P42"` = `"econ-2p42"` = `ECON2P42`). Building the same pair again
+  replaces that lecture's notes (same row, inputs wiped first) instead of
+  adding a duplicate; refused while a job for it is still active.
+  `run_build` gained a `lecture_id` override, so synthesis now sees the real
+  course code rather than `web`. `list_my_lectures` returns `course` and
+  `number` (None for web-dropbox lectures, which keep their old ids).
+- **Caps:** an upload in progress counts against the per-user pending cap
+  (3), shared with the web dropbox.
+- **Restarts:** every queued build now persists its inputs (`jobs.spec`). At
+  startup, interrupted `queued`/`running` jobs are re-queued (cached stages
+  make it a resume), capped at 2 total starts so a build that takes the
+  process down can't crash-loop it. Jobs still `awaiting_upload` are closed
+  out ("call create_build again"), as are pre-M17 rows with no spec. The
+  worker decrypts the owner's key when a task *starts*, so no key is ever
+  held in a task or written to disk.
+- `job_status` falls back to the persisted row, so it still answers after a
+  restart.
+
+**Acceptance — verified locally (AUTH_ENABLED=false, 37 checks):** the
+create → upload → queue → worker flow end to end (fake audio fails in the
+pipeline as expected, not before it); tampered token 403, expired token
+403, re-upload 409, empty body 400 then retryable, an old job's URL against
+a rebuilt lecture 410; course normalization, rebuild reusing the id and
+wiping inputs; cap enforced across both entry points and freed by expiry;
+restart re-queues never-started and once-started jobs, gives up on
+twice-started ones, closes out awaiting-upload and legacy rows; the web
+dropbox route still queues and now persists a spec. **Not yet verified:**
+a real lecture through production.
+
+**Not built:** a part/section suffix in the id. Two separate lectures in
+the same week (`Week3-Lec1`, `Week3-Lec2`) either go in as one build with
+both audio files, or need different numbers.

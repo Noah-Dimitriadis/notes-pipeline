@@ -65,6 +65,13 @@ class WebConfig(BaseSettings):
     # monopolize the only GPU."
     max_pending_jobs_per_user: int = 3
 
+    # M17 agent uploads (`create_build` + `PUT /mcp/uploads/{token}`). The
+    # size cap matches the Ingress's proxy-body-size; Cloudflare's own
+    # per-request limit (100MB on the free plan) is the tighter one in
+    # practice.
+    upload_window_seconds: int = 3600
+    max_upload_bytes: int = 2 * 1024**3
+
     @model_validator(mode="after")
     def _require_google_creds_when_auth_enabled(self) -> "WebConfig":
         if not self.auth_enabled:

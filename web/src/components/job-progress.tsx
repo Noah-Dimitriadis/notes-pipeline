@@ -3,7 +3,7 @@ import { Fragment } from "react";
 export interface JobSnapshot {
   job_id: string;
   lecture_id: string | null;
-  status: "queued" | "running" | "done" | "error";
+  status: "awaiting_upload" | "queued" | "running" | "done" | "error";
   stage: string | null;
   message: string;
   progress: number | null;

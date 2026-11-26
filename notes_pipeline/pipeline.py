@@ -81,6 +81,7 @@ def run_build(
     api_key: Optional[str] = None,
     user_id: Optional[str] = None,
     title: Optional[str] = None,
+    lecture_id: Optional[str] = None,
 ) -> Path:
     """Run the full slides -> audio -> transcribe -> synthesize -> emit
     pipeline for one lecture, reporting stage-by-stage progress through
@@ -93,7 +94,11 @@ def run_build(
     (§14.1: "each user supplies their own"), so its build worker always
     passes the uploading user's own decrypted key here rather than relying
     on `cfg`. `user_id` similarly scopes the resulting `lectures`/`notes`
-    rows (§14.3); both are no-ops for the personal CLI/MCP entry points."""
+    rows (§14.3); both are no-ops for the personal CLI/MCP entry points.
+
+    `lecture_id` overrides the default `f"{course_code}-{number}"` id — the
+    hosted service namespaces ids per user (M17) while still passing the
+    real course code through to synthesis."""
     reporter = reporter or NullReporter()
 
     if notes is not None and notes.resolve() == out.resolve():
@@ -102,7 +107,7 @@ def run_build(
     cache_root = out.parent / ".cache"
     store = Store(cfg.db_path)
     cache = Cache(store, cache_root)
-    lecture_id = f"{course_code}-{number}"
+    lecture_id = lecture_id or f"{course_code}-{number}"
 
     use_cache = not no_cache and not force
 
