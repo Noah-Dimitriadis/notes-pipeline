@@ -514,6 +514,40 @@ mcp_app = mcp.http_app(path="/", allowed_hosts=[_web_cfg.allowed_host] if _web_c
 app = FastAPI(title="notes-pipeline", lifespan=combine_lifespans(_api_lifespan, mcp_app.lifespan))
 
 
+class SecurityHeadersMiddleware:
+    """Adds HSTS and the standard hardening headers to every response
+    (M16). Needed here rather than at the edge: TLS terminates at
+    Cloudflare and the Ingress has no `tls:` block, so ingress-nginx never
+    emits HSTS itself, and `/mcp` + discovery bypass the gateway pod that
+    sets these for `web`. Pure ASGI, not `BaseHTTPMiddleware`, so MCP's
+    streamed responses pass through unbuffered."""
+
+    _HEADERS = [
+        (b"strict-transport-security", b"max-age=31536000"),
+        (b"x-content-type-options", b"nosniff"),
+        (b"x-frame-options", b"DENY"),
+        (b"referrer-policy", b"no-referrer"),
+    ]
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_headers(message):
+            if message["type"] == "http.response.start":
+                message["headers"] = [*message.get("headers", []), *self._HEADERS]
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
+
+
+app.add_middleware(SecurityHeadersMiddleware)
+
+
 @app.get("/healthz")
 def healthz() -> PlainTextResponse:
     return PlainTextResponse("ok\n")

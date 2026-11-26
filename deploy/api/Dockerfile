@@ -71,4 +71,12 @@ RUN mkdir -p /data/uploads /data/notes-db && chown -R notes:users /data
 
 USER notes
 EXPOSE 8000
-CMD ["uvicorn", "notes_pipeline.webapi:app", "--host", "0.0.0.0", "--port", "8000"]
+# --proxy-headers: every public request arrives from Docker's bridge gateway
+# (the tailnet-bound port is forwarded by docker-proxy), and uvicorn ignores
+# X-Forwarded-Proto from anything but 127.0.0.1 by default — so `/mcp`'s
+# trailing-slash redirect pointed at http://. 172.16.0.0/12 is Docker's
+# bridge range; port 8000 is reachable only via the tailnet binding and the
+# internal compose network, and nothing here makes auth decisions on client
+# IP or scheme.
+CMD ["uvicorn", "notes_pipeline.webapi:app", "--host", "0.0.0.0", "--port", "8000", \
+     "--proxy-headers", "--forwarded-allow-ips", "172.16.0.0/12"]
